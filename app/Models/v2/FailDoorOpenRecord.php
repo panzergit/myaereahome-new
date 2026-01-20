@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Models\v2;
+use App\Models\v2\Device;
+
+use Illuminate\Database\Eloquent\Model;
+
+class FailDoorOpenRecord extends Model
+{
+    protected $fillable = [
+      'user_id','account_id','unit_no','empuuid','empname','empPhone','empCardNo','devId','devuuid','devname','devSn','building_no','buildingCode','eventType','eventtime','captureImageBase64','captureImageUrl','faceAge','faceGender','','faceMatchScore','bodyTemperature'
+    ]; 
+
+  public function user(){
+      return $this->belongsTo('App\Models\v2\User','empuuid');
+  }
+
+  public function getunit(){
+    return $this->belongsTo('App\Models\v2\Unit','unit_no');
+  }
+
+  
+
+
+
+}

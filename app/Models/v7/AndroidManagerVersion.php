@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Models\v7;
+use DateTime;
+use Illuminate\Database\Eloquent\Model;
+
+class AndroidManagerVersion extends Model
+{
+     protected $fillable = [
+     'version_code', 'version_name'
+    ];
+
+   
+
+}
