@@ -74,15 +74,14 @@ class DigitalAccessController extends Controller
         
         if($request->has('search')){
             
+            $unit = $request->input('unit');
+            $unit = trim($unit)!='' ? str_replace("#",'',$unit) : '';
+            
             $userIDs = [];
             
-            if(trim($request->name)!='')
-            {   
-                $unit = str_replace("#",'',$unit);
-                $userIDs = User::where('account_id',$account_id)->get()->filter(function($e) use($request){
-                    if(Crypt::decryptString($e->name) === $request->name) return $e;
-                })->pluck('id')->toArray();
-            }
+            if($request->filled('name')) $userIDs = User::where('account_id',$account_id)->get()
+                    ->filter(fn($e) => str_contains(strtolower(trim(Crypt::decryptString($e->name))),strtolower(trim($request->name))))
+                    ->pluck('id')->toArray();
             
             $startDate = trim($request->startDate);
             $endDate = trim($request->endDate);
@@ -275,12 +274,9 @@ class DigitalAccessController extends Controller
             
             $userIDs = [];
             
-            if(trim($request->name)!='')
-            {   
-                $userIDs = User::where('account_id',$account_id)->get()->filter(function($e) use($request){
-                    if(Crypt::decryptString($e->name) === $request->name) return $e;
-                })->pluck('id')->toArray();
-            }
+            if($request->filled('name')) $userIDs = User::where('account_id',$account_id)->get()
+                ->filter(fn($e) => str_contains(strtolower(trim(Crypt::decryptString($e->name))),strtolower(trim($request->name))))
+                ->pluck('id')->toArray();
             
             $startDate = trim($request->startDate);
             $endDate = trim($request->endDate);
@@ -384,12 +380,9 @@ class DigitalAccessController extends Controller
             
             $userIDs = [];
             
-            if(trim($request->name)!='')
-            {   
-                $userIDs = User::where('account_id',$account_id)->get()->filter(function($e) use($request){
-                    if(Crypt::decryptString($e->name) === $request->name) return $e;
-                })->pluck('id')->toArray();
-            }
+            if($request->filled('name')) $userIDs = User::where('account_id',$account_id)->get()
+                    ->filter(fn($e) => str_contains(strtolower(trim(Crypt::decryptString($e->name))),strtolower(trim($request->name))))
+                    ->pluck('id')->toArray();
             
             $startDate = trim($request->startDate);
             $endDate = trim($request->endDate);
@@ -496,12 +489,9 @@ class DigitalAccessController extends Controller
             
             $userIDs = [];
             
-            if(trim($request->name)!='')
-            {   
-                $userIDs = User::where('account_id',$account_id)->get()->filter(function($e) use($request){
-                    if(Crypt::decryptString($e->name) === $request->name) return $e;
-                })->pluck('id')->toArray();
-            }
+            if($request->filled('name')) $userIDs = User::where('account_id',$account_id)->get()
+                ->filter(fn($e) => str_contains(strtolower(trim(Crypt::decryptString($e->name))),strtolower(trim($request->name))))
+                ->pluck('id')->toArray();
             
             $startDate = trim($request->startDate);
             $endDate = trim($request->endDate);
@@ -533,6 +523,9 @@ class DigitalAccessController extends Controller
       
         $account_id = Auth::user()->account_id;
        
+        $allUnitIds = NormalDoorOpenRecord::where('account_id',$account_id)->pluck('unit_no')->unique()->all();
+        $searchUnits = Unit::whereIn('id',$allUnitIds)->get()->map(fn($e) => ['id' => $e->id,'name' => Crypt::decryptString($e->unit)]);
+        
         $relationships =  FacialRecoOption::where('status',1)->pluck('option', 'id')->all();
 
         $auth = new \App\Models\v7\Property();
@@ -663,7 +656,7 @@ class DigitalAccessController extends Controller
         } */
   
 
-        return view('admin.digital.dooropenfailed', compact('records','devices','doorName','name','option','unit','startDate','endDate','startTime','endTime'));
+        return view('admin.digital.dooropenfailed', compact('records','devices','doorName','name','option','unit','startDate','endDate','startTime','endTime','searchUnits'));
     }
 
     public function callunit()
