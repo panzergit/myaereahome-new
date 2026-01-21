@@ -177,7 +177,7 @@ Route::prefix('opslogin')->middleware(['auth', 'otp-validation'])->group(functio
 			Route::get('deleteunit/{id}', [UserMoreInfoController::class, 'deleteunit']);
 			Route::any('assignunitupdate/{id}', [UserMoreInfoController::class, 'assignunitupdate']);
 			Route::get('usercards/{id}', [UserMoreInfoController::class, 'usercards']);
-			Route::any('assigncard', [UserMoreInfoController::class, 'assigncard']);
+			Route::post('assigncard', [UserMoreInfoController::class, 'assigncard']);
 			Route::get('deletecard/{id}', [UserMoreInfoController::class, 'deletecard']);
 			Route::any('userdevices/{id}', [UserMoreInfoController::class, 'userdevices']);
 			Route::any('assigndevice', [UserMoreInfoController::class, 'assigndevice']);
@@ -479,16 +479,20 @@ Route::prefix('opslogin')->middleware(['auth', 'otp-validation'])->group(functio
 	Route::any('book_appt', [UnittakeoverAppointmentController::class, 'create'])->middleware('check-permission:2');
 	Route::any('takeover_appt/lists', [UnittakeoverAppointmentController::class, 'lists'])->middleware('check-permission:2');
 	Route::resource('takeover_appt', UnittakeoverAppointmentController::class)->middleware('check-permission:2');
+	
+	Route::middleware('check-permission:4')->group(function () {
 
-	Route::any('inspection_appt/search', [JoininspectionAppointmentController::class, 'search'])->middleware('check-permission:4');
-	Route::post('book_inspection/updatecancelstatus', [JoininspectionAppointmentController::class, 'updatecancelstatus'])->middleware('check-permission:4');
-	Route::any('book_inspection/updateconfirmstatus', [JoininspectionAppointmentController::class, 'updateconfirmstatus'])->middleware('check-permission:4');
-	Route::any('book_inspection/message', [JoininspectionAppointmentController::class, 'message'])->middleware('check-permission:4');
-	Route::any('inspection_thankyou', [JoininspectionAppointmentController::class, 'thankyou'])->middleware('check-permission:4');
-	Route::any('book_inspection', [JoininspectionAppointmentController::class, 'create'])->middleware('check-permission:4');
-	Route::any('inspection_appt/lists', [JoininspectionAppointmentController::class, 'lists'])->middleware('check-permission:4');
-	Route::resource('inspection_appt', JoininspectionAppointmentController::class)->middleware('check-permission:4');
-
+    	Route::any('inspection_appt/search', [JoininspectionAppointmentController::class, 'search']);
+    	Route::post('book_inspection/updatecancelstatus', [JoininspectionAppointmentController::class, 'updatecancelstatus']);
+    	Route::any('book_inspection/updateconfirmstatus', [JoininspectionAppointmentController::class, 'updateconfirmstatus']);
+    	Route::any('book_inspection/message', [JoininspectionAppointmentController::class, 'message']);
+    	Route::any('inspection_thankyou', [JoininspectionAppointmentController::class, 'thankyou']);
+    	Route::any('book_inspection', [JoininspectionAppointmentController::class, 'create']);
+    	Route::any('inspection_appt/lists', [JoininspectionAppointmentController::class, 'lists']);
+    	Route::resource('inspection_appt', JoininspectionAppointmentController::class);
+    
+	});
+	
 	Route::get('takeover_appt/delete/{id}', [AnnouncementController::class, 'destroy'])->middleware('check-permission:1');
 
 	Route::any('exportinspection', [ExportController::class, 'inspection'])->middleware('check-permission:4');

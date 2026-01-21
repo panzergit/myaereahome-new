@@ -99,7 +99,6 @@
                            <th>Block</th>
                            <th>unit no</th>
                            <th>card no</th>
-                           <th>assigned date</th>
                            <th>status</th>
                            <th>actions</th>
                         </tr>
@@ -113,12 +112,9 @@
                            @if(Auth::user()->role_id ==1)
                         <td  class="spacer">{{isset($dept->propertyinfo->company_name)?$dept->propertyinfo->company_name:''}}</td>
                         @endif
-                           <td  class="spacer">{{isset($dept->addubuildinginfo)?$dept->addubuildinginfo->building:''}}</td>
-                           <td  class="spacer"> #{{isset($dept->addunitinfo)?Crypt::decryptString($dept->addunitinfo->unit):''}}</td>
-                           <td  class="spacer">{{$dept->card_no}}</td>
-                           <td  class="spacer">@php 
-                                    echo date('d/m/y',strtotime($dept->created_at));
-                                 @endphp</td>
+                           <td  class="spacer">{{ $dept->getbuilding->building ?? ''}}</td>
+                           <td  class="spacer"> #{{isset($dept->getunit)?Crypt::decryptString($dept->getunit->unit):''}}</td>
+                           <td  class="spacer">{{$dept->card}}</td>
                            <td  class="spacer"><?php
                            if($dept->status ==1)
                               echo "Active";

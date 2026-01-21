@@ -31,6 +31,12 @@ class AuthenticatedSessionController extends Controller
         
         if(Auth::check()){
             $user = Auth::user();
+            
+            $login_role =  $user->role_id;
+            $env_roles  = (array_key_exists('USER_APP_ROLE', $_ENV)) ? $_ENV['USER_APP_ROLE'] : '';
+            $roles = explode(",", $env_roles);
+            if(in_array($login_role, $roles)) return redirect('/opslogin')->with('status', 'Login to Aerea mobile app instead');;
+            
             LoginOTP::sendotpnew(trim($user->name), trim($user->email));
             return redirect('loginotp');
         }

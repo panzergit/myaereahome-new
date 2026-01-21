@@ -525,7 +525,7 @@ class DigitalAccessController extends Controller
        
         $allUnitIds = NormalDoorOpenRecord::where('account_id',$account_id)->pluck('unit_no')->unique()->all();
         $searchUnits = Unit::whereIn('id',$allUnitIds)->get()->map(fn($e) => ['id' => $e->id,'name' => Crypt::decryptString($e->unit)]);
-        
+
         $relationships =  FacialRecoOption::where('status',1)->pluck('option', 'id')->all();
 
         $auth = new \App\Models\v7\Property();

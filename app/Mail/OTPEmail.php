@@ -19,7 +19,9 @@ class OTPEmail extends Mailable
     {
         $this->emailData = $eData;
     }
-    
+    /**
+     * Build the message.
+     */
     public function build()
     {
         $viewData = $this->emailData;

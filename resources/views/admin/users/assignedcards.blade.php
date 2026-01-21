@@ -30,7 +30,7 @@
                </div>
        <div class="">
             <div class=" forunit forchange devicehead">
-            {!! Form::model($UserObj,['method' =>'PATCH','class'=>"forunit", 'autocomplete'=>"off", 'url' => url('opslogin/user/assigncard/'.$UserObj->id)]) !!}
+            {!! Form::model($UserObj,['method' =>'POST','class'=>"forunit", 'autocomplete'=>"off", 'url' => url('opslogin/user/assigncard')]) !!}
 
                    <h2 class="mt-3">Assign Card</h2>
                   <div >
@@ -86,7 +86,7 @@
                            <th>Block</th>
                            <th>unit</th>
                            <th>Card No</th>
-                           <!-- <th>assigned date</th> -->
+                           <th>assigned date</th>
                            <th>actions</th>
                         </tr>
                      </thead>
@@ -106,7 +106,7 @@
                               </td>
                               <td>
                                  @php 
-                                    #echo date('d/m/y',strtotime($assignedCard->created_at));
+                                    echo date('d/m/y',strtotime($assignedCard->created_at));
                                  @endphp
                               </td>
                               <td>

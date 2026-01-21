@@ -60,6 +60,8 @@ class StaticController extends Controller
         if(Auth::check()){
             $user = Auth::user();
             if($user->otp!=0){
+                $user->otp = 0;
+                $user->save();
                 Auth::logout();
                 return redirect('/');
             }

@@ -3890,10 +3890,6 @@ class UserMoreInfoController extends Controller
 
         $UserMoreInfoObj = UserMoreInfo::find($input['user_more_info_id']);
         $userObj = User::find($UserMoreInfoObj->user_id);
-        //$UserMoreInfoObj = UserMoreInfo::where( 'user_id' , $userObj->id)->where( 'account_id' , $userObj->account_id)->first();
-       
-
-        
         $user_roles = explode(",",env('USER_APP_ROLE'));
         if(in_array($userObj->role_id,$user_roles))
         {

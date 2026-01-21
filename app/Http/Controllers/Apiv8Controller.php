@@ -3738,7 +3738,7 @@ class Apiv8Controller extends Controller
 			])
 			->groupBy('a_id')
 			->orderByDesc('id')->get()
-			->map('announcement')->map(fn ($r) => [
+			->map(fn($r) => [
 				'list' => $r,
 				'announce' => $r->announcement,
 			]);
