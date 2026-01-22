@@ -54,30 +54,29 @@
    </head>
     <body>
       @php 
-      $mytime = Carbon\Carbon::now();
-      $permission = Auth::user();
-      $admin_id = Auth::user()->id;
-      $account_id = Auth::user()->account_id;
-      $takeover_count = $permission->noOfTakeover($account_id);
-      $inspection_count = $permission->noOfInspection($account_id);
-      $faceid_count = $permission->noOfFaceids($account_id);
-      $defect_count = $permission->noOfDefects($account_id);
-      $feedback_count = $permission->noOfFeedback($account_id);
-      $facilitybooking_count = $permission->noOfFacilityBooking($account_id);
-      $fileupload_count = $permission->noOfFileupload($account_id);
-      $vm_count = $permission->noOfVisitors($account_id);
-      $moveinout_count = $permission->noOfMovinginout($account_id);
-      $renovation_count = $permission->noOfRenovation($account_id);
-      $regvehicle_count = $permission->noOfRegvehicle($account_id);
-      $dooraccess_count = $permission->noOfDooraccess($account_id);
-      $mailling_count = $permission->noOfMailing($account_id);
-      $particular_count = $permission->noOfparticulars($account_id);
-      $verification_count = $permission->noOfPendingVerificationPayment($account_id);
+      $loggedInUser = request()->user();
+      $admin_id = $loggedInUser->id;
+      $account_id = $loggedInUser->account_id;
+      $takeover_count = $loggedInUser->noOfTakeover($account_id);
+      $inspection_count = $loggedInUser->noOfInspection($account_id);
+      $faceid_count = $loggedInUser->noOfFaceids($account_id);
+      $defect_count = $loggedInUser->noOfDefects($account_id);
+      $feedback_count = $loggedInUser->noOfFeedback($account_id);
+      $facilitybooking_count = $loggedInUser->noOfFacilityBooking($account_id);
+      $fileupload_count = $loggedInUser->noOfFileupload($account_id);
+      $vm_count = $loggedInUser->noOfVisitors($account_id);
+      $moveinout_count = $loggedInUser->noOfMovinginout($account_id);
+      $renovation_count = $loggedInUser->noOfRenovation($account_id);
+      $regvehicle_count = $loggedInUser->noOfRegvehicle($account_id);
+      $dooraccess_count = $loggedInUser->noOfDooraccess($account_id);
+      $mailling_count = $loggedInUser->noOfMailing($account_id);
+      $particular_count = $loggedInUser->noOfparticulars($account_id);
+      $verification_count = $loggedInUser->noOfPendingVerificationPayment($account_id);
       $eform_total = $moveinout_count + $renovation_count + $regvehicle_count + $dooraccess_count + $mailling_count + $particular_count;
       $img_full_path = env('APP_URL') . "/storage/app/";
       
-         $logo_path = (isset($permission->propertyinfo->company_logo) && trim($permission->propertyinfo->company_logo)!="") 
-            ? Storage::disk('s3')->url(env('AWS_BUCKET_SUBFOLDER').$permission->propertyinfo->company_logo) : null;
+         $logo_path = (isset($loggedInUser->propertyinfo->company_logo) && trim($loggedInUser->propertyinfo->company_logo)!="") 
+            ? Storage::disk('s3')->url(env('AWS_BUCKET_SUBFOLDER').$loggedInUser->propertyinfo->company_logo) : null;
 
       @endphp
       <section class="headersec">
@@ -94,9 +93,9 @@
                            <div class="sidebar-menu">
                               <ul>
                                  @php
-                                 $user =  $permission->check_menu_permission(7,$permission->role_id,1);
+                                 $user =  $loggedInUser->check_menu_permission(7,$loggedInUser->role_id,1);
                                  if((isset($user) && $user->view==1) || Auth::user()->id ==1){
-                                    $access =  $permission->check_menu_permission_level(7,$account_id);
+                                    $access =  $loggedInUser->check_menu_permission_level(7,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=User&nbsp;Management data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -107,10 +106,10 @@
                                     <li> <a href="{{url('/opslogin/user')}}"><span class="sideimg"><img src="{{url('assets/admin/img/user.png')}}"></span> User Management</a></li>
                                  @php 
                                  }
-                                 $announcement =  $permission->check_menu_permission(1,$permission->role_id,1);
+                                 $announcement =  $loggedInUser->check_menu_permission(1,$loggedInUser->role_id,1);
                                  if(isset( $announcement) && $announcement->view==1){
-                                    $module_permission = $permission->check_permission(1,$permission->role_id); 
-                                    $access =  $permission->check_menu_permission_level(1,$account_id);
+                                    $module_permission = $loggedInUser->check_permission(1,$loggedInUser->role_id); 
+                                    $access =  $loggedInUser->check_menu_permission_level(1,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Announcement data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -120,10 +119,10 @@
                                     <li> <a href="{{url('/opslogin/announcement')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Announcements.png')}}"></span> Announcements</a></li>
                                  @php 
                                  }
-                                 $cards =  $permission->check_menu_permission(38,$permission->role_id,1);
+                                 $cards =  $loggedInUser->check_menu_permission(38,$loggedInUser->role_id,1);
                                  if(isset( $cards) && $cards->view==1){
-                                    $module_permission = $permission->check_permission(38,$permission->role_id); 
-                                    $access =  $permission->check_menu_permission_level(38,$account_id);
+                                    $module_permission = $loggedInUser->check_permission(38,$loggedInUser->role_id); 
+                                    $access =  $loggedInUser->check_menu_permission_level(38,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Access&nbsp;Card&nbsp;Management data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -134,10 +133,10 @@
                                     <li> <a href="{{url('/opslogin/card')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Card.png')}}"></span> Access Card Management</a></li>
                                  @php 
                                  }
-                                 $device =  $permission->check_menu_permission(48,$permission->role_id,1);
+                                 $device =  $loggedInUser->check_menu_permission(48,$loggedInUser->role_id,1);
                                  if(isset( $device) && $device->view==1){
-                                    $module_permission = $permission->check_permission(48,$permission->role_id); 
-                                    $access =  $permission->check_menu_permission_level(48,$account_id);
+                                    $module_permission = $loggedInUser->check_permission(48,$loggedInUser->role_id); 
+                                    $access =  $loggedInUser->check_menu_permission_level(48,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Device&nbsp;Management data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -147,9 +146,9 @@
                                     <li> <a href="{{url('/opslogin/device')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Device.png')}}"></span> Device Management</a></li>
                                  @php 
                                  }
-                                 $faceids =  $permission->check_menu_permission(50,$permission->role_id,1);
+                                 $faceids =  $loggedInUser->check_menu_permission(50,$loggedInUser->role_id,1);
                                  if(isset($faceids) && $faceids->view==1){
-                                    $access =  $permission->check_menu_permission_level(50,$account_id);
+                                    $access =  $loggedInUser->check_menu_permission_level(50,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Face&nbsp;Ids data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -159,9 +158,9 @@
                                     <li> <a href="{{url('/opslogin/faceid#fi')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Face.png')}}"></span> Face Ids</a></li>
                                  @php 
                                  }
-                                 $takeover =  $permission->check_menu_permission(2,$permission->role_id,1);
+                                 $takeover =  $loggedInUser->check_menu_permission(2,$loggedInUser->role_id,1);
                                  if(isset( $takeover) && $takeover->view==1){
-                                    $access =  $permission->check_menu_permission_level(2,$account_id);
+                                    $access =  $loggedInUser->check_menu_permission_level(2,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Key&nbsp;Collection data-toggle=modal data-target=#mydata class=datafech";
                                     }
@@ -172,9 +171,9 @@
                                     <li> <a href="{{url('/opslogin/takeover_appt/lists#kc')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Key.png')}}"></span> Key Collection</a></li>
                                  @php 
                                  }
-                                 $defects =  $permission->check_menu_permission(3,$permission->role_id,1);
+                                 $defects =  $loggedInUser->check_menu_permission(3,$loggedInUser->role_id,1);
                                  if(isset($defects) && $defects->view==1){
-                                    $access =  $permission->check_menu_permission_level(3,$account_id);
+                                    $access =  $loggedInUser->check_menu_permission_level(3,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Defects data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -184,9 +183,9 @@
                                     <li> <a href="{{url('/opslogin/defects#defect')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Defects.png')}}"></span> Defects</a></li>
                                  @php 
                                  }  
-                                 $facility =  $permission->check_menu_permission(5,$permission->role_id,1);
+                                 $facility =  $loggedInUser->check_menu_permission(5,$loggedInUser->role_id,1);
                                  if(isset($facility) &&   $facility->view==1){
-                                    $access =  $permission->check_menu_permission_level(5,$account_id);
+                                    $access =  $loggedInUser->check_menu_permission_level(5,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Facility&nbsp;Booking data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -196,9 +195,9 @@
                                     <li> <a href="{{url('/opslogin/facility#fb')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Booking.png')}}"></span> Facilities Booking</a></li>
                                  @php 
                                  } 
-                                 $feedback =  $permission->check_menu_permission(6,$permission->role_id,1);
+                                 $feedback =  $loggedInUser->check_menu_permission(6,$loggedInUser->role_id,1);
                                  if(isset($feedback) &&  $feedback->view==1){
-                                    $access =  $permission->check_menu_permission_level(6,$account_id);
+                                    $access =  $loggedInUser->check_menu_permission_level(6,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Feedbacks data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -208,9 +207,9 @@
                                     <li> <a href="{{url('/opslogin/feedbacks/summary#fb')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Feedback.png')}}"></span> Feedback</a></li>
                                  @php 
                                  }
-                                 $condodocs =  $permission->check_menu_permission(32,$permission->role_id,1);
+                                 $condodocs =  $loggedInUser->check_menu_permission(32,$loggedInUser->role_id,1);
                                  if(isset($condodocs) &&  $condodocs->view==1){
-                                    $access =  $permission->check_menu_permission_level(32,$account_id);
+                                    $access =  $loggedInUser->check_menu_permission_level(32,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Condo&nbsp;Document data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -220,9 +219,9 @@
                                     <li> <a href="{{url('/opslogin/docs-category#cd')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Condo.png')}}"></span> Condo Document</a></li>
                                  @php 
                                  }
-                                 $fileupload =  $permission->check_menu_permission(33,$permission->role_id,1);
+                                 $fileupload =  $loggedInUser->check_menu_permission(33,$loggedInUser->role_id,1);
                                  if(isset($fileupload) &&  $fileupload->view >=1){
-                                    $access =  $permission->check_menu_permission_level(33,$account_id);
+                                    $access =  $loggedInUser->check_menu_permission_level(33,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Resident’s&nbsp;File&nbsp;Upload data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -232,12 +231,12 @@
                                     <li> <a href="{{url('/opslogin/residents-uploads#rfu')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Resident.png')}}"></span> Residents File Upload</a></li>
                                  @php 
                                  }
-                                 $e_movein =  $permission->check_menu_permission(40,$permission->role_id,1);
-                                 $e_renovation=  $permission->check_menu_permission(41,$permission->role_id,1);
-                                 $e_card =  $permission->check_menu_permission(42,$permission->role_id,1);
-                                 $e_vehicle =  $permission->check_menu_permission(43,$permission->role_id,1);
-                                 $e_addr =  $permission->check_menu_permission(44,$permission->role_id,1);
-                                 $e_info =  $permission->check_menu_permission(45,$permission->role_id,1);
+                                 $e_movein =  $loggedInUser->check_menu_permission(40,$loggedInUser->role_id,1);
+                                 $e_renovation=  $loggedInUser->check_menu_permission(41,$loggedInUser->role_id,1);
+                                 $e_card =  $loggedInUser->check_menu_permission(42,$loggedInUser->role_id,1);
+                                 $e_vehicle =  $loggedInUser->check_menu_permission(43,$loggedInUser->role_id,1);
+                                 $e_addr =  $loggedInUser->check_menu_permission(44,$loggedInUser->role_id,1);
+                                 $e_info =  $loggedInUser->check_menu_permission(45,$loggedInUser->role_id,1);
                                  if((isset($e_movein) && $e_movein->view>=1) || (isset($e_renovation->view) && $e_renovation->view ==1) || (isset($e_card->view) && $e_card->view ==1)|| (isset($e_vehicle->view) && $e_vehicle->view ==1)|| (isset($e_addr->view) && $e_addr->view ==1) || (isset($e_info->view) && $e_info->view ==1)){
                                     if(isset($e_movein->view) && $e_movein->view ==1)
                                        $eform_url = url('/opslogin/eform/moveinout#ef');
@@ -254,12 +253,12 @@
                                     else 
                                        $eform_url = '#';
 
-                                    $access1 =  $permission->check_menu_permission_level(40,$account_id);
-                                    $access2 =  $permission->check_menu_permission_level(41,$account_id);
-                                    $access3 =  $permission->check_menu_permission_level(42,$account_id);
-                                    $access4 =  $permission->check_menu_permission_level(43,$account_id);
-                                    $access5 =  $permission->check_menu_permission_level(44,$account_id);
-                                    $access6 =  $permission->check_menu_permission_level(45,$account_id);
+                                    $access1 =  $loggedInUser->check_menu_permission_level(40,$account_id);
+                                    $access2 =  $loggedInUser->check_menu_permission_level(41,$account_id);
+                                    $access3 =  $loggedInUser->check_menu_permission_level(42,$account_id);
+                                    $access4 =  $loggedInUser->check_menu_permission_level(43,$account_id);
+                                    $access5 =  $loggedInUser->check_menu_permission_level(44,$account_id);
+                                    $access6 =  $loggedInUser->check_menu_permission_level(45,$account_id);
 
                                     if((isset($access1) && $access1->view ==2) && (isset($access2) && $access2->view ==2) && (isset($access3) && $access3->view ==2) && (isset($access4) && $access4->view ==2) && (isset($access5) && $access5->view ==2) && (isset($access6) && $access6->view ==2)){
                                        $popup = "data-id=E-Form&nbsp;Submissions data-toggle=modal data-target=#mydata class=datafech";
@@ -270,9 +269,9 @@
                                     <li> <a href="{{$eform_url}}"><span class="sideimg"><img src="{{url('assets/admin/img/Form.png')}}"></span> E-Form Submissions</a></li>
                                  @php 
                                  }
-                                 $vm =  $permission->check_menu_permission(34,$permission->role_id,1);
+                                 $vm =  $loggedInUser->check_menu_permission(34,$loggedInUser->role_id,1);
                                  if(isset($vm) &&  $vm->view==1){
-                                    $access =  $permission->check_menu_permission_level(34,$account_id);
+                                    $access =  $loggedInUser->check_menu_permission_level(34,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Visitor&nbsp;Management data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -282,31 +281,31 @@
                                     <li> <a href="{{url('/opslogin/visitor-summary#vm')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Visitor.png')}}"></span> Visitor Management</a></li>
                                  @php 
                                  }
-                                 $rm =  $permission->check_menu_permission(60,$permission->role_id,1);
-                                 $rm1 =  $permission->check_menu_permission(61,$permission->role_id,1);
-                                 $rm2 =  $permission->check_menu_permission(62,$permission->role_id,1);
-                                 $rm3 =  $permission->check_menu_permission(71,$permission->role_id,1);
-                                 $rm4 =  $permission->check_menu_permission(72,$permission->role_id,1);
+                                 $rm =  $loggedInUser->check_menu_permission(60,$loggedInUser->role_id,1);
+                                 $rm1 =  $loggedInUser->check_menu_permission(61,$loggedInUser->role_id,1);
+                                 $rm2 =  $loggedInUser->check_menu_permission(62,$loggedInUser->role_id,1);
+                                 $rm3 =  $loggedInUser->check_menu_permission(71,$loggedInUser->role_id,1);
+                                 $rm4 =  $loggedInUser->check_menu_permission(72,$loggedInUser->role_id,1);
                                  if((isset($rm) &&  $rm->view==1) || (isset($rm1) &&  $rm1->view==1) || (isset($rm2) &&  $rm2->view==1) || (isset($rm3) &&  $rm3->view==1) || (isset($rm4) &&  $rm4->view==1)){
-                                    $access1 =  $permission->check_menu_permission_level(61,$account_id);
-                                    $access2 =  $permission->check_menu_permission_level(62,$account_id);
-                                    $access3 =  $permission->check_menu_permission_level(63,$account_id);
-                                    $access4 =  $permission->check_menu_permission_level(71,$account_id);
-                                    $access5 =  $permission->check_menu_permission_level(72,$account_id);
+                                    $access1 =  $loggedInUser->check_menu_permission_level(61,$account_id);
+                                    $access2 =  $loggedInUser->check_menu_permission_level(62,$account_id);
+                                    $access3 =  $loggedInUser->check_menu_permission_level(63,$account_id);
+                                    $access4 =  $loggedInUser->check_menu_permission_level(71,$account_id);
+                                    $access5 =  $loggedInUser->check_menu_permission_level(72,$account_id);
 
                                     if((isset($access1) && $access1->view ==2) && (isset($access2) && $access2->view ==2) && (isset($access3) && $access3->view ==2) && (isset($access4) && $access4->view ==2) && (isset($access5) && $access5->view ==2)){
                                        $popup = "data-id=Residence&nbsp;Management data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
                                        $popup = '';
                                     }
-                                    $batch_count = $permission->check_importcsv_permission($account_id);
+                                    $batch_count = $loggedInUser->check_importcsv_permission($account_id);
                                  @endphp
                                     <li> <a href="{{url('/opslogin/paymentoverview#vm')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Residents.png')}}"></span> Resident Management</a></li>
                                  @php 
                                  }
-                                 $supplier =  $permission->check_menu_permission(79,$permission->role_id,1);
+                                 $supplier =  $loggedInUser->check_menu_permission(79,$loggedInUser->role_id,1);
                                  if((isset($supplier) &&  $supplier->view==1) ){
-                                    $supplier =  $permission->check_menu_permission_level(79,$account_id);
+                                    $supplier =  $loggedInUser->check_menu_permission_level(79,$account_id);
                                     if((isset($supplier) && $supplier->view ==2)){
                                        $popup = "data-id=Supplier&nbsp;Management data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($supplier) && $supplier->view ==1) || $admin_id ==1){
@@ -317,13 +316,13 @@
                                     <li> <a href="{{url('/opslogin/supplier#vm')}}"><span class="sideimg"><img src="{{url('assets/admin/img/supplier.png')}}"></span> Supplier Management</a></li>
                                  @php 
                                  }
-                                 $dooropen =  $permission->check_menu_permission(56,$permission->role_id,1);
-                                 $bluetooth =  $permission->check_menu_permission(69,$permission->role_id,1);
-                                 $callunit =  $permission->check_menu_permission(67,$permission->role_id,1);
-                                 $doorfailed =  $permission->check_menu_permission(66,$permission->role_id,1);
-                                 $qrcode =  $permission->check_menu_permission(68,$permission->role_id,1);
+                                 $dooropen =  $loggedInUser->check_menu_permission(56,$loggedInUser->role_id,1);
+                                 $bluetooth =  $loggedInUser->check_menu_permission(69,$loggedInUser->role_id,1);
+                                 $callunit =  $loggedInUser->check_menu_permission(67,$loggedInUser->role_id,1);
+                                 $doorfailed =  $loggedInUser->check_menu_permission(66,$loggedInUser->role_id,1);
+                                 $qrcode =  $loggedInUser->check_menu_permission(68,$loggedInUser->role_id,1);
 
-                                 //$digital =  $permission->check_menu_permission(51,$permission->role_id,1);
+                                 //$digital =  $loggedInUser->check_menu_permission(51,$loggedInUser->role_id,1);
                                  if((isset($dooropen) && $dooropen->view>=1) || (isset($bluetooth) && $bluetooth->view>=1) || (isset($callunit) && $callunit->view>=1) ||(isset($doorfailed) && $doorfailed->view>=1) || (isset($qrcode) && $qrcode->view>=1)){
 
                                     if(isset($dooropen->view) && $dooropen->view ==1)
@@ -339,11 +338,11 @@
                                     else 
                                        $digital_url = '#';
 
-                                    $access1 =  $permission->check_menu_permission_level(56,$account_id);
-                                    $access2 =  $permission->check_menu_permission_level(69,$account_id);
-                                    $access3 =  $permission->check_menu_permission_level(67,$account_id);
-                                    $access4 =  $permission->check_menu_permission_level(66,$account_id);
-                                    $access5 =  $permission->check_menu_permission_level(68,$account_id);
+                                    $access1 =  $loggedInUser->check_menu_permission_level(56,$account_id);
+                                    $access2 =  $loggedInUser->check_menu_permission_level(69,$account_id);
+                                    $access3 =  $loggedInUser->check_menu_permission_level(67,$account_id);
+                                    $access4 =  $loggedInUser->check_menu_permission_level(66,$account_id);
+                                    $access5 =  $loggedInUser->check_menu_permission_level(68,$account_id);
 
                                     if((isset($access1) && $access1->view ==2) || (isset($access2) && $access2->view ==2) || (isset($access3) && $access3->view ==2) || (isset($access4) && $access4->view ==2) || (isset($access5) && $access5->view ==2)){
                                        $popup = "data-id=Open&nbsp;Door&nbsp;Records data-toggle=modal data-target=#mydata class=datafech";
@@ -355,9 +354,9 @@
                                  @php 
                                  }
 
-                                 $digital =  $permission->check_menu_permission(76,$permission->role_id,1);
+                                 $digital =  $loggedInUser->check_menu_permission(76,$loggedInUser->role_id,1);
                                  if(isset($digital) &&  $digital->view==1){
-                                    $access =  $permission->check_menu_permission_level(76,$account_id);
+                                    $access =  $loggedInUser->check_menu_permission_level(76,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Chatter&nbsp;Box data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -369,9 +368,9 @@
                                  }
                                 
 
-                                 $digital =  $permission->check_menu_permission(77,$permission->role_id,1);
+                                 $digital =  $loggedInUser->check_menu_permission(77,$loggedInUser->role_id,1);
                                  if(isset($digital) &&  $digital->view==1){
-                                    $access =  $permission->check_menu_permission_level(76,$account_id);
+                                    $access =  $loggedInUser->check_menu_permission_level(76,$account_id);
                                     if(isset($access) && $access->view ==2){
                                        $popup = "data-id=Chatter&nbsp;Box data-toggle=modal data-target=#mydata class=datafech";
                                     }else if((isset($access) && $access->view ==1) || $admin_id ==1){
@@ -392,25 +391,25 @@
                                  @php 
                                  }
                                  
-                                 $settings =  $permission->check_menu_permission(9,$permission->role_id,1);
-                                 $module =  $permission->check_menu_permission(22,$permission->role_id,1);
-                                 $role =  $permission->check_menu_permission(23,$permission->role_id,1);
-                                 $building =  $permission->check_menu_permission(49,$permission->role_id,1);
-                                 $unit =  $permission->check_menu_permission(24,$permission->role_id,1);
-                                 $menu =  $permission->check_menu_permission(25,$permission->role_id,1);
-                                 $feedback =  $permission->check_menu_permission(26,$permission->role_id,1);
-                                 $defect =  $permission->check_menu_permission(27,$permission->role_id,1);
-                                 $property =  $permission->check_menu_permission(28,$permission->role_id,1);
-                                 $facility =  $permission->check_menu_permission(29,$permission->role_id,1);
-                                 $vm =  $permission->check_menu_permission(37,$permission->role_id,1);
-                                 $eforms =  $permission->check_menu_permission(39,$permission->role_id,1);
-                                 $payment =  $permission->check_menu_permission(46,$permission->role_id,1);
-                                 $holiday =  $permission->check_menu_permission(53,$permission->role_id,1);
-                                 $building =  $permission->check_menu_permission(49,$permission->role_id,1);
-                                 $dashmenu =  $permission->check_menu_permission(55,$permission->role_id,1);
-                                 $key_setting =  $permission->check_menu_permission(9,$permission->role_id,1);
-                                 $inspection_setting =  $permission->check_menu_permission(57,$permission->role_id,1);
-                                 $sharesetting =  $permission->check_menu_permission(63,$permission->role_id,1);
+                                 $settings =  $loggedInUser->check_menu_permission(9,$loggedInUser->role_id,1);
+                                 $module =  $loggedInUser->check_menu_permission(22,$loggedInUser->role_id,1);
+                                 $role =  $loggedInUser->check_menu_permission(23,$loggedInUser->role_id,1);
+                                 $building =  $loggedInUser->check_menu_permission(49,$loggedInUser->role_id,1);
+                                 $unit =  $loggedInUser->check_menu_permission(24,$loggedInUser->role_id,1);
+                                 $menu =  $loggedInUser->check_menu_permission(25,$loggedInUser->role_id,1);
+                                 $feedback =  $loggedInUser->check_menu_permission(26,$loggedInUser->role_id,1);
+                                 $defect =  $loggedInUser->check_menu_permission(27,$loggedInUser->role_id,1);
+                                 $property =  $loggedInUser->check_menu_permission(28,$loggedInUser->role_id,1);
+                                 $facility =  $loggedInUser->check_menu_permission(29,$loggedInUser->role_id,1);
+                                 $vm =  $loggedInUser->check_menu_permission(37,$loggedInUser->role_id,1);
+                                 $eforms =  $loggedInUser->check_menu_permission(39,$loggedInUser->role_id,1);
+                                 $payment =  $loggedInUser->check_menu_permission(46,$loggedInUser->role_id,1);
+                                 $holiday =  $loggedInUser->check_menu_permission(53,$loggedInUser->role_id,1);
+                                 $building =  $loggedInUser->check_menu_permission(49,$loggedInUser->role_id,1);
+                                 $dashmenu =  $loggedInUser->check_menu_permission(55,$loggedInUser->role_id,1);
+                                 $key_setting =  $loggedInUser->check_menu_permission(9,$loggedInUser->role_id,1);
+                                 $inspection_setting =  $loggedInUser->check_menu_permission(57,$loggedInUser->role_id,1);
+                                 $sharesetting =  $loggedInUser->check_menu_permission(63,$loggedInUser->role_id,1);
 
                                  if(isset($settings->view) && $settings->view ==1 || isset($module->view) && $module->view ==1 ||  isset($role->view) && $role->view ==1 || isset($unit->view) && $unit->view ==1 || isset($menu->view) &&  $menu->view ==1 || isset($property->view) &&  $property->view ==1 || isset($defect->view) &&  $defect->view ==1 || isset($feedback->view) &&  $feedback->view ==1 || isset($facility->view) &&  $facility->view ==1 || isset($vm->view) &&  $vm->view ==1 || isset($eforms->view) &&  $eforms->view ==1 || isset($payment->view) && $payment->view ==1 ||  isset($building->view) &&  $building->view ==1 ||  isset($key_setting->view) &&  $key_setting->view >=1||  (isset($inspection_setting->view) &&  $inspection_setting->view >=1)){
                                  @endphp
@@ -455,7 +454,7 @@
                            @if(!empty($logo_path))
                               <img src="{{$logo_path}}" class="logo">
                            @else
-                              <h1>{{$permission->propertyinfo->company_name}}</h1>
+                              <h1>{{$loggedInUser->propertyinfo->company_name}}</h1>
                            @endif
                         </div>
                      </div>
@@ -469,7 +468,7 @@
                        <!-- opslogin-->
                            <select name="ag_prop" id="ag_prop" class="form-control selectimg">
                               @php
-                                 $ag_properties = $permission->propdropdown(Auth::user()->id);
+                                 $ag_properties = $loggedInUser->propdropdown(Auth::user()->id);
                               @endphp
                               @foreach($ag_properties as $ag_property){
                                  <option value="{{$ag_property->id}}" @if($account_id==$ag_property->id) selected="selected" @endif data-src="{{$img_full_path.$ag_property->company_logo}}" 
@@ -2175,8 +2174,8 @@ if($('#unit_list').length){
          cache:false,
          datatype: "JSON",
         success: function (response) {
-            <?php if($permission->role->name =="Employee"){ ?>
-            var name = <?php echo $permission->name ?>;
+            <?php if($loggedInUser->role->name =="Employee"){ ?>
+            var name = <?php echo $loggedInUser->name ?>;
             window.location.href ='../editmyprofile/'+ name;
           <?php } else { ?>
             window.location.href ='../'+uid+'/edit';

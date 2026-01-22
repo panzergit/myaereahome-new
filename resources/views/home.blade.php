@@ -10,7 +10,6 @@ $name =  Auth::user()->name;
 if(isset(Auth::user()->userinfo->last_name))
 $name = $name." ".Auth::user()->userinfo->last_name;
 
-$mytime = Carbon\Carbon::now();
   $permission = Auth::user();
 
   $annoucement_notification = $permission->noOfAnnouncement($permission->id);

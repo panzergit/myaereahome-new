@@ -9,7 +9,6 @@ $admin_id = Auth::user()->id;
 if(isset(Auth::user()->userinfo->last_name))
 $name = $name." ".Auth::user()->userinfo->last_name;
 
-$mytime = Carbon\Carbon::now();
 $permission = Auth::user();
 $reg_count = $permission->noOfReg($account_id);
 $faceid_count = $permission->noOfFaceids($account_id);

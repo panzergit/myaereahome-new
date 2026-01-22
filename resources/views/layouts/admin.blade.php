@@ -51,7 +51,6 @@ desired effect
       </section>
 
 @php 
-$mytime = Carbon\Carbon::now();
   $permission = Auth::user();
 @endphp
 

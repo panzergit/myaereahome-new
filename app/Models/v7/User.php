@@ -105,12 +105,11 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\v7\UserProperty','user_id');
     }
 
-    public function propdropdown($id){
+    public function propdropdown($id)
+    {
         $userprops = UserProperty::select('property_id')->where('user_id',$id)->get()->toArray();
-        $props = Property::select('id','company_name','company_logo')->whereIn('id',$userprops)->where('status',1)
-                    ->orderby('company_name','asc')->get();
-       return $props;
-
+        return Property::select('id','company_name','company_logo')->whereIn('id',$userprops)->where('status',1)
+                    ->orderby('company_name')->get();
     }
 
     public function propdropdown_new($id){
