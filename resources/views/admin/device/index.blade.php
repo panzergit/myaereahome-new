@@ -148,12 +148,10 @@ font-size: 18px;
                       @if($devices)
 
                        @foreach($devices as $k => $dept)
-                       <?php //$result = $dept->device_status($token,$account_id,$dept->device_serial_no); 
-                       //print_r($result);
-                       $deviceClsObj = new \App\Models\v7\Device();
-                       $locations = $deviceClsObj->getLocations($dept->locations); 
-                       //print_r($locations);
-                       ?>
+                        @php
+                           $deviceClsObj = new \App\Models\v7\Device();
+                           $locations = $deviceClsObj->getLocations($dept->locations); 
+                        @endphp
                         <tr>
                            <td class="roundleft">{{$k+1}}</td>
                            @if(Auth::user()->role_id ==1)

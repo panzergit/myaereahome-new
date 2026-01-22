@@ -29,23 +29,18 @@ class DeviceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-     public function index()
+    public function index(Request $request)
     {
+        $user = $request->user();
         $q= $option = $name = $status  = $serial_no ='';
+        $account_id = $user->account_id;
+        
+        $devices = Device::when($user->role_id !=1, fn($q) => $q->where('account_id',$account_id))
+            ->paginate(env('PAGINATION_ROWS'));
 
-        $account_id = Auth::user()->account_id;
-
-        if(Auth::user()->role_id ==1)
-            $devices = Device::get(); 
-        else
-            $devices = Device::where('account_id',$account_id)->paginate(env('PAGINATION_ROWS'));  
-
-        $auth = new \App\Models\v7\Property();
-        $token = $auth->thinmoo_auth_api();  
-
-        //$devices = Device::paginate(150);   
-        return view('admin.device.index', compact('devices','q','name','option','status','serial_no','account_id','token'));
+        return view('admin.device.index', compact('devices','q','name','option','status','serial_no','account_id'));
     }
+    
     public function new()
     {
         $q= $option = $name = $status  = $serial_no ='';
