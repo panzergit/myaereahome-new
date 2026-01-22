@@ -56,7 +56,6 @@
       @php 
       $mytime = Carbon\Carbon::now();
       $permission = Auth::user();
-      $logo_path = '';
       $admin_id = Auth::user()->id;
       $account_id = Auth::user()->account_id;
       $takeover_count = $permission->noOfTakeover($account_id);
@@ -76,8 +75,10 @@
       $verification_count = $permission->noOfPendingVerificationPayment($account_id);
       $eform_total = $moveinout_count + $renovation_count + $regvehicle_count + $dooraccess_count + $mailling_count + $particular_count;
       $img_full_path = env('APP_URL') . "/storage/app/";
-      if(isset($permission->propertyinfo->company_logo))
-      $logo_path = $permission->propertyinfo->company_logo;
+      
+         $logo_path = isset($permission->propertyinfo->company_logo) && trim($permission->propertyinfo->company_logo)!="" 
+            ? Storage::disk('s3')->url(env('AWS_BUCKET_SUBFOLDER').$permission->propertyinfo->company_logo) : null;
+
       @endphp
       <section class="headersec">
          <div class="container">
@@ -451,11 +452,11 @@
 			  <div class="row subheder" >
                      <div class="col-lg-7 col-4">
                         <div class="status">
-                           @php if(isset($logo_path) && $logo_path !='') {@endphp 
-                              <img src="{{$img_full_path}}{{$logo_path}}" class="logo">
-                           @php } else {@endphp
+                           @if(!empty($logo_path))
+                              <img src="{{$logo_path}}" class="logo">
+                           @else
                               <h1>{{$permission->propertyinfo->company_name}} </h1>
-                           @php } @endphp
+                           @endphp
                         </div>
                      </div>
                      <div class="col-lg-2 col-3">
