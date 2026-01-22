@@ -76,7 +76,7 @@
       $eform_total = $moveinout_count + $renovation_count + $regvehicle_count + $dooraccess_count + $mailling_count + $particular_count;
       $img_full_path = env('APP_URL') . "/storage/app/";
       
-         $logo_path = isset($permission->propertyinfo->company_logo) && trim($permission->propertyinfo->company_logo)!="" 
+         $logo_path = (isset($permission->propertyinfo->company_logo) && trim($permission->propertyinfo->company_logo)!="") 
             ? Storage::disk('s3')->url(env('AWS_BUCKET_SUBFOLDER').$permission->propertyinfo->company_logo) : null;
 
       @endphp
