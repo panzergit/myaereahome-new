@@ -455,7 +455,7 @@
                            @if(!empty($logo_path))
                               <img src="{{$logo_path}}" class="logo">
                            @else
-                              <h1>{{$permission->propertyinfo->company_name}} </h1>
+                              <h1>{{$permission->propertyinfo->company_name}}</h1>
                            @endphp
                         </div>
                      </div>
@@ -469,14 +469,12 @@
                        <!-- opslogin-->
                            <select name="ag_prop" id="ag_prop" class="form-control selectimg">
                               @php
-                              $ag_properties = $permission->propdropdown( Auth::user()->id);
-                              foreach($ag_properties as $ag_property){
-                                 $logo_path = $ag_property->company_logo;
+                                 $ag_properties = $permission->propdropdown(Auth::user()->id);
                               @endphp
-                                 <option value="{{$ag_property->id}}" {{($account_id ==$ag_property->id)?"selected":""}} data-src="{{$img_full_path}}{{$logo_path}}" class="optimg">{{$ag_property->company_name}}</option>
-                              @php
-                              }
-                              @endphp
+                              @foreach($ag_properties as $ag_property){
+                                 <option value="{{$ag_property->id}}" @if($account_id==$ag_property->id) selected="selected" @endif data-src="{{$img_full_path.$ag_property->company_logo}}" 
+                                    class="optimg">{{$ag_property->company_name}}</option>
+                              @endforeach
                            </select>
                         </div>
                      </div>
