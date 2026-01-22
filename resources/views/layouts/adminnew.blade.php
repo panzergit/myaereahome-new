@@ -456,7 +456,7 @@
                               <img src="{{$logo_path}}" class="logo">
                            @else
                               <h1>{{$permission->propertyinfo->company_name}}</h1>
-                           @endphp
+                           @endif
                         </div>
                      </div>
                      <div class="col-lg-2 col-3">
