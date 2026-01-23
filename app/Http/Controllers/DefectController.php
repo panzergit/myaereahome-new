@@ -697,7 +697,7 @@ class DefectController extends Controller
                     if($defect_status[$submission->id] ==2)
                         $defectSubmissionObj->handover_message = $handover_message[$submission->id];  
                     if($request->file($rectified_image) != null) {
-                        $defectSubmissionObj->rectified_image = $request->file($rectified_image)->store('defect');
+                        $defectSubmissionObj->rectified_image = $request->file($rectified_image)->store(upload_path('defect'));
                     }    
                     if($defect_status[$submission->id] ==0)  { 
                         $handover = 0;
@@ -840,7 +840,7 @@ class DefectController extends Controller
 
                     
                 if ($request->file($attachement) != null) {
-                        $data['upload'] = $request->file($attachement)->store('defect');
+                        $data['upload'] = $request->file($attachement)->store(upload_path('defect'));
                 }
 
                 

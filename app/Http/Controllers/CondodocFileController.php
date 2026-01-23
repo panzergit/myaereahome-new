@@ -97,7 +97,7 @@ class CondodocFileController extends Controller
             $file_name = 'file_name_' . $i;
 
             if ($request->file($file) != null) {
-                $type['docs_file'] = $request->file($file)->store('condofile');
+                $type['docs_file'] = $request->file($file)->store(upload_path('condofile'));
             }
 
             if ($input[$file_name] != null) { 
@@ -193,7 +193,7 @@ class CondodocFileController extends Controller
         $FileObj->cat_id = $request->input('cat_id');
         
         if ($request->file('docs_file') != null) {
-            $FileObj->docs_file = $request->file('docs_file')->store('condofile');
+            $FileObj->docs_file = $request->file('docs_file')->store(upload_path('condofile'));
         }
         $FileObj->docs_file_name = $request->input('docs_file_name');
 

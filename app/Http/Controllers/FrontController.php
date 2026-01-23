@@ -162,7 +162,7 @@ class FrontController extends Controller
             $filePath = 'user_signatures/'.$fileName;
         
         }else{
-            $filePath = $request->file('file')->store('user_signatures');
+            $filePath = $request->file('file')->store(upload_path('user_signatures'));
         }
         
         User::where('id',Auth::id())->update([
@@ -413,7 +413,7 @@ class FrontController extends Controller
         $UserMoreObj = UserMoreInfo::find($UserObj->userinfo->id);
 
         if ($request->file('profile_picture') != null) {
-            $UserMoreObj->profile_picture = $request->file('profile_picture')->store('profile');
+            $UserMoreObj->profile_picture = $request->file('profile_picture')->store(upload_path('profile'));
         }
 
         $UserMoreObj->save();

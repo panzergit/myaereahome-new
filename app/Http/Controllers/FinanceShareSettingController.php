@@ -85,7 +85,7 @@ class FinanceShareSettingController extends Controller
         }
 
         if ($request->file('qrcode_file') != null) {
-            $input['qrcode_file'] = $request->file('qrcode_file')->store('finance');
+            $input['qrcode_file'] = $request->file('qrcode_file')->store(upload_path('finance'));
         }
         
         FinanceShareSetting::create($input);

@@ -136,7 +136,7 @@ class UserFacialIdController extends Controller
         $input['account_id'] = $account_id;
         $input['status'] =2;
 		if ($request->file('picture') != null) {
-			$input['face_picture'] = $request->file('picture')->store('profile');
+			$input['face_picture'] = $request->file('picture')->store(upload_path('profile'));
 			$input['face_picture_base64'] = base64_encode(file_get_contents($request->file('picture')));
         }
        /* if(Auth::user()->role_id !=3 && Auth::user()->role_id !=201 && Auth::user()->role_id !=197 ){

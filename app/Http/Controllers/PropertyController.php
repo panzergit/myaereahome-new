@@ -76,46 +76,46 @@ class PropertyController extends Controller
         $input = $request->all();
         
         if ($request->file('company_logo') != null) {
-            $input['company_logo'] = $request->file('company_logo')->store('property');
+            $input['company_logo'] = $request->file('company_logo')->store(upload_path('property'));
         }
         if ($request->file('default_bg') != null) {
-            $input['default_bg'] = $request->file('default_bg')->store('property');
+            $input['default_bg'] = $request->file('default_bg')->store(upload_path('property'));
         }
         if ($request->file('announcement_bg') != null) {
-            $input['announcement_bg'] = $request->file('announcement_bg')->store('property');
+            $input['announcement_bg'] = $request->file('announcement_bg')->store(upload_path('property'));
         }
         if ($request->file('takeover_bg') != null) {
-            $input['takeover_bg'] = $request->file('takeover_bg')->store('property');
+            $input['takeover_bg'] = $request->file('takeover_bg')->store(upload_path('property'));
         }
         if ($request->file('defect_bg') != null) {
-            $input['defect_bg'] = $request->file('defect_bg')->store('property');
+            $input['defect_bg'] = $request->file('defect_bg')->store(upload_path('property'));
         }
         if ($request->file('inspection_bg') != null) {
-            $input['inspection_bg'] = $request->file('inspection_bg')->store('property');
+            $input['inspection_bg'] = $request->file('inspection_bg')->store(upload_path('property'));
         }
         if ($request->file('feedback_bg') != null) {
-            $input['feedback_bg'] = $request->file('feedback_bg')->store('property');
+            $input['feedback_bg'] = $request->file('feedback_bg')->store(upload_path('property'));
         }
         if ($request->file('facilities_bg') != null) {
-            $input['facilities_bg'] = $request->file('facilities_bg')->store('property');
+            $input['facilities_bg'] = $request->file('facilities_bg')->store(upload_path('property'));
         }
 
         if ($request->file('faq_bg') != null) {
-            $input['faq_bg'] = $request->file('faq_bg')->store('property');
+            $input['faq_bg'] = $request->file('faq_bg')->store(upload_path('property'));
         }
         
         if ($request->file('condodocs_bg') != null) {
-            $input['condodocs_bg'] = $request->file('condodocs_bg')->store('property');
+            $input['condodocs_bg'] = $request->file('condodocs_bg')->store(upload_path('property'));
         }
         if ($request->file('resident_fileupload_bg') != null) {
-            $input['resident_fileupload_bg'] = $request->file('resident_fileupload_bg')->store('property');
+            $input['resident_fileupload_bg'] = $request->file('resident_fileupload_bg')->store(upload_path('property'));
         }
 
         if ($request->file('visitor_management_bg') != null) {
-            $input['visitor_management_bg'] = $request->file('visitor_management_bg')->store('property');
+            $input['visitor_management_bg'] = $request->file('visitor_management_bg')->store(upload_path('property'));
         }
         if ($request->file('facial_reg_bg') != null) {
-            $input['facial_reg_bg'] = $request->file('facial_reg_bg')->store('property');
+            $input['facial_reg_bg'] = $request->file('facial_reg_bg')->store(upload_path('property'));
         }
 
         $result = Property::create($input);
@@ -290,45 +290,45 @@ class PropertyController extends Controller
         }
 
         if ($request->file('company_logo') != null){
-            $configObj->company_logo = $request->file('company_logo')->store('property');
+            $configObj->company_logo = $request->file('company_logo')->store(upload_path('property'));
         }
         if ($request->file('default_bg') != null) {
-            $configObj->default_bg = $request->file('default_bg')->store('property');
+            $configObj->default_bg = $request->file('default_bg')->store(upload_path('property'));
         }
         if ($request->file('faq_bg') != null) {
-            $configObj->faq_bg = $request->file('faq_bg')->store('property');
+            $configObj->faq_bg = $request->file('faq_bg')->store(upload_path('property'));
         }
 
         if ($request->file('announcement_bg') != null) {
-            $configObj->announcement_bg = $request->file('announcement_bg')->store('property');
+            $configObj->announcement_bg = $request->file('announcement_bg')->store(upload_path('property'));
         }
         if ($request->file('takeover_bg') != null) {
-            $configObj->takeover_bg = $request->file('takeover_bg')->store('property');
+            $configObj->takeover_bg = $request->file('takeover_bg')->store(upload_path('property'));
         }
         if ($request->file('defect_bg') != null) {
-            $configObj->defect_bg = $request->file('defect_bg')->store('property');
+            $configObj->defect_bg = $request->file('defect_bg')->store(upload_path('property'));
         }
         if ($request->file('inspection_bg') != null) {
-            $configObj->inspection_bg = $request->file('inspection_bg')->store('property');
+            $configObj->inspection_bg = $request->file('inspection_bg')->store(upload_path('property'));
         }
         if ($request->file('feedback_bg') != null) {
-            $configObj->feedback_bg = $request->file('feedback_bg')->store('property');
+            $configObj->feedback_bg = $request->file('feedback_bg')->store(upload_path('property'));
         }
         if ($request->file('facilities_bg') != null) {
-            $configObj->facilities_bg = $request->file('facilities_bg')->store('property');
+            $configObj->facilities_bg = $request->file('facilities_bg')->store(upload_path('property'));
         }
 
         if ($request->file('condodocs_bg') != null) {
-            $configObj->condodocs_bg = $request->file('condodocs_bg')->store('property');
+            $configObj->condodocs_bg = $request->file('condodocs_bg')->store(upload_path('property'));
         }
         if ($request->file('resident_fileupload_bg') != null) {
-            $configObj->resident_fileupload_bg = $request->file('resident_fileupload_bg')->store('property');
+            $configObj->resident_fileupload_bg = $request->file('resident_fileupload_bg')->store(upload_path('property'));
         }
         if ($request->file('visitor_management_bg') != null) {
-            $configObj->visitor_management_bg = $request->file('visitor_management_bg')->store('property');
+            $configObj->visitor_management_bg = $request->file('visitor_management_bg')->store(upload_path('property'));
         }
         if ($request->file('facial_reg_bg') != null) {
-            $configObj->facial_reg_bg = $request->file('facial_reg_bg')->store('property');
+            $configObj->facial_reg_bg = $request->file('facial_reg_bg')->store(upload_path('property'));
         }
 
         /*

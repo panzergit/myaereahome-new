@@ -318,7 +318,7 @@ class FeedbackController extends Controller
         $input['ticket'] = $ticket->ticketgen();
         
         if ($request->file('upload') != null) {
-            $input['upload'] = $request->file('upload')->store('feedback');
+            $input['upload'] = $request->file('upload')->store(upload_path('feedback'));
         }
         $input['user_id'] = Auth::user()->id;
         $input['status'] = 0;

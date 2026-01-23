@@ -95,13 +95,13 @@ class MagazineController extends Controller
             $file_image = 'file_image_' . $i;
             $type['created_at'] = date("Y-m-d H:i:s");
             if ($request->file($file) != null) {
-                $type['docs_file'] = $request->file($file)->store('magazine');
+                $type['docs_file'] = $request->file($file)->store(upload_path('magazine'));
             }
             if ($request->file($file) != null) {
-                $type['docs_file'] = $request->file($file)->store('magazine');
+                $type['docs_file'] = $request->file($file)->store(upload_path('magazine'));
             }
             if ($request->file($file_image) != null) {
-                $type['file_image'] = $request->file($file_image)->store('magazine');
+                $type['file_image'] = $request->file($file_image)->store(upload_path('magazine'));
             }
             if ($input[$file_name] != null) { 
                 $type['docs_file_name'] = $input[$file_name];
@@ -167,7 +167,7 @@ class MagazineController extends Controller
 
        
         if ($request->file('docs_file') != null) {
-            $FileObj->docs_file = $request->file('docs_file')->store('magazine');
+            $FileObj->docs_file = $request->file('docs_file')->store(upload_path('magazine'));
         }
         $FileObj->docs_file_name = $request->input('file_name');
         //echo $request->input('file_name');

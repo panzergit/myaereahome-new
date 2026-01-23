@@ -75,7 +75,7 @@ class SupplierController extends Controller
              return redirect('opslogin/configuration/purpose/create')->with('status', 'Visiting Purpose already exist!');         
         }*/
         if ($request->file('attachment') != null) {
-			$input['attachment'] = $request->file('attachment')->store('supplier');
+			$input['attachment'] = $request->file('attachment')->store(upload_path('supplier'));
         }
         $typeObj = Supplier::create($input);
 

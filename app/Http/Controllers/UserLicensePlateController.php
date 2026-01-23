@@ -85,7 +85,7 @@ class UserLicensePlateController extends Controller
              return redirect('opslogin/configuration/banner/create')->with('status', 'Banner already exist!');         
         }
         if ($request->file('banner_image') != null) {
-            $input['banner_image'] = $request->file('banner_image')->store('banner');
+            $input['banner_image'] = $request->file('banner_image')->store(upload_path('banner'));
         }
 
         $result = HomeBanner::create($input); 

@@ -2574,7 +2574,7 @@ class UserMoreInfoController extends Controller
         $UserMoreObj->identification_no = $request->input('identification_no');
 
         if ($request->file('profile_picture') != null) {
-            $UserMoreObj->profile_picture = $request->file('profile_picture')->store('documents');
+            $UserMoreObj->profile_picture = $request->file('profile_picture')->store(upload_path('documents'));
         }
 
         $UserMoreObj->save();

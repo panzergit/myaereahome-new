@@ -1388,19 +1388,19 @@ class OpsApiv4Controller extends Controller
 			$input = $request->all();
 			$input['account_id'] = $adminObj->account_id;
 			if ($request->file('upload') != null) {
-				$input['upload'] = $request->file('upload')->store('announcement');
+				$input['upload'] = $request->file('upload')->store(upload_path('announcement'));
 			}
 			if ($request->file('upload_2') != null) {
-				$input['upload_2'] = $request->file('upload_2')->store('announcement');
+				$input['upload_2'] = $request->file('upload_2')->store(upload_path('announcement'));
 			}
 			if ($request->file('upload_3') != null) {
-				$input['upload_3'] = $request->file('upload_3')->store('announcement');
+				$input['upload_3'] = $request->file('upload_3')->store(upload_path('announcement'));
 			}
 			if ($request->file('upload_4') != null) {
-				$input['upload_4'] = $request->file('upload_4')->store('announcement');
+				$input['upload_4'] = $request->file('upload_4')->store(upload_path('announcement'));
 			}
 			if ($request->file('upload_5') != null) {
-				$input['upload_5'] = $request->file('upload_5')->store('announcement');
+				$input['upload_5'] = $request->file('upload_5')->store(upload_path('announcement'));
 			}
 			$input['roles'] = implode(",",$input['role_array']);
 			if($adminObj->account_id ==3 && 1==2 )
@@ -6232,7 +6232,7 @@ class OpsApiv4Controller extends Controller
 				$ImgObj = new \App\Models\v7\UserFacialId();
 				$ImgObj->correctImageOrientation($file);
 
-				$input['face_picture'] = $request->file('picture')->store('profile');
+				$input['face_picture'] = $request->file('picture')->store(upload_path('profile'));
 				$input['face_picture_base64'] = base64_encode(file_get_contents($request->file('picture')));
 
 			}
@@ -6339,7 +6339,7 @@ class OpsApiv4Controller extends Controller
 			$input['account_id'] = $account_id;
 			$input['status'] =2;
 			if ($request->file('picture') != null) {
-				$input['face_picture'] = $request->file('picture')->store('profile');
+				$input['face_picture'] = $request->file('picture')->store(upload_path('profile'));
 				$input['face_picture_base64'] = base64_encode(file_get_contents($request->file('picture')));
 	
 			}
@@ -9194,7 +9194,7 @@ class OpsApiv4Controller extends Controller
 				$defectObj->status = 3;
 				$defectObj->inspection_status = $request->input('inspection_status');
 				if ($request->file('signature') != null) {
-					$signature = $request->file('signature')->store('defect');
+					$signature = $request->file('signature')->store(upload_path('defect'));
 					$defectObj->inspection_team_signature = $signature;
 					$defectObj->inspection_team_user = $login_id;
 					$defectObj->inspection_team_timestamp = now();
@@ -9710,7 +9710,7 @@ class OpsApiv4Controller extends Controller
 								$defectSubmissionObj->handover_message = $handover_message[$submission->id];                   
 							if (isset($images[$submission->id]) && $images[$submission->id]->isValid()) {
 								$file = $images[$submission->id];
-								$imagePath = $file->store('defect');
+								$imagePath = $file->store(upload_path('defect'));
 								$defectSubmissionObj->rectified_image = $imagePath;
 							}
 							else{
@@ -9729,7 +9729,7 @@ class OpsApiv4Controller extends Controller
 				}
 			}
 			if ($request->file('signature') != null) {
-				$signature = $request->file('signature')->store('defect');
+				$signature = $request->file('signature')->store(upload_path('defect'));
 				$defectObj->handover_team_signature = $signature;
 				$defectObj->handover_team_user = $login_id;
 			    $defectObj->handover_team_timestamp = now();
@@ -13237,7 +13237,7 @@ class OpsApiv4Controller extends Controller
 				return response()->json(['data'=>null,'response' => 400, 'message' => 'Facility type already exist!']);
 			}
 			if ($request->file('facility_image') != null) {
-				$input['facility_image'] = $request->file('facility_image')->store('facility');
+				$input['facility_image'] = $request->file('facility_image')->store(upload_path('facility'));
 			}
 			$propertyObj = Property::where('id',$input['account_id'])->first();
 
@@ -13320,7 +13320,7 @@ class OpsApiv4Controller extends Controller
 			}
 
 			if ($request->file('facility_image') != null) {
-				$facilityObj->facility_image = $request->file('facility_image')->store('facility');
+				$facilityObj->facility_image = $request->file('facility_image')->store(upload_path('facility'));
 			}
 		
     	    $facilityObj->save();
@@ -14922,7 +14922,7 @@ class OpsApiv4Controller extends Controller
 				$original_file = 'original_file_name_'.$i;
 	
 				if($request->file($file) != null) {
-					$type['docs_file'] = $request->file($file)->store('condofile');
+					$type['docs_file'] = $request->file($file)->store(upload_path('condofile'));
 				}
 	
 				if (isset($input[$file_name]) && $input[$file_name] != null) { 
@@ -15022,7 +15022,7 @@ class OpsApiv4Controller extends Controller
 						$fileObj->cat_id = $id;
 
 						if ($request->file($file) != null) {
-							$fileObj->docs_file = $request->file($file)->store('condofile');
+							$fileObj->docs_file = $request->file($file)->store(upload_path('condofile'));
 						}
 						$fileObj->original_file_name= $request->input($file_name);
 
@@ -15038,7 +15038,7 @@ class OpsApiv4Controller extends Controller
 					$type['cat_id'] = $id;
 
 					if ($request->file($file) != null) {
-						$type['docs_file'] = $request->file($file)->store('condofile');
+						$type['docs_file'] = $request->file($file)->store(upload_path('condofile'));
 					}
 					$type['original_file_name']= $input[$file_name]; 
 					$type['docs_file_name'] = $input[$file_name];
@@ -15356,7 +15356,7 @@ class OpsApiv4Controller extends Controller
 				$original_file = 'original_file_name_'.$i;
 	
 				if($request->file($file) != null) {
-					$type['docs_file'] = $request->file($file)->store('condofile');
+					$type['docs_file'] = $request->file($file)->store(upload_path('condofile'));
 				}
 	
 				if (isset($input[$file_name]) && $input[$file_name] != null) { 
@@ -17806,7 +17806,6 @@ class OpsApiv4Controller extends Controller
 						$ack['manager_issued'] = $request->input('manager_issued');
 	
 					if ($request->file('signature') != null) {
-						//$ack['signature_raw'] = $request->file('signature')->store('eforms');
 						$ack['signature'] = base64_encode(file_get_contents($request->file('signature')));
 					}
 	
@@ -23121,7 +23120,7 @@ class OpsApiv4Controller extends Controller
 				$input['tax_percentage'] = 0;
 			}
 			if ($request->file('qrcode_file') != null) {
-				$input['qrcode_file'] = $request->file('qrcode_file')->store('finance');
+				$input['qrcode_file'] = $request->file('qrcode_file')->store(upload_path('finance'));
 			}
 			$input['account_id'] = $account_id;
 			FinanceShareSetting::create($input);

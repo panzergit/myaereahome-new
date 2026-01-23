@@ -269,10 +269,10 @@ class Apiv8Controller extends Controller
 						$ImgObj = new \App\Models\v7\UserFacialId();
 						$ImgObj->correctImageOrientation($file);
 
-						$input['profile_picture'] = $request->file('profile')->store('user_request');
+						$input['profile_picture'] = $request->file('profile')->store(upload_path('user_request'));
 					}
 					if ($request->file('contract') != null && $input['role_id']==29) {
-						$input['contract_file'] = $request->file('contract')->store('user_request');
+						$input['contract_file'] = $request->file('contract')->store(upload_path('user_request'));
 					}
 					$user = UserRegistrationRequest::create($input);
 					//return redirect()->route('thankyou', ['status' => 1]);
@@ -851,7 +851,7 @@ class Apiv8Controller extends Controller
 		$user = Auth::id();
 		$UserObj = User::find($user);
 		if ($request->file('picture') != null) {
-			$profile = $request->file('picture')->store('profile');
+			$profile = $request->file('picture')->store(upload_path('profile'));
 			$profile_base64 = base64_encode(file_get_contents($request->file('picture')));
 
 		}
@@ -890,7 +890,7 @@ class Apiv8Controller extends Controller
 		$UserObj = User::find($user);
 
 		if ($request->file('picture') != null) {
-			$profile = $request->file('picture')->store('profile');
+			$profile = $request->file('picture')->store(upload_path('profile'));
 			$profile_base64 = base64_encode(file_get_contents($request->file('picture')));
 		}
 
@@ -949,7 +949,7 @@ class Apiv8Controller extends Controller
 			$ImgObj = new \App\Models\v7\UserFacialId();
 			$ImgObj->correctImageOrientation($file);
 
-			$input['face_picture'] = $request->file('picture')->store('profile');
+			$input['face_picture'] = $request->file('picture')->store(upload_path('profile'));
 			$input['face_picture_base64'] = base64_encode(file_get_contents($request->file('picture')));
 
 		}
@@ -1078,7 +1078,7 @@ class Apiv8Controller extends Controller
 		$user = Auth::id();
 		$UserObj = User::find($user);
 		if ($request->file('picture') != null) {
-			$profile = $request->file('picture')->store('profile');
+			$profile = $request->file('picture')->store(upload_path('profile'));
 			$profile_base64 = base64_encode(file_get_contents($request->file('picture')));
 
 		}
@@ -1652,7 +1652,7 @@ class Apiv8Controller extends Controller
 		$input['unit_no'] = $UserObj->unit_no;
 		$input['ticket'] = $ticket->ticketgen();
 		if ($request->file('signature') != null) {
-			$input['signature']  = $request->file('signature')->store('defect');
+			$input['signature']  = $request->file('signature')->store(upload_path('defect'));
 			//$signature_base64 = base64_encode(file_get_contents($request->file('signature')));
 		}
 		$defect = Defect::create($input);
@@ -1674,7 +1674,7 @@ class Apiv8Controller extends Controller
                 $data['defect_type'] = $request->input($type);
                 $data['notes'] = $request->input($note);
                 if ($request->file($attachement) != null) {
-                    $data['upload'] = $request->file($attachement)->store('defect');
+                    $data['upload'] = $request->file($attachement)->store(upload_path('defect'));
                 }else{
 					$data['upload']='';
 				}
@@ -1907,10 +1907,10 @@ class Apiv8Controller extends Controller
 		$input['ticket'] = $ticket->ticketgen();
 
 		if ($request->file('upload_1') != null) {
-            $input['upload_1'] = $request->file('upload_1')->store('feedback');
+            $input['upload_1'] = $request->file('upload_1')->store(upload_path('feedback'));
 		}
 		if ($request->file('upload_2') != null) {
-            $input['upload_2'] = $request->file('upload_2')->store('feedback');
+            $input['upload_2'] = $request->file('upload_2')->store(upload_path('feedback'));
         }
 		$feedback = FeedbackSubmission::create($input);
 		$probObj = Property::find($UserObj->account_id);
@@ -4471,7 +4471,7 @@ class Apiv8Controller extends Controller
 				
                 if ($request->file($upload_file) != null) {
 					$data['original_file_name'] = $request->file($upload_file)->getClientOriginalName();
-                    $data['docs_file'] = $request->file($upload_file)->store('condofile');
+                    $data['docs_file'] = $request->file($upload_file)->store(upload_path('condofile'));
                 }else{
 					$data['upload']='';
 				}
@@ -4806,7 +4806,7 @@ class Apiv8Controller extends Controller
 
                     
                 if ($request->file($qrcode_file) != null) {
-                    $data['qrcode_file'] = $request->file($qrcode_file)->store('visitor');
+                    $data['qrcode_file'] = $request->file($qrcode_file)->store(upload_path('visitor'));
                 }else{
 					$data['qrcode_file']='';
 				}
@@ -5053,7 +5053,7 @@ class Apiv8Controller extends Controller
 		$user = Auth::id();
 		$defect = $request->def_id;
 		$signature = '';
-		if ($request->file('signature') != null) $signature = $request->file('signature')->store('defect');
+		if ($request->file('signature') != null) $signature = $request->file('signature')->store(upload_path('defect'));
 
 		$result = Defect::where( 'user_id' , $user)->update( array( 'signature' =>  $signature));
 		return response()->json(['result'=>$result,'response' => 1, 'message' => 'Signature updated successfully']);
@@ -5119,7 +5119,7 @@ class Apiv8Controller extends Controller
         }
 
 		$signature = '';
-		if ($request->file('signature') != null) $signature = $request->file('signature')->store('defect');
+		if ($request->file('signature') != null) $signature = $request->file('signature')->store(upload_path('defect'));
 		
 		
 		if($defectObj->status !=1 && $defectObj->inspection_status ==1 && $need_to_rectify ==1){ //ticket not closed
@@ -5236,7 +5236,7 @@ class Apiv8Controller extends Controller
         //$defectObj->status = $request->input('status');
        
 		if ($request->file('signature') != null) {
-			$signature = $request->file('signature')->store('defect');
+			$signature = $request->file('signature')->store(upload_path('defect'));
 			$defectObj->handover_owner_signature = $signature;
 			$defectObj->handover_owner_user = $user;
 			$defectObj->handover_owner_timestamp = now();
@@ -5920,18 +5920,16 @@ class Apiv8Controller extends Controller
 			$input['unit_no'] = $UserObj->unit_no;
 		
 		if ($request->file('owner_signature') != null) {
-			//$signature = $request->file('owner_signature')->store('ren');
 			$input['owner_signature']  = base64_encode(file_get_contents($request->file('owner_signature')));
 	
 		}
 		if ($request->file('nominee_signature') != null) {
-			//$signature = $request->file('owner_signature')->store('ren');
 			$input['nominee_signature']  = base64_encode(file_get_contents($request->file('nominee_signature')));
 	
 		}
 
 		if ($request->file('letter_of_authorization') != null) {
-			$letter_of_authorization = $request->file('letter_of_authorization')->store('ren');
+			$letter_of_authorization = $request->file('letter_of_authorization')->store(upload_path('ren'));
 			$input['letter_of_authorization']  = $letter_of_authorization;
 	
 		}
@@ -6099,12 +6097,10 @@ class Apiv8Controller extends Controller
 			$input['unit_no'] = $UserObj->unit_no;
 		
 		if ($request->file('owner_signature') != null) {
-			//$signature = $request->file('owner_signature')->store('ren');
 			$input['owner_signature']  = base64_encode(file_get_contents($request->file('owner_signature')));
 	
 		}
 		if ($request->file('nominee_signature') != null) {
-			//$signature = $request->file('owner_signature')->store('ren');
 			$input['nominee_signature']  = base64_encode(file_get_contents($request->file('nominee_signature')));
 	
 		}
@@ -6227,12 +6223,10 @@ class Apiv8Controller extends Controller
 			$input['unit_no'] = $UserObj->unit_no;
 		
 		if ($request->file('owner_signature') != null) {
-			//$signature = $request->file('owner_signature')->store('ren');
 			$input['owner_signature']  = base64_encode(file_get_contents($request->file('owner_signature')));
 	
 		}
 		if ($request->file('nominee_signature') != null) {
-			//$signature = $request->file('owner_signature')->store('ren');
 			$input['nominee_signature']  = base64_encode(file_get_contents($request->file('nominee_signature')));
 	
 		}
@@ -6248,7 +6242,7 @@ class Apiv8Controller extends Controller
 				$data =array();
 				$data['reg_id'] = $reg->id;
 				$data['cat'] = $request->input($cat);
-				$data['file_original'] = $request->file($file)->store('vehicle');
+				$data['file_original'] = $request->file($file)->store(upload_path('vehicle'));
                 $data['file'] = base64_encode(file_get_contents($request->file($file)));
 				$data['created_at'] =  $reg->created_at;
 				$data['updated_at'] =  $reg->created_at;            
@@ -6401,12 +6395,10 @@ class Apiv8Controller extends Controller
 			$input['unit_no'] = $UserObj->unit_no;
 		
 		if ($request->file('owner_signature') != null) {
-			//$signature = $request->file('owner_signature')->store('ren');
 			$input['owner_signature']  = base64_encode(file_get_contents($request->file('owner_signature')));
 	
 		}
 		if ($request->file('nominee_signature') != null) {
-			//$signature = $request->file('owner_signature')->store('ren');
 			$input['nominee_signature']  = base64_encode(file_get_contents($request->file('nominee_signature')));
 	
 		}
@@ -8693,7 +8685,7 @@ class Apiv8Controller extends Controller
 		$input['user_id'] = Auth::id();
 		$input['invoice_id'] = $input['invoice_id'];
 		if ($request->file('screenshot') != null) {
-			$input['screenshot'] = $request->file('screenshot')->store('paymentlog');
+			$input['screenshot'] = $request->file('screenshot')->store(upload_path('paymentlog'));
 		}
 		$logObj = FinancePaymentLog::create($input);
 
@@ -9199,8 +9191,7 @@ class Apiv8Controller extends Controller
 		
 		$input['status'] = 1;
 		if ($request->file('upload_1') != null) {
-			$input['upload_1']  = $request->file('upload_1')->store('chatbox');
-			//$signature_base64 = base64_encode(file_get_contents($request->file('signature')));
+			$input['upload_1']  = $request->file('upload_1')->store(upload_path('chatbox'));
 		}
 		$defect = ChatBox::create($input);
 		return response()->json(['response' => 1, 'message' => 'Chatter Box has been created!']);
@@ -9945,7 +9936,7 @@ class Apiv8Controller extends Controller
 			$data = array();
             $attachement = 'upload_'.$i;
             if ($request->file($attachement) != null) {
-                $data['upload'] = $request->file($attachement)->store('mpads');
+                $data['upload'] = $request->file($attachement)->store(upload_path('mpads'));
 				$data['ref_id'] = $record->id;
             	$data['status'] = 1;
 				$defect = MpAdsImage::create($data);
@@ -10055,7 +10046,7 @@ class Apiv8Controller extends Controller
 			return response()->json(['response' => 200, 'message' => 'Record not found!']);
 		}
 		if ($request->file('upload') != null) {
-			$data['upload'] = $request->file('upload')->store('mpads');
+			$data['upload'] = $request->file('upload')->store(upload_path('mpads'));
 			$data['ref_id'] = $input['ref_id'];
 			$data['status'] = 1;
 			$defect = MpAdsImage::create($data);
@@ -10097,7 +10088,7 @@ class Apiv8Controller extends Controller
 		if(empty($imgObj)){
 			return response()->json(['response' => 200, 'message' => 'Image not found!']);
 		}
-		$imgObj->upload = $request->file('upload')->store('mpads');
+		$imgObj->upload = $request->file('upload')->store(upload_path('mpads'));
 		$imgObj->save();
 		return response()->json(['result'=>$imgObj,'response' => 1, 'message' => 'Updated!']);
 	}
@@ -11235,7 +11226,7 @@ class Apiv8Controller extends Controller
 			return response()->json(['response' => 1, 'message' => 'Sender not found!']);
 		}
 		if ($request->file('attachment_image') != null) {
-			$attachement = $request->file('attachment_image')->store('chat');
+			$attachement = $request->file('attachment_image')->store(upload_path('chat'));
 		}
 		$data['user_id'] =$input['user_id'];
 		$data['account_id'] =$senderObj->account_id;

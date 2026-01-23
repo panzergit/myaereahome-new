@@ -53,7 +53,7 @@ class EconciergeController extends Controller
              return redirect('opslogin/configuration/econcierge/create')->with('status', 'E-Concierge already exist!');         
         }
         if ($request->file('banner_image') != null) {
-            $input['banner_image'] = $request->file('banner_image')->store('econcierge');
+            $input['banner_image'] = $request->file('banner_image')->store(upload_path('econcierge'));
         }
 
         $result = Econcierge::create($input); 
@@ -122,7 +122,7 @@ class EconciergeController extends Controller
         } 
 
         if ($request->file('banner_image') != null) {
-            $BannerObj->banner_image = $request->file('banner_image')->store('econcierge');
+            $BannerObj->banner_image = $request->file('banner_image')->store(upload_path('econcierge'));
         }
         $BannerObj->banner_title = $request->input('banner_title');
         $BannerObj->description = $request->input('description');

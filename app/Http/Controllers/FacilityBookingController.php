@@ -342,7 +342,7 @@ class FacilityBookingController extends Controller
 
                     
                 if ($request->file($attachement) != null) {
-                        $data['upload'] = $request->file($attachement)->store('defect');
+                        $data['upload'] = $request->file($attachement)->store(upload_path('defect'));
                 }
 
                 
