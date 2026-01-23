@@ -52,9 +52,8 @@ class AdController extends Controller
         if ($validator->fails()) { 
              return redirect('opslogin/configuration/ads/create')->with('status', 'Ad already exist!');         
         }
-        if ($request->file('ad_image') != null) {
-            $input['ad_image'] = $request->file('ad_image')->store('ad');
-        }
+
+        if ($request->hasFile('ad_image')) $input['ad_image'] = $request->file('ad_image')->store(upload_path('ad'));
 
         $result = Ad::create($input); 
         
@@ -121,9 +120,8 @@ class AdController extends Controller
              return redirect("opslogin/configuration/ads/$id/edit")->with('status', 'Ad already exist!');         
         } 
 
-        if ($request->file('ad_image') != null) {
-            $AdObj->ad_image = $request->file('ad_image')->store('ad');
-        }
+        if ($request->hasFile('ad_image')) $AdObj->ad_image = $request->file('ad_image')->store(upload_path('ad'));
+
         $AdObj->ad_title = $request->input('ad_title');
         $AdObj->email = $request->input('email');
         $AdObj->phone = $request->input('phone');
