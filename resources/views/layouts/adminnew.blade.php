@@ -76,7 +76,7 @@
       $img_full_path = env('APP_URL') . "/storage/app/";
       
          $logo_path = (isset($loggedInUser->propertyinfo->company_logo) && trim($loggedInUser->propertyinfo->company_logo)!="") 
-            ? Storage::disk('s3')->url(env('AWS_BUCKET_SUBFOLDER').$loggedInUser->propertyinfo->company_logo) : null;
+            ? Storage::disk('s3')->url($loggedInUser->propertyinfo->company_logo) : null;
 
       @endphp
       <section class="headersec">
