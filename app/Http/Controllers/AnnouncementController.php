@@ -82,9 +82,6 @@ class AnnouncementController extends Controller
      */
     public function store(Request $request)
     {
-        $base = config('filesystems.upload_folder');
-        $path = $base ? "$base/announcement" : 'announcement';
-
         $input = $request->all();
 
         $input['account_id'] = !isset($input['account_id']) ? $request->user()->account_id : $input['account_id'];
@@ -92,7 +89,7 @@ class AnnouncementController extends Controller
         foreach (range(1,5) as $i) {
             if ($request->hasFile("upload_$i")) {
                 $key = $i === 1 ? 'upload' : "upload_$i";
-                $input[$key] = $request->file("upload_$i")->store($path);
+                $input[$key] = $request->file("upload_$i")->store(upload_path('announcement'));
             }
         }
 
