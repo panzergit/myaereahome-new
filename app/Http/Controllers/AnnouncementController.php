@@ -46,7 +46,7 @@ class AnnouncementController extends Controller
         AnnouncementDetail::where('user_id', $user->id)
                 ->update(['status' => '1']);
         
-        $file_path = Storage::disk('s3')->url(upload_path());
+        $file_path = config('filesystems.disks.s3.url');
         $icon_path = url('assets/admin/');
         if($user->role_id ==2)
             return view('user.announcement', compact('announcements','file_path','icon_path'));
