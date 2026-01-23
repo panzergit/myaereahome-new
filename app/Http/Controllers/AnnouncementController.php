@@ -21,7 +21,7 @@ use Auth;
 use Mail;
 use App\Models\v7\Mail\AnnouncementNotification;
 use App\Models\v7\Setting;
-use DB;
+use DB, Storage;
 
 class AnnouncementController extends Controller
 {
@@ -46,7 +46,7 @@ class AnnouncementController extends Controller
         AnnouncementDetail::where('user_id', $user->id)
                 ->update(['status' => '1']);
         
-        $file_path = url('storage/app');
+        $file_path = Storage::disk('s3')->url(upload_path());
         $icon_path = url('assets/admin/');
         if($user->role_id ==2)
             return view('user.announcement', compact('announcements','file_path','icon_path'));
