@@ -192,7 +192,7 @@
                                        $popup = '';
                                     }
                                  @endphp
-                                    <li> <a href="{{url('/opslogin/facility#fb')}}"><span class="sideimg"><img src="{{url('assets/admin/img/Booking.png')}}"></span> Facilities Booking</a></li>
+                                    <li> <a href="{{url('/opslogin/facility#fb')}}"><span class="sideimg"><img src="{{url('assets/admin/img/booking.png')}}"></span> Facilities Booking</a></li>
                                  @php 
                                  } 
                                  $feedback =  $loggedInUser->check_menu_permission(6,$loggedInUser->role_id,1);

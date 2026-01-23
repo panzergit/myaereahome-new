@@ -288,7 +288,7 @@ $vm_count = $permission->noOfVisitors($account_id);
             @endif
                            <div class="service-content imagew">
                               <div class="service-icon imagew my-auto">
-                                 <span><img src="{{url('assets/img/Booking.png')}}"></span>
+                                 <span><img src="{{url('assets/img/booking.png')}}"></span>
                  Facillties Booking
                               </div>
                            </div>
