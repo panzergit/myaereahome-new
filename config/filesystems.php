@@ -15,6 +15,8 @@ return [
 
     'default' => env('FILESYSTEM_DISK', 'local'),
 
+    'upload_folder' => trim(env('AWS_BUCKET_SUBFOLDER', ''), '/'),
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks

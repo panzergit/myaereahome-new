@@ -69,12 +69,9 @@ class AnnouncementController extends Controller
      */
     public function create(Request $request)
     {
-        $account_id = $request->user()->account_id;
         $env_roles 	= env('USER_APP_ROLE');
         $roles = Role::whereIn('id', explode(",",$env_roles))->pluck('name', 'id')->all();
-        $users = User::pluck('name', 'id')->all();
-        $file_path = url('storage/app');
-        return view('admin.announcement.create', compact('roles','users','file_path'));
+        return view('admin.announcement.create', compact('roles'));
     }
 
     /**
@@ -85,38 +82,31 @@ class AnnouncementController extends Controller
      */
     public function store(Request $request)
     {
+        $base = config('filesystems.upload_folder');
+        $path = $base ? "$base/announcement" : 'announcement';
+
         $input = $request->all();
 
-        if(isset($input['account_id']))
-            $input['account_id'] = $input['account_id'];
-        else
-            $input['account_id'] = Auth::user()->account_id;
+        $input['account_id'] = !isset($input['account_id']) ? $request->user()->account_id : $input['account_id'];
 
-        if ($request->file('upload') != null) {
-            $input['upload'] = $request->file('upload')->store('announcement');
+        foreach (range(1,5) as $i) {
+            if ($request->hasFile("upload_$i")) {
+                $key = $i === 1 ? 'upload' : "upload_$i";
+                $input[$key] = $request->file("upload_$i")->store($path);
+            }
         }
-        if ($request->file('upload_2') != null) {
-            $input['upload_2'] = $request->file('upload_2')->store('announcement');
-        }
-        if ($request->file('upload_3') != null) {
-            $input['upload_3'] = $request->file('upload_3')->store('announcement');
-        }
-        if ($request->file('upload_4') != null) {
-            $input['upload_4'] = $request->file('upload_4')->store('announcement');
-        }
-        if ($request->file('upload_5') != null) {
-            $input['upload_5'] = $request->file('upload_5')->store('announcement');
-        }
+
+        unset($input['upload_1']);
+
         $input['roles'] = implode(",",$input['role_array']);
         $announcement = Announcement::create($input);
-        if($announcement){
-            $cron = array();
-            $cron['a_id'] = $announcement->id;
-            $cron['account_id'] = $announcement->account_id;
-            $cron['roles'] = $announcement->roles;
-            AnnouncementCron::create($cron);
-        }
-         
+
+        if($announcement) AnnouncementCron::create([
+                'a_id' => $announcement->id,
+                'account_id' => $announcement->account_id,
+                'roles' => $announcement->roles
+            ]);
+
         return redirect('opslogin/announcement')->with('status', 'Announcement has been uploaded!');;
     }
 

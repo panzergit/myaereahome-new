@@ -89,13 +89,12 @@
                               <label for="file-input" class="file-55 file100" >
                                  <img src="{{url('assets/img/fileupload.png')}}" class="announcementimg" >
                               </label>
-                              <input id="file-input" type="file" name="upload">
+                              <input id="file-input" type="file" name="upload_1">
                         </div>
   </div>
   <div class="p-2 saf100"> <img id="preview-file-input"  width="100px"></div>
-  <div class="p-2 saf50"><img id="delete1" class="announcementdel"></div>
+   <div class="p-2 saf50"><img id="delete1" class="announcementdel"></div>
 </div>
-                         
                         
                      </div>
 					   <div class="form-group col-lg-6">
