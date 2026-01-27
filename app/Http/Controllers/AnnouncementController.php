@@ -46,7 +46,7 @@ class AnnouncementController extends Controller
         AnnouncementDetail::where('user_id', $user->id)
                 ->update(['status' => '1']);
         
-        $file_path = config('filesystems.disks.s3.url');
+        $file_path = config('filesystems.disks.s3.url').'/'.upload_path();
         $icon_path = url('assets/admin/');
         if($user->role_id ==2)
             return view('user.announcement', compact('announcements','file_path','icon_path'));
@@ -89,7 +89,7 @@ class AnnouncementController extends Controller
         foreach (range(1,5) as $i) {
             if ($request->hasFile("upload_$i")) {
                 $key = $i === 1 ? 'upload' : "upload_$i";
-                $input[$key] = $request->file("upload_$i")->store(upload_path('announcement'));
+                $input[$key] = str_replace(upload_path('/'), '',$request->file("upload_$i")->store(upload_path('announcement')));
             }
         }
 
