@@ -89,7 +89,7 @@ class AnnouncementController extends Controller
         foreach (range(1,5) as $i) {
             if ($request->hasFile("upload_$i")) {
                 $key = $i === 1 ? 'upload' : "upload_$i";
-                $input[$key] = str_replace(upload_path('/'), '',$request->file("upload_$i")->store(upload_path('announcement')));
+                $input[$key] = str_replace(upload_path(). '/', '',$request->file("upload_$i")->store(upload_path('announcement')));
             }
         }
 
