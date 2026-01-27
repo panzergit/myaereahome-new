@@ -1619,16 +1619,17 @@ class Apiv8Controller extends Controller
 	
 	public function submitdefects(Request $request)
     {
-		$rules=array(
+		$rules = [
 			'defect_location_1'=>'required',
 			'defect_type_1'=>'required',
 			'notes_1'=>'required',
-		);
-		$messages=array(
+		];
+
+		$messages = [
 			'defect_location_1.required'=>'Defect Location is missing',
 			'defect_type_1.required'=>'Defect Type is missing',
 			'notes_1.required'=>'Remarks is missing',
-		);
+		];
 
 		$validator = Validator::make($request->all(), $rules, $messages);
 		if ($validator->fails()) {
@@ -1639,52 +1640,48 @@ class Apiv8Controller extends Controller
             ], 400);
         }
 		
+		$user = $request->user();
         $input = $request->all();
-		$input['user_id'] = Auth::id();
-        
-        $details = array();
-		$UserObj = User::find($input['user_id']);
-	
+        $details = [];
+
         $ticket = new \App\Models\v7\Defect();
-		$input['user_id'] = $input['user_id'];
-		$input['account_id'] = $UserObj->account_id;
-		$input['block_no'] = $UserObj->building_no;
-		$input['unit_no'] = $UserObj->unit_no;
+		
+		$input['user_id'] = $user->id;
+		$input['account_id'] = $user->account_id;
+		$input['block_no'] = $user->building_no;
+		$input['unit_no'] = $user->unit_no;
 		$input['ticket'] = $ticket->ticketgen();
-		if ($request->file('signature') != null) {
-			$input['signature']  = remove_upload_path($request->file('signature')->store(upload_path('defect')));
-			//$signature_base64 = base64_encode(file_get_contents($request->file('signature')));
-		}
+		if($request->hasFile('signature')) $input['signature'] = 
+			remove_upload_path($request->file('signature')->store(upload_path('defect')));
+		
 		$defect = Defect::create($input);
 		
         $data['user_id'] = $input['user_id'];
         $data['def_id'] = $defect->id;
-        for($i=1;$i<=100;$i++){
 
-            $location = 'defect_location_'.$i;
+        for($i=1;$i<=100;$i++)
+		{
+        	$location = 'defect_location_'.$i;
             $type = 'defect_type_'.$i;
             $note ='notes_'.$i;
             $attachement = 'upload_'.$i;
 
-            //print_r($input);
-
-            if(!empty($request->input($location)) && !empty($request->input($type))){
-                
+            if(!empty($request->input($location)) && !empty($request->input($type)))
+			{ 
                 $data['defect_location'] = $request->input($location);
                 $data['defect_type'] = $request->input($type);
                 $data['notes'] = $request->input($note);
-                $data['upload'] = $request->file($attachement) != null ?
+                $data['upload'] = $request->hasFile($attachement) ?
 					remove_upload_path($request->file($attachement)->store(upload_path('defect'))) : '';
                 $data['status'] = 0;
                 $details[] = $data;
             }
         }
 		$record = DefectSubmission::insert($details);
-		
 
-		$inbox['account_id'] = $UserObj->account_id;
-		$inbox['unit_no'] = $UserObj->unit_no;
-		$inbox['user_id'] = $UserObj->id;
+		$inbox['account_id'] = $user->account_id;
+		$inbox['unit_no'] = $user->unit_no;
+		$inbox['user_id'] = $user->id;
 		$inbox['type'] = 3;
 		$inbox['ref_id'] = $defect->id;
 		$inbox['title'] = "New Defect(s) Submitted";
@@ -1694,24 +1691,23 @@ class Apiv8Controller extends Controller
 		$inbox['submitted_by'] =  1;      
 		$inbox['created_at'] =  $defect->created_at;   
 		$result = InboxMessage::create($inbox);
-        $probObj = Property::find($UserObj->account_id);
+        $probObj = Property::find($user->account_id);
 		if($probObj->manager_push_notification ==1){ //if push notification activated for manager app
 			$fcm_token_array ='';
 			$user_token = ',';
-			$ios_devices_to_send = array();
-			$android_devices_to_send = array();
+			$ios_devices_to_send = [];
+			$android_devices_to_send = [];
 			
-			//ModuleSetting::where 
-			$allowed_roles = ModuleSetting::where('module_id',3)->where('view',1)->whereNotIn('role_id',[3])->get();
-			if(isset($allowed_roles)){
-				$allowed_role_array =array();
-				foreach($allowed_roles as $allowed_role){
-					$allowed_role_array[] = $allowed_role->role_id;
-				}
+			$allowed_roles = ModuleSetting::where(['module_id' => 3, 'view' => 1])->whereNotIn('role_id',[3])->get();
+			if($allowed_roles->isNotEmpty()){
+				$allowed_role_array = [];
+				foreach($allowed_roles as $allowed_role) $allowed_role_array[] = $allowed_role->role_id;
 			}
+
 			//$allowed_role_array[] = 3;
-			$log_records= UserManagerLog::where('account_id',$UserObj->account_id)->whereIn('role_id',$allowed_role_array)->where('status',1)->orderBy('id','desc')->get()->unique('user_id');
-			$manager_ids = array();
+			$log_records= UserManagerLog::where(['account_id' => $user->account_id, 'status' => 1])
+				->whereIn('role_id',$allowed_role_array)->orderBy('id','desc')->get()->unique('user_id');
+			$manager_ids = [];
 			if(isset($log_records)){
 				foreach($log_records as $logs){
 					if(isset($logs->fcm_token) && $logs->fcm_token !=''){
@@ -1729,7 +1725,7 @@ class Apiv8Controller extends Controller
 			
 			$title = "Aerea Manager - ".$probObj->company_name;
 			$message = 'New Defect(s) Submitted';
-			$notofication_data = array();
+			$notofication_data = [];
 			$notofication_data['body'] =$title;
 			$notofication_data['unit_no'] =$defect->unit_no;   
 			$notofication_data['user_id'] =$defect->user_id;   
@@ -1739,10 +1735,7 @@ class Apiv8Controller extends Controller
 			$NotificationObj->android_manager_notification($title,$message,$android_devices_to_send,$notofication_data); //
 		}
 
-		//exit;
 		return response()->json(['result'=>$defect,'response' => 1, 'message' => 'Defects has been submitted!']);
-
-        
 	}
 
 	public function defectupdate(Request $request)

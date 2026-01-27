@@ -1518,107 +1518,96 @@ class OpsApiv4Controller extends Controller
 			
 		}
 	}
-
-
 	
 	public function usersummarylist(Request $request) 
     {
 		$login_id = Auth::id();
 		//echo $login_id;
 		$adminObj = User::find($login_id); 
-		if(empty($adminObj)){
-			return response()->json(['data'=>null,'response' => 300, 'message' => 'User not found']);
-		}
+		if(empty($adminObj)) return response()->json(['data'=>null,'response' => 300, 'message' => 'User not found']);
 		
 		$permission = $adminObj->check_permission(7,$adminObj->role_id); 
-		if(empty($permission) ){
+		if(empty($permission) || (isset($permission->view) && $permission->view !=1)){
 			return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
-		}
-		else if(isset($permission->view) && $permission->view !=1){
-				return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
-		}
-		else{
+		}else{
 
-        $account_id = $adminObj->account_id;
+        	$account_id = $adminObj->account_id;
 
-		if($adminObj->role_id ==1){
-			$users = User::where('role_id',3)->get();
-			$roles = Role::pluck('name', 'id')->all(); 
-		   } else{
-			$prop_userids = array();
-            $userids = UserProperty::where('property_id',$account_id)->orderby('id','desc')->get();        
-            foreach($userids as $k =>$v){
-                $prop_userids[] = $v->user_id;
-            }
-            $users = UserMoreInfo::whereNotIn('status',[2])->where(function ($query) use ($account_id,$prop_userids) {
-                if($account_id !='')
-                    $query->where('account_id',$account_id);
-                if($prop_userids !='')
-                    $query->orwhereIn('user_id', $prop_userids);
-               
-            })->orderby('id','desc')->get();
+			if($adminObj->role_id ==1){
+				$users = User::where('role_id',3)->get();
+				$roles = Role::pluck('name', 'id')->all(); 
+		   	} else{
+				$prop_userids = array();
+				$userids = UserProperty::where('property_id',$account_id)->orderby('id','desc')->get();        
+				
+				foreach($userids as $k =>$v) $prop_userids[] = $v->user_id;
+				
+				$users = UserMoreInfo::whereNotIn('status',[2])->where(function ($query) use ($account_id,$prop_userids) {
+					if($account_id !='') $query->where('account_id',$account_id);
+					if($prop_userids !='') $query->orwhereIn('user_id', $prop_userids);
+				})->orderby('id','desc')->get();
 
-			$roles = Role::WhereRaw("CONCAT(',',account_id,',') LIKE ?", '%,'.$account_id .',%')->orWhere('type',1)->pluck('name', 'id')->all();
-	
+				$roles = Role::WhereRaw("CONCAT(',',account_id,',') LIKE ?", '%,'.$account_id .',%')->orWhere('type',1)->pluck('name', 'id')->all();
 		   }
-		$app_user_lists = explode(",",env('USER_APP_ROLE'));
-		$data = array();
-		foreach($users as $user){
-		    if(empty($user->getuser)) continue;
-			$user_id = $user->getuser->id;
-			$role_id = $user->getuser->role_id;
-			$role = isset($user->getuser->role->name)?$user->getuser->role->name:null;
-			if(in_array($user->getuser->role_id,$app_user_lists)){
-				$moreinfo = new \App\Models\v7\UserMoreInfo();
-				$unitinfo = $moreinfo->moreunitinfo($user->id,$user->account_id);
-				//print_r($unitinfo);
-				$role_id = isset($unitinfo->role_id)?$unitinfo->role_id:null;
-				$role = isset($unitinfo->role->name)?$unitinfo->role->name:null;
-			 }
-			$record['id']=$user->getuser->id;
-			$record['name']=isset($user->first_name)?Crypt::decryptString($user->first_name):null;
-			$record['last_name']= isset($user->last_name)?Crypt::decryptString($user->last_name):null;
-			$record['email']=$user->getuser->email;
-			$record['account_enabled']=$user->status;
-			$record['role_id']=isset($role_id)?$role_id:null;
-			$record['role']= $role;
-			$record['status']=$user->status;
-			$record['app_version']=$user->getuser->app_version;
-			$record['created_at']=$user->created_at->format('d/m/Y');
-			//$record['name']=$user->name;
-			$record['userinfo']['id'] = $user->id;
-			$record['userinfo']['profile_picture'] = isset($user->profile_picture)?$user->profile_picture:null;
-			$record['userinfo']['face_picture'] = isset($user->face_picture)?$user->face_picture:null;
-			$record['userinfo']['last_name'] = isset($user->last_name)?Crypt::decryptString($user->last_name):null;
-			$record['userinfo']['phone'] = isset($user->phone)?Crypt::decryptString($user->phone):null;
-			$record['userinfo']['mailing_address'] = isset($user->mailing_address)?$user->mailing_address:null;
-			$record['userinfo']['country'] = isset($user->country)?$user->country:null;
-			$record['userinfo']['card'] = isset($user->card_no)?$user->card_no:null;
-			$record['building'] = isset($unitinfo->addubuildinginfo)?$unitinfo->addubuildinginfo->building:null;
-			$record['unit'] = isset($unitinfo->addunitinfo)?"#".Crypt::decryptString($unitinfo->addunitinfo->unit):null;
-			$PurchaserUnits = UserPurchaserUnit::where('user_id', $user_id)->where('property_id', $account_id)->get();
-			$user_units = array();
-			if(isset($PurchaserUnits)){
-				foreach($PurchaserUnits as $PurchaserUnit){
-					$eachunit = array();
-					$eachunit['id'] = $PurchaserUnit->id;
-					$eachunit['building_id'] = $PurchaserUnit->building_id;
-					$eachunit['unit_id'] = $PurchaserUnit->unit_id;
-					$eachunit['building'] = isset($PurchaserUnit->addubuildinginfo)?$PurchaserUnit->addubuildinginfo->building:null;
-					$eachunit['unit'] = isset($PurchaserUnit->addunitinfo)?Crypt::decryptString($PurchaserUnit->addunitinfo->unit):null;
-					$eachunit['role'] = isset($PurchaserUnit->role->name)?$PurchaserUnit->role->name:null;
-					$eachunit['primary_contact'] = ($PurchaserUnit->primary_contact==1)?"Yes":"No";
-					$eachunit['created_date'] = date('d/m/y',strtotime($PurchaserUnit->created_at));
-					$user_units[] =$eachunit;
+
+			$app_user_lists = explode(",",env('USER_APP_ROLE'));
+			$data = [];
+			foreach($users as $user){
+				if(empty($user->getuser)) continue;
+				$user_id = $user->getuser->id;
+				$role_id = $user->getuser->role_id;
+				$role = isset($user->getuser->role->name)?$user->getuser->role->name:null;
+				if(in_array($user->getuser->role_id,$app_user_lists)){
+					$moreinfo = new \App\Models\v7\UserMoreInfo();
+					$unitinfo = $moreinfo->moreunitinfo($user->id,$user->account_id);
+					//print_r($unitinfo);
+					$role_id = isset($unitinfo->role_id)?$unitinfo->role_id:null;
+					$role = isset($unitinfo->role->name)?$unitinfo->role->name:null;
 				}
+				$record['id']=$user->getuser->id;
+				$record['name']=isset($user->first_name)?Crypt::decryptString($user->first_name):null;
+				$record['last_name']= isset($user->last_name)?Crypt::decryptString($user->last_name):null;
+				$record['email']=$user->getuser->email;
+				$record['account_enabled']=$user->status;
+				$record['role_id']=isset($role_id)?$role_id:null;
+				$record['role']= $role;
+				$record['status']=$user->status;
+				$record['app_version']=$user->getuser->app_version;
+				$record['created_at']=$user->created_at->format('d/m/Y');
+				//$record['name']=$user->name;
+				$record['userinfo']['id'] = $user->id;
+				$record['userinfo']['profile_picture'] = isset($user->profile_picture)?$user->profile_picture:null;
+				$record['userinfo']['face_picture'] = isset($user->face_picture)?$user->face_picture:null;
+				$record['userinfo']['last_name'] = isset($user->last_name)?Crypt::decryptString($user->last_name):null;
+				$record['userinfo']['phone'] = isset($user->phone)?Crypt::decryptString($user->phone):null;
+				$record['userinfo']['mailing_address'] = isset($user->mailing_address)?$user->mailing_address:null;
+				$record['userinfo']['country'] = isset($user->country)?$user->country:null;
+				$record['userinfo']['card'] = isset($user->card_no)?$user->card_no:null;
+				$record['building'] = isset($unitinfo->addubuildinginfo)?$unitinfo->addubuildinginfo->building:null;
+				$record['unit'] = isset($unitinfo->addunitinfo)?"#".Crypt::decryptString($unitinfo->addunitinfo->unit):null;
+				$PurchaserUnits = UserPurchaserUnit::where('user_id', $user_id)->where('property_id', $account_id)->get();
+				$user_units = array();
+				if(isset($PurchaserUnits)){
+					foreach($PurchaserUnits as $PurchaserUnit){
+						$eachunit = array();
+						$eachunit['id'] = $PurchaserUnit->id;
+						$eachunit['building_id'] = $PurchaserUnit->building_id;
+						$eachunit['unit_id'] = $PurchaserUnit->unit_id;
+						$eachunit['building'] = isset($PurchaserUnit->addubuildinginfo)?$PurchaserUnit->addubuildinginfo->building:null;
+						$eachunit['unit'] = isset($PurchaserUnit->addunitinfo)?Crypt::decryptString($PurchaserUnit->addunitinfo->unit):null;
+						$eachunit['role'] = isset($PurchaserUnit->role->name)?$PurchaserUnit->role->name:null;
+						$eachunit['primary_contact'] = ($PurchaserUnit->primary_contact==1)?"Yes":"No";
+						$eachunit['created_date'] = date('d/m/y',strtotime($PurchaserUnit->created_at));
+						$user_units[] =$eachunit;
+					}
+				}
+				$record['user_units'] = $user_units;
+				$data[] = $record;
 			}
-			$record['user_units'] = $user_units;
-			$data[] = $record;
-		}
 
-		$app_user_lists = explode(",",env('USER_APP_ROLE'));
+			$app_user_lists = explode(",",env('USER_APP_ROLE'));
 
-		return response()->json(['users'=>$data,'roles'=>$roles,'user_roles'=>$app_user_lists,'response' => 1, 'message' => 'Success']);
+			return response()->json(['users'=>$data,'roles'=>$roles,'user_roles'=>$app_user_lists,'response' => 1, 'message' => 'Success']);
 		}
 	}
 
@@ -8780,20 +8769,18 @@ class OpsApiv4Controller extends Controller
 
 	public function defectsnewlist(Request $request) 
     {
-				$login_id = Auth::id();
+		$login_id = Auth::id();
 		$adminObj = User::find($login_id); 
-		if(empty($adminObj)){
-			return response()->json(['data'=>null,'response' => 300, 'message' => 'User not found']);
-		}
+		
+		if(empty($adminObj)) return response()->json(['data'=>null,'response' => 300, 'message' => 'User not found']);
 		
 		$permission = $adminObj->check_permission(3,$adminObj->role_id); 
 		if(empty($permission) ){
 			return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
 		}
 		else if(isset($permission->view) && $permission->view !=1){
-				return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
-		}
-		else{
+			return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
+		}else{
 
         $account_id = $adminObj->account_id;
 
@@ -8813,9 +8800,9 @@ class OpsApiv4Controller extends Controller
 				$user_data["building_no"]= $defect->user->building_no;
 				$user_data["unit_no"]= $defect->user->unit_no;
 				$user_data["primary_contact"]= $defect->user->primary_contact;
-				$user_data["name"]=Crypt::decryptString($defect->user->name);
-				
+				$user_data["name"]=Crypt::decryptString($defect->user->name);	
 			}
+
 			$record['user_info'] = !empty($user_data)?$user_data:null;
 			$unitObj = Unit::find($defect->unit_no);
 			$unit_data =array();
@@ -8824,17 +8811,11 @@ class OpsApiv4Controller extends Controller
 				$unit_data["unit"]= Crypt::decryptString($unitObj->unit);
 			}
 			$record['unit_info'] = !empty($unit_data)?$unit_data:null;
-
-			//$record['user_info'] = $defect->user;
-			//$record['unit_info'] = isset($defect->getunit)?$defect->getunit:null;
-
 			$record['inspection'] = isset($defect->inspection)?$defect->inspection:null;
-
+			
 			$data[] = $record;
 		}
-				
-						
-		return response()->json(['data'=>$data,'response' => 1, 'message' => 'Success']);
+			return response()->json(['data'=>$data,'response' => 1, 'message' => 'Success']);
 		}
 	}
 	
