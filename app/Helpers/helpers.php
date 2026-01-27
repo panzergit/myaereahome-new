@@ -10,5 +10,12 @@ if (! function_exists('upload_path')) {
             ? trim($base.'/'.$folder, '/')
             : trim($folder, '/');
     }
+}
 
+if (! function_exists('is_primary_domain')) {
+    function is_primary_domain(): int
+    {
+        $host = request()->getHost(); // abc.com, def.com, ghi.com
+        return $host === 'new.myaereahome.com' ? 1 : 0;
+    }
 }

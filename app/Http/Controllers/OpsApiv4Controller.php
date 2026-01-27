@@ -1264,11 +1264,10 @@ class OpsApiv4Controller extends Controller
 
 	public function getpropertylist(Request $request) 
     {
-		$login_id = Auth::id();
-		$adminObj = User::find($login_id); 
-		$user = new \App\Models\v7\User();
-		$properties = $user->propdropdown($login_id);
-		return response()->json(['data'=>$properties,'current_property'=>$adminObj->account_id,'response' => 1, 'message' => 'Success']);
+		$user = $request->user();
+		$userObj = new \App\Models\v7\User();
+		$properties = $userObj->propdropdown($user->id);
+		return response()->json(['data' => $properties, 'current_property' => $user->account_id, 'response' => 1, 'message' => 'Success']);
 	}
 
 	public function switchproperty(Request $request) 
