@@ -157,17 +157,23 @@ class UserMoreInfoController extends Controller
                 'account_id' => $accountId,
                 'status' => 1
                 ])->get();
-    		
-            
+
             $appUsageNumbers = UserLog::where([
                     'account_id' => $accountId,
                     'status' => 1
                 ])
                 ->whereIn('user_id',$totalHomeUsersLists->pluck('user_id'))
-                ->groupBy('user_id')->orderby('id','desc')->get();
+                ->whereIn('id', function ($q) use ($accountId, $totalHomeUsersLists) {
+                    $q->selectRaw('MAX(id)')
+                    ->from('user_logs')
+                    ->where([
+                        'account_id' => $accountId,
+                        'status' => 1
+                    ])
+                    ->whereIn('user_id', $totalHomeUsersLists->pluck('user_id'))
+                    ->groupBy('user_id');
+                })->get();
 
-           
-            //print_r( $appUsageNumbers->toArray());
             $androidUsageNumbers = $appUsageNumbers->where('login_from', 2)->count();
             $iOsUsageNumbers = $appUsageNumbers->where('login_from', 1)->count();
             /*$androidUsageNumbers = UserLog::where([
@@ -327,10 +333,6 @@ class UserMoreInfoController extends Controller
                 'chartTwo', 'chartThree', 'chartFour'));
         }
     }
-
-    
-
-    
 
     /**
      * Show the form for creating a new resource.
@@ -2574,7 +2576,7 @@ class UserMoreInfoController extends Controller
         $UserMoreObj->identification_no = $request->input('identification_no');
 
         if ($request->file('profile_picture') != null) {
-            $UserMoreObj->profile_picture = $request->file('profile_picture')->store(upload_path('documents'));
+            $UserMoreObj->profile_picture = remove_upload_path($request->file('profile_picture')->store(upload_path('documents')));
         }
 
         $UserMoreObj->save();

@@ -90,13 +90,13 @@ class UserGuideController extends Controller
             $file_image = 'file_image_' . $i;
             $type['created_at'] = date("Y-m-d H:i:s");
             if ($request->file($file) != null) {
-                $type['docs_file'] = $request->file($file)->store(upload_path('userguide'));
+                $type['docs_file'] = remove_upload_path($request->file($file)->store(upload_path('userguide')));
             }
             if ($request->file($file) != null) {
-                $type['docs_file'] = $request->file($file)->store(upload_path('userguide'));
+                $type['docs_file'] = remove_upload_path($request->file($file)->store(upload_path('userguide')));
             }
             if ($request->file($file_image) != null) {
-                $type['file_image'] = $request->file($file_image)->store(upload_path('userguide'));
+                $type['file_image'] = remove_upload_path($request->file($file_image)->store(upload_path('userguide')));
             }
             if ($input[$file_name] != null) { 
                 $type['docs_file_name'] = $input[$file_name];
@@ -162,7 +162,7 @@ class UserGuideController extends Controller
 
        
         if ($request->file('docs_file') != null) {
-            $FileObj->docs_file = $request->file('docs_file')->store(upload_path('userguide'));
+            $FileObj->docs_file = remove_upload_path($request->file('docs_file')->store(upload_path('userguide')));
         }
         $FileObj->docs_file_name = $request->input('file_name');
         $FileObj->url_type = $request->input('url_type');

@@ -102,9 +102,8 @@ class SettingController extends Controller
         $configObj->no_of_digits = $request->input('no_of_digits');
         $configObj->payroll_notes = $request->input('payroll_notes');
 
-        if ($request->file('logo') != null){
-            $configObj->logo = $request->file('logo')->store(upload_path('setting'));
-        }
+        if ($request->file('logo') != null) $configObj->logo = remove_upload_path($request->file('logo')->store(upload_path('setting')));
+
         $configObj->save();
         return redirect('opslogin/configuration/setting')->with('status', 'Settings has been updated!');;
     }

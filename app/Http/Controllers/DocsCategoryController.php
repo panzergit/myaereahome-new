@@ -86,7 +86,7 @@ class DocsCategoryController extends Controller
             $original_file = 'original_file_name_'.$i;
 
             if ($request->file($file) != null) {
-                $type['docs_file'] = $request->file($file)->store(upload_path('condofile'));
+                $type['docs_file'] = remove_upload_path($request->file($file)->store(upload_path('condofile')));
             }
 
             if ($input[$file_name] != null) { 
@@ -210,7 +210,7 @@ class DocsCategoryController extends Controller
                     $fileObj->cat_id = $id;
 
                     if ($request->file($file) != null) {
-                        $fileObj->docs_file = $request->file($file)->store(upload_path('condofile'));
+                        $fileObj->docs_file = remove_upload_path($request->file($file)->store(upload_path('condofile')));
                     }
                     $fileObj->original_file_name= $request->input($original_file_name);
 
@@ -226,7 +226,7 @@ class DocsCategoryController extends Controller
                 $type['cat_id'] = $id;
 
                 if ($request->file($file) != null) {
-                    $type['docs_file'] = $request->file($file)->store(upload_path('condofile'));
+                    $type['docs_file'] = remove_upload_path($request->file($file)->store(upload_path('condofile')));
                 }
                 $type['original_file_name']= $input[$original_file_name]; 
                 $type['docs_file_name'] = $input[$file_name];

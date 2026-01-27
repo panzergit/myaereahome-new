@@ -72,7 +72,7 @@ class FacilityTypeController extends Controller
         }
         if ($request->file('facility_image') != null) {
             
-            $input['facility_image'] = $request->file('facility_image')->store(upload_path('facility'));
+            $input['facility_image'] = remove_upload_path($request->file('facility_image')->store(upload_path('facility')));
         }
         $propertyObj = Property::where('id',$input['account_id'])->first();
 
@@ -180,7 +180,7 @@ class FacilityTypeController extends Controller
         }
         
         if ($request->file('facility_image') != null) {
-            $facilityObj->facility_image = $request->file('facility_image')->store(upload_path('facility'));
+            $facilityObj->facility_image = remove_upload_path($request->file('facility_image')->store(upload_path('facility')));
         }
         
         $facilityObj->save();

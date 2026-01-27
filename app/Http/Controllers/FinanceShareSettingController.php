@@ -79,17 +79,11 @@ class FinanceShareSettingController extends Controller
 
         $unit =  FinanceShareSetting::where('account_id', $input['account_id'])->where('status',1)->first(); 
 
-        if(isset($unit)){
-        FinanceShareSetting::where('account_id', $input['account_id'])->where('id',$unit->id)
-        ->update(['status' => 0]);
-        }
+        if(isset($unit)) FinanceShareSetting::where('account_id', $input['account_id'])->where('id',$unit->id)->update(['status' => 0]);
 
-        if ($request->file('qrcode_file') != null) {
-            $input['qrcode_file'] = $request->file('qrcode_file')->store(upload_path('finance'));
-        }
+        if ($request->file('qrcode_file') != null) $input['qrcode_file'] = remove_upload_path($request->file('qrcode_file')->store(upload_path('finance')));
         
         FinanceShareSetting::create($input);
-        
         return redirect('opslogin/configuration/sharesettings#settings')->with('status', 'Settings has been added!');
     }
 

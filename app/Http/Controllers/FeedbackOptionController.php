@@ -196,7 +196,7 @@ class FeedbackOptionController extends Controller
         $input['ticket'] = $ticket->ticketgen();
         
         if ($request->file('upload') != null) {
-            $input['upload'] = $request->file('upload')->store(upload_path('feedback'));
+            $input['upload'] = remove_upload_path($request->file('upload')->store(upload_path('feedback')));
         }
         $input['user_id'] = Auth::user()->id;
         $input['status'] = 0;

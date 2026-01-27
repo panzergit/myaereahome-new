@@ -184,8 +184,8 @@ class StaticController extends Controller
             if(($total_vehicle >=2 && $license_record->first_vehicle !='') || 
                 ($total_vehicle >=2 && $license_record->second_vehicle !='')) return redirect('/license-message')->with('status', '1');
             
-            if ($request->file('profile') != null) $input['profile_picture'] = $request->file('profile')->store(upload_path('user_request'));
-            if ($request->file('contract') != null && $input['role_id']==29) $input['contract_file'] = $request->file('contract')->store(upload_path('user_request'));
+            if ($request->file('profile') != null) $input['profile_picture'] = remove_upload_path($request->file('profile')->store(upload_path('user_request')));
+            if ($request->file('contract') != null && $input['role_id']==29) $input['contract_file'] = remove_upload_path($request->file('contract')->store(upload_path('user_request')));
             
             return redirect('/thankyou')->with('status', '1');
 		}

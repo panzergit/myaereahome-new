@@ -56,7 +56,7 @@ class HomeBannerController extends Controller
              return redirect('opslogin/configuration/banner/create')->with('status', 'Banner already exist!');         
         }
         if ($request->file('banner_image') != null) {
-            $input['banner_image'] = $request->file('banner_image')->store(upload_path('banner'));
+            $input['banner_image'] = remove_upload_path($request->file('banner_image')->store(upload_path('banner')));
         }
 
         $result = HomeBanner::create($input); 
@@ -150,7 +150,7 @@ class HomeBannerController extends Controller
         } 
 
         if ($request->file('banner_image') != null) {
-            $BannerObj->banner_image = $request->file('banner_image')->store(upload_path('banner'));
+            $BannerObj->banner_image = remove_upload_path($request->file('banner_image')->store(upload_path('banner')));
         }
         $BannerObj->banner_title = $request->input('banner_title');
         $BannerObj->banner_url_type = $request->input('banner_url_type');
