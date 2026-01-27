@@ -10387,6 +10387,9 @@ class OpsApiv4Controller extends Controller
 			$feedbackObj = FeedbackSubmission::find($id);
 			$feedbackObj->view_status = 1;
 			$feedbackObj->save();
+
+			if(!empty($feedbackObj->upload_1)) $feedbackObj->upload_1 = is_primary_domain() ? upload_path($feedbackObj->upload_1) : $feedbackObj->upload_1;
+			if(!empty($feedbackObj->upload_2)) $feedbackObj->upload_2 = is_primary_domain() ? upload_path($feedbackObj->upload_2) : $feedbackObj->upload_2;
 			
 			$record['submissions']=$feedbackObj;
 			$record['option'] = $feedbackObj->getoption;
