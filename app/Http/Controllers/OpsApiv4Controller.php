@@ -314,7 +314,16 @@ class OpsApiv4Controller extends Controller
                     'status' => 1
                 ])
                 ->whereIn('user_id',$totalHomeUsersLists->pluck('user_id'))
-                ->groupBy('user_id')->orderby('id','desc')->get();
+                ->whereIn('id', function ($q) use ($accountId, $totalHomeUsersLists) {
+                    $q->selectRaw('MAX(id)')
+                    ->from('user_logs')
+                    ->where([
+                        'account_id' => $accountId,
+                        'status' => 1
+                    ])
+                    ->whereIn('user_id', $totalHomeUsersLists->pluck('user_id'))
+                    ->groupBy('user_id');
+                })->get();
 
            
             //print_r( $appUsageNumbers->toArray());
