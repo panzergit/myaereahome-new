@@ -10,6 +10,16 @@ class FeedbackSubmission extends Model
         'account_id', 'ticket', 'fb_option','upload_1','upload_2','subject','notes', 'user_id','unit_no','status','view_status','remarks'
     ];
 
+    public function getUpload1Attribute($value)
+    {
+        return is_primary_domain() ? upload_path($value) : $value;
+    }
+
+    public function getUpload2Attribute($value)
+    {
+        return is_primary_domain() ? upload_path($value) : $value;
+    }
+
     public function getoption(){
         return $this->belongsTo('App\Models\v7\FeedbackOption','fb_option');
     }
