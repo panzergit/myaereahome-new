@@ -220,7 +220,6 @@
           <div class="modal fade" id="confirmModalCenter" tabindex="-1" role="dialog" aria-labelledby="confirmModalCenterTitle" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered" role="document">
             {!! Form::open(['method' => 'POST', 'url' => url('opslogin/faceid/updateconfirmstatus'), 'files' => false]) !!}
-            {{ csrf_field() }}
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalCenterTitle">Facial Recognition - Confirm</h5>
