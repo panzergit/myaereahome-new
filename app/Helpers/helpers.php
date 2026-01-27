@@ -19,3 +19,10 @@ if (! function_exists('is_primary_domain')) {
         return $host === 'new.myaereahome.com' ? 1 : 0;
     }
 }
+
+if (! function_exists('remove_upload_path')) {
+    function remove_upload_path(string $path): string
+    {
+        return str_replace(upload_path(). '/', '', $path);
+    }
+} 
