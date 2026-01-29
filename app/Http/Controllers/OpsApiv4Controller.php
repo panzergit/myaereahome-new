@@ -1337,14 +1337,8 @@ class OpsApiv4Controller extends Controller
 		$permission = $user->check_permission(1,$user->role_id); 
 		if(empty($permission) || (isset($permission->view) && $permission->view !=1)) return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
 
-		$announcements = Announcement::where('account_id',$user->account_id)->orderByDesc('id')->get()
-			->map(function ($announcement) {
-				if(!empty($announcement->upload_2)) $announcement->upload_2 = upload_path($announcement->upload_2);
-				if(!empty($announcement->upload_3)) $announcement->upload_3 = upload_path($announcement->upload_3);
-				if(!empty($announcement->upload_4)) $announcement->upload_4 = upload_path($announcement->upload_4);
-				if(!empty($announcement->upload_5)) $announcement->upload_5 = upload_path($announcement->upload_5);
-				return $announcement;
-			});
+		$announcements = Announcement::where('account_id',$user->account_id)->orderByDesc('id')->get();
+		
 		return response()->json(['data'=>$announcements,'file_path'=> image_storage_domain(),'response' => 1, 'message' => 'Success']);
 	}
 
