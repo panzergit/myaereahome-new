@@ -1332,30 +1332,21 @@ class OpsApiv4Controller extends Controller
 	
 	public function announcements(Request $request) 
     {
-	
-		$login_id = Auth::id();
-		$adminObj = User::find($login_id); 
-		if(empty($adminObj)){
-			return response()->json(['data'=>null,'response' => 300, 'message' => 'User not found']);
-		}
-		
-		$permission = $adminObj->check_permission(1,$adminObj->role_id); 
-		if(empty($permission) ){
-			return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
-		}
-		else if(isset($permission->view) && $permission->view !=1){
-				return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
-		}
-		else{
+		$user = $request->user();
 
-        $account_id = $adminObj->account_id;
+		$permission = $user->check_permission(1,$user->role_id); 
+		if(empty($permission) || (isset($permission->view) && $permission->view !=1)) return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
 
-        $announcements = Announcement::where('account_id',$account_id)->orderBy('id','desc')->get();
-
-		$file_path = env('APP_URL')."/storage/app";
-
-		return response()->json(['data'=>$announcements,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
-		}
+		$announcements = Announcement::where('account_id',$user->account_id)->orderByDesc('id')->get()
+			->map(function ($announcement) {
+				if(!empty($announcement->upload_2)) $announcement->upload_2 = upload_path($announcement->upload_2);
+				if(!empty($announcement->upload_3)) $announcement->upload_3 = upload_path($announcement->upload_3);
+				if(!empty($announcement->upload_4)) $announcement->upload_4 = upload_path($announcement->upload_4);
+				if(!empty($announcement->upload_5)) $announcement->upload_5 = upload_path($announcement->upload_5);
+				return $announcement;
+			});
+		$file_path = is_primary_domain() ? upload_path('/') : url('storage/app');
+		return response()->json(['data'=>$announcements,'file_path'=> $file_path,'response' => 1, 'message' => 'Success']);
 	}
 
 

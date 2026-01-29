@@ -11,8 +11,14 @@ class Announcement extends Model
       'account_id','title','document','notes', 'roles','upload','upload_2','upload_3','upload_4','upload_5'
     ];
 
-      public function uploadedto(){
+    public function uploadedto(){
         return $this->belongsTo('App\Models\v7\Department','announcement_to');
+    }
+
+    public function getUploadAttribute($value)
+    {
+      if(empty($value)) return $value;
+      return is_primary_domain() ? upload_path($value) : $value;
     }
 
     public function role(){
