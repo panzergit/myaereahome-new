@@ -46,7 +46,13 @@
 <form action="{{url('/opslogin/digitalaccess/searchcallunit')}}" method="get" role="search" class="forunit">
                      <div class="">
                         <div class="row asignbg">
-						<div class="col-lg-3">
+						<div class="col-lg-6">
+						 <div class="row">
+						 <label class="col-lg-12">
+                              <label class="">&nbsp;
+                              </label>
+                              </label>
+						<div class="col-lg-6">
                         <div class="form-group ">
                               <label class=""> device name : 
                               </label>
@@ -54,12 +60,14 @@
 						
                            </div>
                            </div>
-						   <div class="col-lg-3">
+						   <div class="col-lg-6">
                            <div class="form-group ">
                               <label class=""> unit : 
                               </label>
                               <input  type="text" name="unit" class="form-control" value="<?php echo(isset($unit)?$unit:'');?>" id="unit_list">
 
+                           </div>
+                           </div>
                            </div>
                            </div>
 						  

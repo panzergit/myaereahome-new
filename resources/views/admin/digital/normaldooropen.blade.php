@@ -47,7 +47,13 @@
     <input type="hidden" name="search" value="1">
                      <div class="">
                           <div class="row asignbg">
-						    <div class="col-lg-4">
+						  <div class="col-lg-6">
+						 <div class="row">
+						 <label class="col-lg-12">
+                              <label class="">&nbsp;
+                              </label>
+                              </label>
+						    <div class="col-lg-6">
                         <div class="form-group ">
                               <label class=""> device name :
                               </label>
@@ -55,7 +61,7 @@
 						
                            </div>
                            </div>
-						   <div class="col-lg-4">
+						   <div class="col-lg-6">
                            <div class="form-group ">
                               <label class=""> unit : 
                               </label>
@@ -67,7 +73,7 @@
                               </select>
                            </div>
                            </div>
-						   <div class="col-lg-4">
+						   <div class="col-lg-6">
 						    <div class="form-group">
                               <label class="">name :
                               </label>
@@ -75,21 +81,23 @@
                            
                            </div>
                            </div>
+                           </div>
+                           </div>
 						  
-                           <div class="col-lg-12">
+                           <div class="col-lg-6">
                            <div class="form-group row">
                               <div class="col-sm-12">
                               <label class="">open door date & time : 
                               
                               </label>
                               </div>
-                              <div class="col-sm-4 col-6">
+                              <div class="col-sm-6 col-6">
 							  <label class="control-label">start date </label>
                              <div id="sandbox3">
 						<input id="datetext1" type="text" class="form-control" name="startDate" value="{{ request()->has('startDate') ? request()->startDate : '' }}">
 				                           </div>
                               </div>
-							   <div class="col-sm-4 col-6">
+							   <div class="col-sm-6 col-6">
 							  <label class="control-label">end date </label>
                              <div id="sandbox4">
 						<input id="datetext2" type="text" class="form-control" name="endDate" value="{{ request()->has('endDate') ? request()->endDate : '' }}">
@@ -97,11 +105,11 @@
                               </div>
                            </div>
                         <div class="form-group row">
-                            <div class="col-sm-4 col-6">
+                            <div class="col-sm-6 col-6">
 							    <label class="control-label">start time </label>
                                 <input id="" type="time" class="form-control" name="startTime" value="{{ request()->has('startTime') ? request()->startTime : '' }}">
 				            </div>
-							   <div class="col-sm-4 col-6">
+							   <div class="col-sm-6 col-6">
 							  <label class="control-label ">end time </label>
                              <div id="sandbox288">
 						<input id="datetime" type="time" class="form-control" name="endTime" value="{{ request()->has('endTime') ? request()->endTime : '' }}">

@@ -46,7 +46,13 @@
 <form action="{{url('/opslogin/digitalaccess/searchdooropen')}}" class="forunit" autocomplete="off">
                      <div class="">
                         <div class="row asignbg">
-                        <div class="col-lg-3">
+						<div class="col-lg-6">
+						 <div class="row">
+						 <label class="col-lg-12">
+                              <label class="">&nbsp;
+                              </label>
+                              </label>
+                        <div class="col-lg-6">
                            <div class="form-group ">
                               <label class=""> name :
                               </label>
@@ -54,7 +60,7 @@
 						
                            </div>
                            </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg-6">
                            <div class="form-group ">
                               <label class=""> device name :
                               </label>
@@ -62,7 +68,7 @@
 						
                            </div>
                            </div>
-						   <div class="col-lg-3">
+						   <div class="col-lg-6">
 						    <div class="form-group ">
                               <label class="">open door type :
                               </label>
@@ -70,6 +76,8 @@
                              {{ Form::select('eventType', [''=>'Select',8=>'Remote Door Opening',19=>'Bluetooth Door Opening',21=>'Face Recognition Door Opening'], $eventType, ['class'=>'form-control']) }}
 						
                               </div>
+                           </div>
+                           </div>
                            </div>
                            </div>
 						  <div class="col-lg-6">
