@@ -269,7 +269,8 @@ class DigitalAccessController extends Controller
         $units = [];
         $allUnitIds = RemoteDoorOpen::where('account_id',$account_id)->pluck('unit_no')->unique()->all();
         $searchUnits = Unit::whereIn('id',$allUnitIds)->get()->map(fn($e) => ['id' => $e->id,'name' => Crypt::decryptString($e->unit)]);
-        
+        $buildings = Building::where("status",1)->where('account_id',$account_id)->orderby('building','asc')->get();
+
         if($request->has('search')){
             
             $userIDs = [];
@@ -300,7 +301,7 @@ class DigitalAccessController extends Controller
             $records = RemoteDoorOpen::where('account_id',$account_id)->orderBy('id','DESC')->paginate(env('PAGINATION_ROWS'));
         }
 
-        return view('admin.digital.remote', compact('records','devices','searchUnits'));
+        return view('admin.digital.remote', compact('records','devices','searchUnits','buildings','account_id'));
     }
 
     public function searchremotedooropen(Request $request)
@@ -376,7 +377,8 @@ class DigitalAccessController extends Controller
         $units = [];
         $allUnitIds = BluetoothDoorOpen::where('account_id',$account_id)->pluck('unit_no')->unique()->all();
         $searchUnits = Unit::whereIn('id',$allUnitIds)->get()->map(fn($e) => ['id' => $e->id,'name' => Crypt::decryptString($e->unit)]);
-        
+        $buildings = Building::where("status",1)->where('account_id',$account_id)->orderby('building','asc')->get();
+
         if($request->has('search')){
             
             $userIDs = [];
@@ -407,7 +409,7 @@ class DigitalAccessController extends Controller
             $records = BluetoothDoorOpen::where('account_id',$account_id)->orderBy('id','DESC')->paginate(env('PAGINATION_ROWS'));
         }
 
-        return view('admin.digital.bluetooth', compact('records','devices','searchUnits'));
+        return view('admin.digital.bluetooth', compact('records','devices','searchUnits','buildings','account_id'));
     }
 
     public function searchbluetoothdooropen(Request $request)

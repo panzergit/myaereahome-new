@@ -142,9 +142,9 @@
                         <tr>
                            <td  class="roundleft">{{date('d/m/y',strtotime($record->created_at))}}</td>
                            <td  class="spacer">{{date('G:i A',strtotime($record->created_at))}}</td>
-                           <td  class="spacer">{{($buildinglists[$record->roomCode])?$buildinglists[$record->roomCode]:''}}</td>
+                           <td  class="spacer">{{$buildinglists[$record->roomCode]??''}}</td>
 
-                           <td  class="spacer">{{($unitlists[$record->roomCode])?$unitlists[$record->roomCode]:''}}</td>
+                           <td  class="spacer">{{$unitlists[$record->roomCode]??''}}</td>
                            <td  class="spacer"> @if(isset($record->captureImage))
 
                                  <a href="{{substr($record->captureImage,0,-1)}}" target="_blank">
