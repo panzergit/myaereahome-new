@@ -30,6 +30,6 @@ if (! function_exists('remove_upload_path')) {
 if (! function_exists('image_storage_domain')) {
     function image_storage_domain(): string
     {
-		return is_primary_domain() ? Storage::disk('s3')->url('/') : Storage::disk('public')->url('app');
+		return is_primary_domain() ? Storage::disk('s3')->url(upload_path()) : Storage::disk('public')->url('app');
     }
 }
