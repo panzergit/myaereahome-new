@@ -80,6 +80,19 @@
                             
                            </div>
                            </div>
+						    <div class="col-lg-6">
+                           <div class="form-group ">
+                              <label class=""> Building : 
+                              </label>
+                              <select class="form-control" name="building" id='building' onchange='getbuldunits()'>
+                                  <option value="">--select--</option>
+                                   @foreach($buildings as $b)
+                                  <option @if(request()->has('building') && request()->building==$b['id']) selected @endif value="{{$b['id']}}">{{$b['building']}}</option>
+                                  @endforeach
+                              </select>
+                             
+                           </div>
+                           </div>
                            </div>
                            </div>
 						   <div class="col-lg-6">
