@@ -30,29 +30,22 @@ class AnnouncementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $role ='';
-        $startdate ='';
-        $enddate='';
+        $role = $startdate = $enddate = '';
+        $user = $request->user();
+        $whereCondition = ['account_id' => $user->account_id];
 
-        $user = Auth::user(); 
-        $account_id = Auth::user()->account_id;
+        $announcements = Announcement::where($whereCondition)->orderByDesc('id')->paginate(50);
+        $roles = Role::where($whereCondition)->orWhere('type',1)->pluck('name', 'id')->all();
 
-        $announcements = Announcement::where('account_id',$account_id)->orderBy('id','desc')->paginate(50);
-        $roles = Role::where('account_id',$account_id)->orWhere('type',1)->pluck('name', 'id')->all();
-
-       
-        AnnouncementDetail::where('user_id', $user->id)
-                ->update(['status' => '1']);
+        AnnouncementDetail::where('user_id', $user->id)->update(['status' => '1']);
         
-        $file_path = config('filesystems.disks.s3.url').'/'.upload_path();
+        $file_path = image_storage_domain();
         $icon_path = url('assets/admin/');
-        if($user->role_id ==2)
-            return view('user.announcement', compact('announcements','file_path','icon_path'));
-         else
-            return view('admin.announcement.index', compact('roles','startdate','role','enddate','announcements','file_path','icon_path'));
 
+        return $user->role_id == 2 ? view('user.announcement', compact('announcements','file_path','icon_path')) 
+            : view('admin.announcement.index', compact('roles','startdate','role','enddate','announcements','file_path','icon_path'));
     }
 
     public function viewdetails($id)
