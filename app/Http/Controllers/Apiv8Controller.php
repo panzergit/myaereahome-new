@@ -2469,7 +2469,7 @@ class Apiv8Controller extends Controller
 			}
 			//print_r($prop_banner_array);
 
-			$homeBanner = HomeBanner::whereIn('id', $prop_banner_array)->where('status',1)->orderby('display_order','asc')->get();
+			$homeBanner = HomeBanner::whereIn('id', $prop_banner_array)->where('status',1)->orderby('display_order','desc')->get();
 			if(isset($UserObj->propertyinfo)){
 				$data['sliders'] = $homeBanner;
 			}
@@ -6752,8 +6752,16 @@ class Apiv8Controller extends Controller
 		}
 		
 		$unit = Unit::where('id',$unit_id)->first();
-
-		$users_lists = UserPurchaserUnit::where('unit_id',$unit->id)->where('receive_call',1)->get();
+		$DeviceAllowedUsers = UserDevice::where('unit_no',$unit->id)->where('device_svn',$input['devSn'])->get();
+		$allowedUsers = array();
+		if($DeviceAllowedUsers){
+			foreach($DeviceAllowedUsers as $DeviceAllowedUser){
+				$allowedUsers[] = $DeviceAllowedUser->user_id;
+			}
+		}
+		
+		$users_lists = UserPurchaserUnit::whereIn('user_id',$allowedUsers)->where('unit_id',$unit->id)->where('receive_call',1)->get();
+		//$users_lists = UserPurchaserUnit::where('unit_id',$unit->id)->where('receive_call',1)->get();
 		//$users_lists = User::select('users.id')->where('users.status',1)->where('users.unit_no',$unit->id)->join('user_more_infos', 'users.id', '=', 'user_more_infos.user_id')->where('user_more_infos.receive_device_cal',1)->orderby('users.id','desc')->get();
 
 		$user_rec = ',';
