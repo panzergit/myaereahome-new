@@ -289,6 +289,7 @@ class DigitalAccessController extends Controller
             
             
             $records = RemoteDoorOpen::where('account_id',$account_id)
+                ->when(($request->has('building') && trim($request->building)!=''),fn($e) => $e->wherehas('getunit',fn($q)=> $q->where('building_id',trim($request->building))))
                 ->when(($request->has('unit') && trim($request->unit)!=''),fn($e) => $e->where('unit_no',trim($request->unit)))
                 ->when(($request->has('doorName') && trim($request->doorName)!=''),fn($e) => $e->where('devname',trim($request->doorName)))
                 ->when(!empty($userIDs),fn($e) => $e->whereIn('user_id',$userIDs))
@@ -395,6 +396,7 @@ class DigitalAccessController extends Controller
             
             
             $records = BluetoothDoorOpen::where('account_id',$account_id)
+                ->when(($request->has('building') && trim($request->building)!=''),fn($e) => $e->wherehas('getunit',fn($q)=> $q->where('building_id',trim($request->building))))
                 ->when(($request->has('unit') && trim($request->unit)!=''),fn($e) => $e->where('unit_no',trim($request->unit)))
                 ->when(($request->has('doorName') && trim($request->doorName)!=''),fn($e) => $e->where('devname',trim($request->doorName)))
                 ->when(!empty($userIDs),fn($e) => $e->whereIn('user_id',$userIDs))

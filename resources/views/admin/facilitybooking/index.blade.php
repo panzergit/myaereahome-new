@@ -295,6 +295,13 @@
                                  </label>
                                     
                                                             </div>
+                                                            <div  class="col-sm-2 filerl  col-3">
+                                          <label class="containerbut">date of event
+                                 <input type="radio" name="filter" value="booking_date" {{($filter=='booking_date')?'checked':''}}>
+                                 <span class="checkmarkbut"></span>
+                                 </label>
+                                    
+                                                            </div>
                                                       <div  class="col-sm-3 filerl  col-4">
                                                       <label class="containerbut"> status
                                  <input type="radio" name="filter" value="status" {{($filter=='status')?'checked':''}}>
