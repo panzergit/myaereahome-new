@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Storage;
+
 if (! function_exists('upload_path')) {
     function upload_path(string $folder = ''): string
     {
@@ -23,4 +25,11 @@ if (! function_exists('remove_upload_path')) {
     {
         return str_replace(upload_path(). '/', '', $path);
     }
-} 
+}
+
+if (! function_exists('image_storage_domain')) {
+    function image_storage_domain(): string
+    {
+		return is_primary_domain() ? Storage::disk('s3')->url('/') : url('storage/app');
+    }
+}

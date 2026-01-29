@@ -1345,8 +1345,7 @@ class OpsApiv4Controller extends Controller
 				if(!empty($announcement->upload_5)) $announcement->upload_5 = upload_path($announcement->upload_5);
 				return $announcement;
 			});
-		$file_path = is_primary_domain() ? upload_path('/') : url('storage/app');
-		return response()->json(['data'=>$announcements,'file_path'=> $file_path,'response' => 1, 'message' => 'Success']);
+		return response()->json(['data'=>$announcements,'file_path'=> image_storage_domain(),'response' => 1, 'message' => 'Success']);
 	}
 
 
