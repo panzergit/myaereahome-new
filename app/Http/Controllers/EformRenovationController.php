@@ -118,7 +118,7 @@ class EformRenovationController extends Controller
         $eformObj->view_status = 1;
         $eformObj->save();
 
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         return view('admin.eform_renovation.edit', compact('eformObj','file_path'));
     }
 
@@ -217,7 +217,7 @@ class EformRenovationController extends Controller
         $account_id = Auth::user()->account_id;
 
         $eformsettingsObj = EformSetting::where('account_id', $account_id)->where('eform_type', 41)->first();
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         return view('admin.eform_renovation.payment', compact('eformObj','file_path','eformsettingsObj'));
     }
     public function paymentsave(Request $request,$id)
@@ -534,7 +534,7 @@ class EformRenovationController extends Controller
        
 
         $eformsettingsObj = EformSetting::where('account_id', $account_id)->where('eform_type', 41)->first();
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         return view('admin.eform_renovation.inspection', compact('eformObj','file_path','eformsettingsObj','defect_files'));
     }
 

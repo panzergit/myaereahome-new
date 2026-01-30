@@ -143,7 +143,7 @@ class DocsCategoryController extends Controller
                 $doc_files[$k + 1] = $doc_file;
             }
         }
-        $img_full_path = env('APP_URL')."/storage/app/";
+        $img_full_path = image_storage_domain();
 
 
         return view('admin.condodoc_category.edit', compact('docsObj','doc_files','img_full_path'));

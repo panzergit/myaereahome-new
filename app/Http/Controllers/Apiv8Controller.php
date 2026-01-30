@@ -1313,7 +1313,7 @@ class Apiv8Controller extends Controller
 	public function feedbacklist(Request $request) {
 
 		$userid = Auth::id();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($userid);
 
        	$feedbacks = FeedbackSubmission::where('user_id',$userid)->where('unit_no',$UserObj->unit_no)->orderby('id','desc')->get();  
@@ -1587,7 +1587,7 @@ class Apiv8Controller extends Controller
 		$userid = Auth::id();
 		$UserObj = User::find($userid);
 
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$records = Defect::where('unit_no',$UserObj->unit_no)->orderby('id','desc')->get();   
 		$data = array();
 		foreach($records as $k => $record){
@@ -2573,7 +2573,7 @@ class Apiv8Controller extends Controller
 			$data['face_ids'] = $faceids;
 			$data['thinmoo_appId'] = env('APPID');
 			$data['modules'] = $modules;
-			$data['file_path'] = env('APP_URL')."/storage/app";
+			$data['file_path'] = image_storage_domain();
 			$data['proximity'] = $proximity;
 			$data['OPN_PKEY'] = env('VAULTKEY');
 
@@ -2776,7 +2776,7 @@ class Apiv8Controller extends Controller
 
    $facilities = FacilityType::where('account_id', $account_id)->get();
    $options= array(1=>'none','2'=>"month",3=>"days");
-   $file_path = env('APP_URL')."/storage/app";
+   $file_path = image_storage_domain();
 
    return response()->json(['data'=>$facilities,'file_path'=>$file_path,'option'=>$options,'response' => 1, 'message' => 'success!']);
    }
@@ -3736,7 +3736,7 @@ class Apiv8Controller extends Controller
 		return $data->isEmpty() ? response()->json(['message' => "No Record"], 402) 
 			: response()->json([
 			'record' => $data, 
-			'file_path' => env('APP_URL')."/storage/app",
+			'file_path' => image_storage_domain(),
 			'response' => 1, 
 			'message' => 'Success!'
 		]);
@@ -3771,7 +3771,7 @@ class Apiv8Controller extends Controller
 			$result = AnnouncementDetail::where('id',$request->id)->first();
 			$data['details'] = $result;
 			$data['announcement'] = $result->announcement;
-			$data['file_path'] = env('APP_URL')."/storage/app/";;
+			$data['file_path'] = image_storage_domain();
 		
 	    	return response()->json(['data'=>$data,'response' => 1, 'message' => 'Success!']);
 		}
@@ -4213,7 +4213,7 @@ class Apiv8Controller extends Controller
 
 		$files = CondodocFile::where('cat_id',$cat_id)->get();   
 		
-		$file_path =  env('APP_URL')."/storage/app/";
+		$file_path =  image_storage_domain();
 
 		return response()->json(['data'=>$files,'file_path'=>$file_path,'response' => 1, 'message' => 'success']);		
 
@@ -4599,7 +4599,7 @@ class Apiv8Controller extends Controller
 			$details['message'] = $submissionObj->notes;
 			$details['management_remarks'] = $submissionObj->remarks;
 
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 			$data = array();
 			$data[] = $details;
 			return response()->json(['data'=>$details,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
@@ -4618,7 +4618,7 @@ class Apiv8Controller extends Controller
 		$userid = Auth::id();
 		$UserObj = User::find($userid);
 
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$records = ResidentFileSubmission::where('user_id',$userid)->where('unit_no',$UserObj->unit_no)->orderby('id','desc')->get();   
 		$data = array();
 		foreach($records as $k => $record){
@@ -4823,7 +4823,7 @@ class Apiv8Controller extends Controller
 		$userid = Auth::id();
 		$UserObj = User::find($userid);
 
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 
 		$records = VisitorBooking::where('user_id',$userid)->orderby('id','desc')->get();   
 		$data = array();
@@ -4880,7 +4880,7 @@ class Apiv8Controller extends Controller
 		$userid = Auth::id();
 		$UserObj = User::find($userid);
 
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 
 		$record = VisitorBooking::where('id',$bookid)->first();  
 		
@@ -8656,7 +8656,7 @@ class Apiv8Controller extends Controller
 		$property_info = Property::where('id',$input['property'])->first();
 
 		$sharesettings = FinanceShareSetting::where("account_id",$input['property'])->where('status',1)->first();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 
 		return response()->json([
 			'qrtype' =>$property_info->qrcode_option,
@@ -9103,7 +9103,7 @@ class Apiv8Controller extends Controller
 		$input['user_id'] = Auth::id();
 		$category  =isset($input['category'])?$input['category']:'';
 		$userid = $input['user_id'];
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($userid);
 		
 		$blocked_users = ChatBoxBlockUser::where('user_id',$userid)->where('account_id',$UserObj->account_id)->get();
@@ -9220,7 +9220,7 @@ class Apiv8Controller extends Controller
 		$UserObj = User::find($input['user_id']);
 		$result = ChatBox::find($id);
 
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		if(isset($result) && isset($UserObj)){
 			$data = array();
 			$data['info']['id'] = $result->id;
@@ -9656,7 +9656,7 @@ class Apiv8Controller extends Controller
 		$input = $request->all();
 		$input['user_id'] = Auth::id();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 
@@ -9712,7 +9712,7 @@ class Apiv8Controller extends Controller
 		
 		$input = $request->all();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 		$userinfo = UserMoreInfo::where('account_id',$UserObj->account_id)->where('user_id',$input['user_id'])->where('status',1)->first();
@@ -10186,7 +10186,7 @@ class Apiv8Controller extends Controller
 				$records[] = $data;
 			}
 		}
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 
 		return response()->json(['result'=>$records,'file_path'=>$file_path,'response' => 1, 'message' => 'success!']);
 
@@ -10257,7 +10257,7 @@ class Apiv8Controller extends Controller
 				$records[] = $data;
 			}
 		}
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 
 		return response()->json(['result'=>$records,'file_path'=>$file_path,'response' => 1, 'message' => 'success!']);
 
@@ -10317,7 +10317,7 @@ class Apiv8Controller extends Controller
 				$records[] = $data;
 			}
 		}
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 
 		return response()->json(['result'=>$records,'file_path'=>$file_path,'response' => 1, 'message' => 'success!']); 
 	}
@@ -10374,7 +10374,7 @@ class Apiv8Controller extends Controller
 				$records[] = $data;
 			}
 		}
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 
 		return response()->json(['result'=>$records,'file_path'=>$file_path,'response' => 1, 'message' => 'success!']); 
 	}
@@ -10404,7 +10404,7 @@ class Apiv8Controller extends Controller
 		$UserObj = User::find($input['user_id']);
 		$result = MpAdsSubmission::find($id);
 		if(isset($result) && isset($UserObj)){
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 			$data = array();
 			$data['id'] = $result->id;
 			$data['type'] = $result->type;
@@ -10666,7 +10666,7 @@ class Apiv8Controller extends Controller
 				}
 				
 			}
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 			return response()->json(['data'=>$blocked_user_array,'file_path'=>$file_path,'response' => 1, 'message' => 'Success!']);
 		}
 		else{
@@ -10967,7 +10967,7 @@ class Apiv8Controller extends Controller
 		if(empty($UserObj)){
 			return response()->json(['response' => 200, 'message' => 'User not found!']);
 		}
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 
 		$fileObj = AppTermCondition::where('status',1)->orderby('id','desc')->first();
 		$data =array();
@@ -11232,7 +11232,7 @@ class Apiv8Controller extends Controller
 		$data['chat_room_id'] =$input['chat_room_id'];
 		$data['attachment_image'] =$attachement;
 		$results = ChatAttachment::create($data);
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		return response()->json(['data'=>$results,'file_path'=>$file_path,'response' => 1, 'message' => 'Attachement successful!']);
 	}
 
@@ -11312,7 +11312,7 @@ class Apiv8Controller extends Controller
 				$records[] = $data;
 			}
 		}
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 
 		return response()->json(['result'=>$records,'file_path'=>$file_path,'response' => 1, 'message' => 'success!']);
 
@@ -11343,7 +11343,7 @@ class Apiv8Controller extends Controller
 				$records[] = $data;
 			}
 		}
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 
 		return response()->json(['result'=>$records,'file_path'=>$file_path,'response' => 1, 'message' => 'success!']);
 

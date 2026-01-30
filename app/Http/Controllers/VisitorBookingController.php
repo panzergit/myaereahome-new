@@ -327,7 +327,7 @@ class VisitorBookingController extends Controller
             return redirect('opslogin/visitor-summary')->with('status', 'Booking has been cancelled or closed.'); 
         }
         $propObj = property::find(Auth::user()->account_id);
-        $img_full_path = env('APP_URL')."/storage/app/";
+        $img_full_path = image_storage_domain();
         $visiting_types = VisitorType::where('account_id', $account_id)->get();
 
         return view('admin.visitor_booking.edit', compact('bookingObj','img_full_path','propObj','visiting_types'));

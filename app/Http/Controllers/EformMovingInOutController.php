@@ -118,7 +118,7 @@ class EformMovingInOutController extends Controller
         $eformObj->view_status = 1;
         $eformObj->save();
 
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         return view('admin.eform_move.edit', compact('eformObj','file_path'));
     }
 
@@ -139,7 +139,7 @@ class EformMovingInOutController extends Controller
         $account_id = Auth::user()->account_id;
 
         $eformsettingsObj = EformSetting::where('account_id', $account_id)->where('eform_type', 40)->first();
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         return view('admin.eform_move.payment', compact('eformObj','file_path','eformsettingsObj'));
     }
     public function paymentsave(Request $request,$id)
@@ -462,7 +462,7 @@ class EformMovingInOutController extends Controller
         
 
         $eformsettingsObj = EformSetting::where('account_id', $account_id)->where('eform_type', 40)->first();
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         return view('admin.eform_move.inspection', compact('eformObj','file_path','eformsettingsObj','defect_files'));
     }
 

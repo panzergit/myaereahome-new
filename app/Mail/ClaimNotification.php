@@ -36,7 +36,7 @@ class ClaimNotification extends Mailable
         $name = $this->name;
                         
         if($this->claim->attachment !=''){
-            $attachement = env('APP_URL')."/storage/app/".$this->claim->attachment;
+            $attachement = image_storage_domain().$this->claim->attachment;
             return $this->subject($this->subject)->view('admin.emails.claim', compact('records','name'))->attach($attachement);
         }
         else{

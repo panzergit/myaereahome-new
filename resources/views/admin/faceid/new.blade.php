@@ -285,7 +285,7 @@
                 </button>
               </div>
               <div class="modal-body">
-              <!--img src="https://aerea.panzerplayground.com/storage/app/profile/XB06NyYW7pHgjmHxYnzljI9njY5Epdz7CaC3nZ6Q.jpeg" class="facidimg"-->
+              
 			  <div id="image-popup" class="facidimg"></div>
               </div>
               

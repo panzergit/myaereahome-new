@@ -2878,7 +2878,7 @@ class FinanceController extends Controller
         $visitor_app_url = env('VISITOR_APP_URL');
         $buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
         $property_info = Property::where('id',$account_id)->first();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
         //$shares = FinanceShareSetting::paginate(150);   
         return view('admin.finance.report',compact('invoices','unit','status','invoice_no','batch_file_no','option','month','building','visitor_app_url','buildings','property_info','file_path','unit_print','unitno'));
     }
@@ -3006,7 +3006,7 @@ class FinanceController extends Controller
         */
             $buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
             $property_info = Property::where('id',$account_id)->first();
-            $file_path = env('APP_URL')."/storage/app";
+            $file_path = image_storage_domain();
             $visitor_app_url = env('VISITOR_APP_URL');
             session()->put('current_page', 'search_page' );
             $search_url = $_SERVER['REQUEST_URI'];

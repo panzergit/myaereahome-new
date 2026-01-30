@@ -119,7 +119,7 @@ class ResidentFileSubmissionController extends Controller
         ResidentFileSubmission::where('id', $id)
         ->update(['view_status' => 1,'updated_at'=>$submissionObj->updated_at]);
 
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         return view('admin.filesubmission.edit', compact('submissionObj','file_path'));
     }
 

@@ -191,12 +191,8 @@ class AnnouncementController extends Controller
         $fileObj->save();
         
         $file_path = $file_path;  // Value is not URL but directory file path
-            if(Announcement::exists($file_path)) {
-                Announcement::delete($file_path);
-            }
-        
-        
-         $success['message'] = "success";
+            if(Announcement::exists($file_path)) Announcement::delete($file_path);        
+        $success['message'] = "success";
 
           $request->session()->flash('message', " Announcement has been removed.");
           $request->session()->flash('message-type', 'success');
@@ -208,7 +204,7 @@ class AnnouncementController extends Controller
     {
        $role = $startdate = $enddate='';
       $account_id = Auth::user()->account_id;
-      $file_path = url('storage/app');
+      $file_path = image_storage_domain();
       $icon_path = url('assets/admin');
 
       $roles = Role::where('account_id',$account_id)->orWhere('type',1)->pluck('name', 'id')->all();

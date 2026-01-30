@@ -664,7 +664,7 @@ class OpsApiv3Controller extends Controller
 		}
 
 		$PropertyObj = Property::find($adminObj->account_id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
 		//$groups = ModuleGroup::whereIn('id',[7,20])->where('status',1)->orderBy('orderby','ASC')->get();
 		$groups = ModuleGroup::where('status',1)->orderBy('orderby','ASC')->get();
 		$role_access = array();
@@ -867,7 +867,7 @@ class OpsApiv3Controller extends Controller
 		}
 
 		$PropertyObj = Property::find($adminObj->account_id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
 		//$groups = ModuleGroup::whereIn('id',[7,20])->where('status',1)->orderBy('orderby','ASC')->get();
 		$groups = ModuleGroup::where('status',1)->orderBy('orderby','ASC')->get();
 		$role_access = array();
@@ -1092,7 +1092,7 @@ class OpsApiv3Controller extends Controller
 
         $announcements = Announcement::where('account_id',$account_id)->orderBy('id','desc')->get();
 
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 
 		return response()->json(['data'=>$announcements,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 		}
@@ -1270,7 +1270,7 @@ class OpsApiv3Controller extends Controller
 		}
 		else{
 			
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 			$role = $startdate = $enddate='';
 
 			$roles = Role::WhereRaw("CONCAT(',',account_id,',') LIKE ?", '%,'.$account_id .',%')->orWhere('type',1)->pluck('name', 'id')->all();
@@ -1295,7 +1295,7 @@ class OpsApiv3Controller extends Controller
 						
 			})->orderby('id','desc')->get();
 			
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 
 			return response()->json(['data'=>$announcements,'response' => 1,'file_path'=>$file_path, 'message' => 'Success']);
 			
@@ -1798,7 +1798,7 @@ class OpsApiv3Controller extends Controller
 			$data['agent_assigned_property'] = $agent_assigned_properties;
 
 
-			$data['file_path'] = env('APP_URL')."/storage/app";
+			$data['file_path'] = image_storage_domain();
 			
 
 
@@ -4520,7 +4520,7 @@ class OpsApiv3Controller extends Controller
 				}
 			}
 
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 			$relationships =  FacialRecoOption::where('status',1)->pluck('option', 'id')->all();
 			return response()->json(['data'=>$data,'file_path'=>$file_path,'relationships'=>$relationships,'response' => 1, 'message' => 'Success']);
 			
@@ -4581,7 +4581,7 @@ class OpsApiv3Controller extends Controller
 				}
 			}
 
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 			$relationships =  FacialRecoOption::where('status',1)->pluck('option', 'id')->all();
 			return response()->json(['data'=>$data,'file_path'=>$file_path,'relationships'=>$relationships,'response' => 1, 'message' => 'Success']);
 			
@@ -4679,7 +4679,7 @@ class OpsApiv3Controller extends Controller
 						$data[] = $record;
 					}
 				}
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
 				$relationships =  FacialRecoOption::where('status',1)->pluck('option', 'id')->all();
 				return response()->json(['data'=>$data,'file_path'=>$file_path,'relationships'=>$relationships,'response' => 1, 'message' => 'Success']);
 			}
@@ -4752,7 +4752,7 @@ class OpsApiv3Controller extends Controller
 			}
 
 			
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 			return response()->json(['data'=>$result,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 			
 		}
@@ -4845,7 +4845,7 @@ class OpsApiv3Controller extends Controller
 						$data[] = $record;
 					}
 				}
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
 				$relationships =  FacialRecoOption::where('status',1)->pluck('option', 'id')->all();
 				return response()->json(['data'=>$data,'file_path'=>$file_path,'relationships'=>$relationships,'response' => 1, 'message' => 'Success']);
 			}
@@ -4908,7 +4908,7 @@ class OpsApiv3Controller extends Controller
 				}
 			}
 
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 			return response()->json(['data'=>$data,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 			
 		}
@@ -4967,7 +4967,7 @@ class OpsApiv3Controller extends Controller
 				}
 			}
 
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 
 			return response()->json(['data'=>$data,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 			
@@ -5493,7 +5493,7 @@ class OpsApiv3Controller extends Controller
 				$data['reason'] =$facialResult->reason;
 				$data['submitted_date']=date('d/m/y',strtotime($facialResult->created_at));
 				$data['approved_date']=($facialResult->status ==2)?date('d/m/y',strtotime($facialResult->updated_at)):null;
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
         		//$relationships =  FacialRecoOption::where('status',1)->get();
 				return response()->json(['data'=>$data,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 			}else{
@@ -9988,7 +9988,7 @@ class OpsApiv3Controller extends Controller
 				}else{
 						$record['user_info'] = null;
 				}
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
 				return response()->json(['booking'=>$record,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 			}
 			else{
@@ -12259,7 +12259,7 @@ class OpsApiv3Controller extends Controller
 		else{
 			$account_id = $adminObj->account_id;
 			$facilities = FacilityType::where('account_id',$account_id)->get();  
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 			return response()->json(['data'=>$facilities,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 		}
 	}
@@ -12308,7 +12308,7 @@ class OpsApiv3Controller extends Controller
 				$prop_data['id'] = $propertyObj->id;
 				$prop_data['merchant_id'] = $propertyObj->opn_secret_key;
 			}
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 			return response()->json(['type'=>$facilityObj,'file_path'=>$file_path,'property'=>$prop_data,'response' => 1, 'message' => 'Success']);
 
        
@@ -14136,7 +14136,7 @@ class OpsApiv3Controller extends Controller
 					$doc_files[$k + 1] = $doc_file;
 				}
 			}
-			$img_full_path = env('APP_URL')."/storage/app/";
+			$img_full_path = image_storage_domain();
 
 			return response()->json(['docs'=>$docsObj,'docs_file'=>$doc_files,'img_full_path'=>$img_full_path,'response' => 1, 'message' => 'Success']);
 
@@ -14487,7 +14487,7 @@ class OpsApiv3Controller extends Controller
 				$record['files'] = $submission->files;
 				$data[] = $record;
 			} 
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 
 			return response()->json(['data'=>$data,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 		}
@@ -14558,7 +14558,7 @@ class OpsApiv3Controller extends Controller
 				$record['files'] = $submission->files;
 				$data[] = $record;
 			}    
-			$file_path = env('APP_URL')."/storage/app";
+			$file_path = image_storage_domain();
 
 			return response()->json(['data'=>$data,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 		}
@@ -14612,7 +14612,7 @@ class OpsApiv3Controller extends Controller
 				$record['user'] = $submissionObj->user;
 				$record['unit'] = $submissionObj->getunit;
 				$record['files'] = $submissionObj->files;
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
 				return response()->json(['details'=>$record,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 			}else{
 				return response()->json(['details'=>'','file_path'=>'','response' => 200, 'message' => 'Not found']);
@@ -15098,7 +15098,7 @@ class OpsApiv3Controller extends Controller
 				$record['submitted_by'] = isset($submissionObj->user)?$submissionObj->user:null;
 				$record['unit'] = isset($submissionObj->unitinfo)?$submissionObj->unitinfo:null;
 				
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
 
 				return response()->json(['details'=>$record,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 
@@ -15976,7 +15976,7 @@ class OpsApiv3Controller extends Controller
 				$record['submitted_by'] = $submissionObj->user;
 				$record['unit'] = isset($submissionObj->unitinfo)?$submissionObj->unitinfo:null;
 				
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
 
 				return response()->json(['details'=>$record,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 
@@ -16852,7 +16852,7 @@ class OpsApiv3Controller extends Controller
 				$record['submitted_by'] = $submissionObj->user;
 				$record['unit'] = isset($submissionObj->unitinfo)?$submissionObj->unitinfo:null;
 				
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
 
 				return response()->json(['details'=>$record,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 
@@ -17632,7 +17632,7 @@ class OpsApiv3Controller extends Controller
 				$record['submitted_by'] = $submissionObj->user;
 				$record['unit'] = isset($submissionObj->unitinfo)?$submissionObj->unitinfo:null;
 				
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
 
 				return response()->json(['details'=>$record,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 
@@ -18065,7 +18065,7 @@ class OpsApiv3Controller extends Controller
 				}
 				$record['unit'] = !empty($unit_data)?$unit_data:null;
 				
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
 
 				return response()->json(['details'=>$record,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 
@@ -18499,7 +18499,7 @@ class OpsApiv3Controller extends Controller
 						$record['unit'] = isset($submission->unitinfo)?$submission->unitinfo:null;
 						$data[] = $record;
 				
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
 
 				return response()->json(['details'=>$record,'file_path'=>$file_path,'response' => 1, 'message' => 'Success']);
 
@@ -18991,7 +18991,7 @@ class OpsApiv3Controller extends Controller
 					return response()->json(['details'=>'','file_path'=>'','response' => 200, 'message' => 'Booking has been cancelled or closed.']);
 				}
 				
-				$file_path = env('APP_URL')."/storage/app";
+				$file_path = image_storage_domain();
 				$data = array();
 				$data['submission'] = $bookingObj;
 				$data['visitors'] = isset($bookingObj->visitors)?$bookingObj->visitpurpose:null;
@@ -20022,7 +20022,7 @@ class OpsApiv3Controller extends Controller
 								$record['status_lable'] ="Paid";
 						 
 						 }
-						 $file_path = env('APP_URL')."/storage/app";
+						 $file_path = image_storage_domain();
 						 $record['pdf_path'] = $visitor_app_url."/".$invoice->id;
 
 						 if(isset($invoice->PaymentLog) && $invoice->PaymentLog->type ==1){
@@ -20296,7 +20296,7 @@ class OpsApiv3Controller extends Controller
 						 
 						 }
 						 $record['pdf_path'] = $visitor_app_url."/".$invoice->id;
-						 $file_path = env('APP_URL')."/storage/app";
+						 $file_path = image_storage_domain();
 
 						if(isset($invoice->PaymentLog) && $invoice->PaymentLog->type ==1){
 							$record['screenshot'] =$file_path."/".$invoice->PaymentLog->screenshot;

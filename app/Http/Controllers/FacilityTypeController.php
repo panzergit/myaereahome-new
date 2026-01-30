@@ -109,7 +109,7 @@ class FacilityTypeController extends Controller
         //
 
         $facilityObj = FacilityType::find($id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
         $property_id =  Auth::user()->account_id;
         $propertyObj = Property::where('id',$property_id)->first();
 

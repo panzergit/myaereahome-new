@@ -21,7 +21,7 @@ class AdController extends Controller
     public function index()
     {
         $q ='';
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
         $ads = Ad::paginate(50);   
         return view('admin.ad.index', compact('ads','file_path'));
     }
@@ -87,7 +87,7 @@ class AdController extends Controller
     {
         //
         $adObj = Ad::find($id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
 
         return view('admin.ad.edit', compact('adObj','file_path'));
     }

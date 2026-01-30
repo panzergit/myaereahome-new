@@ -54,7 +54,7 @@ class UserFacialIdController extends Controller
         else{
             $faceids = UserFacialId::where('account_id',$account_id)->where('user_id',$login_id)->where('status',2)->orderBy('id','DESC')->paginate(env('PAGINATION_ROWS'));
         }
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
 
         $relationships =  FacialRecoOption::where('status',1)->pluck('option', 'id')->all();
         $buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
@@ -85,7 +85,7 @@ class UserFacialIdController extends Controller
         $account_id = Auth::user()->account_id;
 
         $faceids = UserFacialId::where('account_id',$account_id)->where('status',1)->orderBy('id','DESC')->paginate(env('PAGINATION_ROWS'));
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
 
         $relationships =  FacialRecoOption::where('status',1)->pluck('option', 'id')->all();
         $buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
@@ -210,7 +210,7 @@ class UserFacialIdController extends Controller
         $relationships =  FacialRecoOption::where('status',1)->pluck('option', 'id')->all();
 
         //print_r($UserObj->permissions);
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         return view('admin.faceid.edit', compact('UserFaceObj','relationships', 'file_path'));
     }
 
@@ -359,7 +359,7 @@ class UserFacialIdController extends Controller
             $buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
 
             $relationships =  FacialRecoOption::where('status',1)->pluck('option', 'id')->all();
-            $file_path = env('APP_URL')."/storage/app";
+            $file_path = image_storage_domain();
             
             return view('admin.faceid.new', compact('faceids','relationships','relationship','name','option','unit','file_path','buildings','building'));
 
@@ -428,7 +428,7 @@ class UserFacialIdController extends Controller
             $buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
 
             $relationships =  FacialRecoOption::where('status',1)->pluck('option', 'id')->all();
-            $file_path = env('APP_URL')."/storage/app";
+            $file_path = image_storage_domain();
             
             return view('admin.faceid.index', compact('faceids','relationships','relationship','name','option','unit','file_path','buildings','building'));
     }
@@ -612,7 +612,7 @@ class UserFacialIdController extends Controller
             if(isset($MoreInfoObj)){
                 if($code == $MoreInfoObj->faceid_access_code){
                     $result['status'] = 1;
-                    $result['img'] =  $file_path = env('APP_URL')."/storage/app/".$faceidObj->face_picture;
+                    $result['img'] =  $file_path = image_storage_domain().$faceidObj->face_picture;
                     $result['64img'] = $faceidObj->face_picture_base64;
                 }
                 else{

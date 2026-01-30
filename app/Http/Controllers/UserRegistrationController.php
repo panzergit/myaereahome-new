@@ -63,7 +63,7 @@ class UserRegistrationController extends Controller
         $account_id = Auth::user()->account_id;
         $regObj = UserRegistrationRequest::find($id);
         $ownersObj = UserRegistrationRequest::where('role_id',2)->where('unit_no',$regObj->unit_no)->where('status',2)->get();
-        $img_full_path = env('APP_URL') . "/storage/app/";
+        $img_full_path = image_storage_domain();
         return view('admin.registration.view', compact('regObj','ownersObj','img_full_path'));
     }
 
@@ -75,7 +75,7 @@ class UserRegistrationController extends Controller
     public function approve($id)
     {
         $q ='';
-        $img_full_path = env('APP_URL') . "/storage/app/";
+        $img_full_path = image_storage_domain();
         $account_id = Auth::user()->account_id;
         $regObj = UserRegistrationRequest::find($id);
         $regObj->approved_date = date("Y-m-d H:i:s");

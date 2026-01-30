@@ -968,7 +968,7 @@ class DigitalAccessController extends Controller
       
         $account_id = Auth::user()->account_id;
         $faceids = UserFacialId::where('account_id',$account_id)->where('status',2)->orderBy('id','DESC')->paginate(env('PAGINATION_ROWS'));
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         $option = $request->input('option');
         if ($option != '') {
             if($option == 'doorName') {

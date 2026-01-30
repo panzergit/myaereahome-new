@@ -135,7 +135,7 @@ class UserGuideController extends Controller
         //
         $account_id = Auth::user()->account_id;
         $fileObj =UserGuide::find($id);
-        $img_full_path = env('APP_URL')."/storage/app/";
+        $img_full_path = image_storage_domain();
         return view('admin.userguide.edit', compact('fileObj','img_full_path'));
     }
 

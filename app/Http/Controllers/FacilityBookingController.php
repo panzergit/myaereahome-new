@@ -187,7 +187,7 @@ class FacilityBookingController extends Controller
         $slots = explode(",",$bookingObj->gettype->timing);
        // print_r($slots);
 
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         return view('admin.facilitybooking.edit', compact('bookingObj','file_path','slots'));
     }
 
@@ -361,7 +361,7 @@ class FacilityBookingController extends Controller
 
     public function submitlists()
     {
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         $user = Auth::user()->id;
         $defects = DefectSubmission::where('user_id',$user)->orderby('id','desc')->paginate(50); 
         return view('user.defectlists', compact('defects','file_path'));

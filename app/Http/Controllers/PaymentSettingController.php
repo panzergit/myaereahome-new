@@ -31,9 +31,6 @@ class PaymentSettingController extends Controller
         
             return view('admin.payment.edit', compact('PaymentObj'));
 
-            //$file_path = env('APP_URL')."/storage/app/";
-           // $properities = Property::where('id',$account_id)->paginate(50);   
-            //return view('admin.property.index', compact('properities','file_path'));
         }
         
     }
@@ -82,7 +79,7 @@ class PaymentSettingController extends Controller
     public function edit($id)
     {
         $PropertyObj = Property::find($id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
 
         return view('admin.property.edit', compact('PropertyObj','file_path'));
     }
@@ -164,7 +161,7 @@ class PaymentSettingController extends Controller
     public function access($id)
     {
         $PropertyObj = Property::find($id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
         $modules = Module::where('status',1)->orderBy('name','ASC')->get();
         $role_access = array();
         foreach($PropertyObj->Permissions as $permission){

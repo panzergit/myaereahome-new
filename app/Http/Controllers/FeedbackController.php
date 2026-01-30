@@ -192,7 +192,7 @@ class FeedbackController extends Controller
         $feedbackObj = FeedbackSubmission::find($id);
         $feedbackObj->view_status = 1;
         $feedbackObj->save();
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         //$feedbackObj = FeedbackSubmission::find($id);
         return view('admin.feedback.edit', compact('feedbackObj','file_path'));
     }

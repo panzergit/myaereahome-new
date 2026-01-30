@@ -61,7 +61,7 @@ class JoininspectionAppointment extends Model
         $user_rec   = User::find($userId);
         $prop_rec   = Property::find($accountId);
 
-        $logo = env('APP_URL')."/storage/app/". $prop_rec->company_logo;
+        $logo = image_storage_domain(). $prop_rec->company_logo;
         $companyname = $prop_rec->company_name;
         $companyemail = $prop_rec->company_email;
         $message = $boking_rec->email_message;

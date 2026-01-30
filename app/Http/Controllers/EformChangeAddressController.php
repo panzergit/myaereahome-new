@@ -113,7 +113,7 @@ class EformChangeAddressController extends Controller
         $eformObj->view_status = 1;
         $eformObj->save();
 
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         return view('admin.eform_address.edit', compact('eformObj','file_path'));
     }
 

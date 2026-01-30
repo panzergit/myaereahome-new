@@ -30,7 +30,7 @@ class UserLicensePlateController extends Controller
     public function index()
     {
         $q ='';
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
         $banners = HomeBanner::orderby('id','desc')->paginate(1000);   
         return view('admin.banner.index', compact('banners','file_path'));
     }

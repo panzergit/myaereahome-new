@@ -73,7 +73,7 @@
       $particular_count = $loggedInUser->noOfparticulars($account_id);
       $verification_count = $loggedInUser->noOfPendingVerificationPayment($account_id);
       $eform_total = $moveinout_count + $renovation_count + $regvehicle_count + $dooraccess_count + $mailling_count + $particular_count;
-      $img_full_path = env('APP_URL') . "/storage/app/";
+      $img_full_path = image_storage_domain();
       
          $logo_path = ($loggedInUser->propertyinfo && trim($loggedInUser->propertyinfo->company_logo)!="") 
             ? Storage::disk('s3')->url($loggedInUser->propertyinfo->company_logo) : null;

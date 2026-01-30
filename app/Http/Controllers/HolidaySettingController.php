@@ -36,9 +36,6 @@ class HolidaySettingController extends Controller
         
             return view('admin.holiday.edit', compact('HolidayObj'));
 
-            //$file_path = env('APP_URL')."/storage/app/";
-           // $properities = Property::where('id',$account_id)->paginate(50);   
-            //return view('admin.holoday.index', compact('properities','file_path'));
         }
         
     }
@@ -87,7 +84,7 @@ class HolidaySettingController extends Controller
     public function edit($id)
     {
         $HolidayObj = Property::find($id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
 
         return view('admin.holoday.edit', compact('HolidayObj','file_path'));
     }
@@ -126,7 +123,7 @@ class HolidaySettingController extends Controller
     public function access($id)
     {
         $HolidayObj = Property::find($id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
         $modules = Module::where('status',1)->orderBy('name','ASC')->get();
         $role_access = array();
         foreach($HolidayObj->Permissions as $permission){

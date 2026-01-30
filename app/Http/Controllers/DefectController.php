@@ -47,7 +47,7 @@ class DefectController extends Controller
         $account_id = Auth::user()->account_id;
         $defects = Defect::where('account_id',$account_id)->orderby('id','desc')->paginate(env('PAGINATION_ROWS')); 
         $visitor_app_url = env('VISITOR_APP_URL');
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         
         $defectBlocks = array_filter(array_unique(Defect::where('account_id',$account_id)->pluck('block_no')->toArray()));
         $blocks = !empty($defectBlocks) ? Building::select('id','building')->where('account_id',$account_id)->whereIn('id',$defectBlocks)->orderBy('building')->get()
@@ -181,7 +181,7 @@ class DefectController extends Controller
         $account_id = Auth::user()->account_id;
         $defects = Defect::where('account_id',$account_id)->where('status',0)->where('view_status',0)->where('created_at', '>=', $date)->orderby('id','desc')->paginate(env('PAGINATION_ROWS'));
         $visitor_app_url = env('VISITOR_APP_URL');
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
 
         return view('admin.defect.index', compact('defects','ticket','unit','name','status','option','visitor_app_url','file_path'));
     }
@@ -239,7 +239,7 @@ class DefectController extends Controller
         else
             $ticket_status = array('a' => '--ALL--',0=>'OPEN','3'=>'ON SCHEDULE',4=>'IN PROGRESS',1=>"CLOSED");
 
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         
         $defectStatus = $this->defectStatus;
         $inspectionStatus = $this->inspectionStatus;
@@ -272,7 +272,7 @@ class DefectController extends Controller
     {
         $user = Auth::user();
         $defectObj = Defect::find($id);
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         $defectStatus = $this->defectStatus;
         $isUserSignatureEmpty = is_null($user->signature);
         return view('admin.defect.defect_submission_update', compact('defectObj','defectStatus','file_path','isUserSignatureEmpty'));
@@ -349,7 +349,7 @@ class DefectController extends Controller
         else
             $ticket_status = array('a' => '--ALL--',0=>'OPEN','3'=>'ON SCHEDULE',4=>'IN PROGRESS',1=>"CLOSED");
 
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         
         $defectStatus = $this->defectStatus;
         $isUserSignatureEmpty = is_null($user->signature);
@@ -400,7 +400,7 @@ class DefectController extends Controller
         else
             $ticket_status = array('a' => '--ALL--',0=>'OPEN','3'=>'ON SCHEDULE',4=>'IN PROGRESS',1=>"CLOSED");
 
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         
         $defectStatus = $this->defectStatus;
         
@@ -658,7 +658,7 @@ class DefectController extends Controller
         $obj = new JoininspectionAppointment();
         $times = $obj->timeslots($user->account_id);	
         $defectStatus = $this->defectStatus;
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         $defectStatus = $this->defectStatus;
         $isUserSignatureEmpty = is_null($user->signature);
         
@@ -859,7 +859,7 @@ class DefectController extends Controller
 
     public function submitlists()
     {
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         $user = Auth::user()->id;
         $defects = DefectSubmission::where('user_id',$user)->orderby('id','desc')->paginate(50); 
         return view('user.defectlists', compact('defects','file_path'));

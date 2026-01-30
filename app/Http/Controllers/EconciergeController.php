@@ -21,7 +21,7 @@ class EconciergeController extends Controller
     public function index()
     {
         $q ='';
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
         $econcierges = Econcierge::paginate(50);   
         return view('admin.econcierge.index', compact('econcierges','file_path'));
     }
@@ -88,7 +88,7 @@ class EconciergeController extends Controller
     {
         //
         $econciergeObj = Econcierge::find($id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
 
         return view('admin.econcierge.edit', compact('econciergeObj','file_path'));
     }

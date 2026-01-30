@@ -270,7 +270,7 @@ class UserMoreInfoController extends Controller
             
             $roles = Role::orderby('name','asc')->pluck('name', 'id')->all(); 
             $properties = Property::pluck('company_name', 'id')->all();
-            $file_path = env('APP_URL')."/storage/app";
+            $file_path = image_storage_domain();
             return view('admin.users.employee', compact('users', 'q','roles','role','name','last_name','option','unit','file_path','property','properties','property_name','login_from', 'chartOne',
                 'chartTwo', 'chartThree', 'chartFour'));
         } 
@@ -315,7 +315,7 @@ class UserMoreInfoController extends Controller
             }
             //$users = User::Where('account_id', $account_id)->orwhereIn('id',$userids)->paginate(env('PAGINATION_ROWS'));
             $roles = Role::WhereRaw("CONCAT(',',account_id,',') LIKE ?", '%,'.$account_id .',%')->orWhere('id',3)->orWhere('type',1)->orderby('name','asc')->pluck('name', 'id')->all();
-            $file_path = env('APP_URL')."/storage/app";
+            $file_path = image_storage_domain();
             session()->forget('searchpage');
             session()->forget('search_url');
             session()->forget('current_page');
@@ -750,7 +750,7 @@ class UserMoreInfoController extends Controller
 
 
         //print_r($UserObj->permissions);
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         $all_modules = Module::where('status',1)->where('type',2)->orderBy('orderby','ASC')->get();
        
         $modules =array();
@@ -935,7 +935,7 @@ class UserMoreInfoController extends Controller
         }
 
         //print_r($UserObj->permissions);
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         $all_modules = Module::where('status',1)->where('type',2)->orderBy('orderby','ASC')->get();
        
         $modules =array();
@@ -1390,7 +1390,7 @@ class UserMoreInfoController extends Controller
             }
             $user_access[$user->id] = $role_access;
         }
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         $currentURL = url()->full();
         $page = explode("=",$currentURL);
         if(isset($page[1]) && $page[1]>0){
@@ -1445,7 +1445,7 @@ class UserMoreInfoController extends Controller
             }
             $user_access[$user->id] = $role_access;
         }
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         $currentURL = url()->full();
         $page = explode("=",$currentURL);
         if(isset($page[1]) && $page[1]>0){
@@ -1746,7 +1746,7 @@ class UserMoreInfoController extends Controller
         ->orderby('id','desc')->paginate(env('PAGINATION_ROWS'));
         $roles = Role::orderby('name','asc')->pluck('name', 'id')->all(); 
         $properties = Property::orderby('company_name', 'asc')->pluck('company_name', 'id')->all();
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         if($property >0){
             $property_result = Property::select('company_name')->where('id',$property)->first();
             $property_name = $property_result->company_name;
@@ -2008,7 +2008,7 @@ class UserMoreInfoController extends Controller
 
         $buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
         $roles = Role::WhereRaw("CONCAT(',',account_id,',') LIKE ?", '%,'.$account_id .',%')->orWhere('type',1)->orderby('name','asc')->pluck('name', 'id')->all();
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         //echo Request::url();
 
         session()->forget('current_page');
@@ -2189,7 +2189,7 @@ class UserMoreInfoController extends Controller
 
         $buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
         $roles = Role::orderby('name','asc')->pluck('name', 'id')->all();
-        $file_path = env('APP_URL')."/storage/app";
+        $file_path = image_storage_domain();
         //echo Request::url();
 
         session()->forget('current_page');
@@ -2475,7 +2475,7 @@ class UserMoreInfoController extends Controller
 
         $employment = EmploymentType::pluck('type', 'id')->all();
 
-        $img_full_path = env('APP_URL') . "/storage/app/";
+        $img_full_path = image_storage_domain();
 
         $allowance_types = AllowanceType::all();
         if (isset($UserObj->allowances)) {
@@ -2520,7 +2520,7 @@ class UserMoreInfoController extends Controller
 
         $UserObj = Auth::user();
 
-        $img_full_path = env('APP_URL') . "/storage/app/";
+        $img_full_path = image_storage_domain();
 
         return view('admin.users.editprofile', compact('UserObj', 'img_full_path'));
     }

@@ -44,7 +44,7 @@ class OpnController extends Controller
 		
 		$input = $request->all();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 
@@ -123,7 +123,7 @@ class OpnController extends Controller
 		
 		$input = $request->all();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 		$userinfo = UserMoreInfo::where('account_id',$UserObj->account_id)->where('user_id',$input['user_id'])->where('status',1)->first();
@@ -234,7 +234,7 @@ class OpnController extends Controller
 		
 		$input = $request->all();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 
@@ -366,7 +366,7 @@ class OpnController extends Controller
 		
 		$input = $request->all();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 
@@ -495,7 +495,7 @@ class OpnController extends Controller
 		
 		$input = $request->all();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 
@@ -600,7 +600,7 @@ class OpnController extends Controller
 		
 		$input = $request->all();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 
@@ -668,7 +668,7 @@ class OpnController extends Controller
 		
 		$input = $request->all();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 
@@ -753,7 +753,7 @@ class OpnController extends Controller
 		
 		$input = $request->all();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 
@@ -823,7 +823,7 @@ class OpnController extends Controller
 		
 		$input = $request->all();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 
@@ -891,7 +891,7 @@ class OpnController extends Controller
 		
 		$input = $request->all();
 		$details = array();
-		$file_path = env('APP_URL')."/storage/app";
+		$file_path = image_storage_domain();
 		$UserObj = User::find($input['user_id']);
 		$env_roles 	= env('USER_APP_ROLE');
 

@@ -60,7 +60,7 @@ $name = $name." ".Auth::user()->userinfo->last_name;
 
   $annoucement_notification = $permission->noOfAnnouncement($permission->id);
  
-   $img_full_path = env('APP_URL') . "/storage/app/";
+   $img_full_path = image_storage_domain();
 
 @endphp
 

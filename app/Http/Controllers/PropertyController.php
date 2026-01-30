@@ -36,19 +36,16 @@ class PropertyController extends Controller
     {
         if(Auth::user()->role_id ==1)
         {
-            $file_path = env('APP_URL')."/storage/app/";
+            $file_path = image_storage_domain();
             $properities = Property::paginate(100);   
             return view('admin.property.index', compact('properities','file_path'));
         }else{
             $account_id = Auth::user()->account_id;
             $PropertyObj = Property::find($account_id);
-            $file_path = env('APP_URL')."/storage/app/";
+            $file_path = image_storage_domain();
 
             return view('admin.property.edit', compact('PropertyObj','file_path'));
 
-            //$file_path = env('APP_URL')."/storage/app/";
-           // $properities = Property::where('id',$account_id)->paginate(50);   
-            //return view('admin.property.index', compact('properities','file_path'));
         }
         
     }
@@ -157,7 +154,7 @@ class PropertyController extends Controller
     public function edit($id)
     {
         $PropertyObj = Property::find($id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
         $services = ThirdPartyService::where('status',1)->pluck('name', 'id')->all();
 
         return view('admin.property.edit', compact('PropertyObj','file_path','services'));
@@ -173,7 +170,7 @@ class PropertyController extends Controller
     {
         $account_id = Auth::user()->account_id;
         $PropertyObj = Property::find($account_id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
         return view('admin.property.collection', compact('PropertyObj','file_path'));
     }
 
@@ -196,7 +193,7 @@ class PropertyController extends Controller
     {
         $account_id = Auth::user()->account_id;
         $PropertyObj = Property::find($account_id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
         return view('admin.property.inspection', compact('PropertyObj','file_path'));
     }
 
@@ -423,7 +420,7 @@ class PropertyController extends Controller
     public function access($id)
     {
         $PropertyObj = Property::find($id);
-        $file_path = env('APP_URL')."/storage/app/";
+        $file_path = image_storage_domain();
         $groups = ModuleGroup::where('status',1)->orderBy('orderby','ASC')->get();
 
         //$modules = Module::where('status',1)->orderBy('name','ASC')->get();
