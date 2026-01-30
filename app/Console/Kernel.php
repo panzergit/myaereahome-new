@@ -12,11 +12,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        $schedule->command('aereahome:test-command')->everyMinute();
         // $schedule->command('inspire')->hourly();
-        $schedule->command('send_invoice_notification:command')->everyMinute();
-        $schedule->command('announcement_user:command')->everyMinute();
-        $schedule->command('announcement:command')->everyFiveMinutes();
-        $schedule->command('aereahome:delete_inbox_messages')->monthlyOn(1, '02:00')->withoutOverlapping();
+        // $schedule->command('send_invoice_notification:command')->everyMinute();
+        // $schedule->command('announcement_user:command')->everyMinute();
+        // $schedule->command('announcement:command')->everyFiveMinutes();
+        // $schedule->command('aereahome:delete_inbox_messages')->monthlyOn(1, '02:00')->withoutOverlapping();
     }
 
     /**
