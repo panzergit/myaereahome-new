@@ -14,11 +14,6 @@ class Property extends Model
         'company_name','short_code','company_email','company_contact','company_address','management_company_name','management_company_addr','invoice_notes','mcst_code','third_party_option','manager_push_notification','enquiry_email','enquiry_contact','otp_option','qrcode_option','opn_secret_key','opn_password','sms_username','sms_password','security_option','company_logo','default_bg','inspection_bg','announcement_bg','defect_bg','faq_bg','feedback_bg','facilities_bg','takeover_bg','condodocs_bg','resident_fileupload_bg','visitor_management_bg','facial_reg_bg','takeover_timing','takeover_availability_start','inspection_timing','inspection_availability_start','takeover_blockout_days','inspection_blockout_days','takeover_notes','visitor_limit','public_holidays','visitors_allowed','inspection_notes','due_date','status','final_inspection_required','defect_max_limit','open_for_registration','manager_otp_option'
     ];
 
-    public function getCompanyLogoAttribute($value)
-    {
-        return is_primary_domain() ? upload_path($value) : $value;
-    }
-
     public function permissions(){
         return $this->hasMany('App\Models\v7\PropertyPermission','property_id');
     }

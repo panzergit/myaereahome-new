@@ -10,36 +10,6 @@ class Defect extends Model
      'account_id', 'ticket','ref_id','notes', 'user_id','unit_no','status','view_status','remarks','signature','inspection_owner_signature','inspection_team_signature','handover_owner_signature','handover_team_signature','inspection_status','handover_status','completion_date','block_no'
     ];
 
-    public function getSignatureAttribute($value)
-    {
-        if(empty($value)) return $value;
-        return is_primary_domain() ? upload_path($value) : $value;
-    }
-
-    public function getInspectionOwnerSignatureAttribute($value)
-    {
-        if(empty($value)) return $value;
-        return is_primary_domain() ? upload_path($value) : $value;
-    }
-
-    public function getInspectionTeamSignatureAttribute($value)
-    {
-        if(empty($value)) return $value;
-        return is_primary_domain() ? upload_path($value) : $value;
-    }
-
-    public function getHandoverOwnerSignatureAttribute($value)
-    {
-        if(empty($value)) return $value;
-        return is_primary_domain() ? upload_path($value) : $value;
-    }
-
-    public function getHandoverTeamSignatureAttribute($value)
-    {
-        if(empty($value)) return $value;
-        return is_primary_domain() ? upload_path($value) : $value;
-    }
-
     public function property(){
         return $this->belongsTo('App\Models\v7\Property','account_id');
     }
