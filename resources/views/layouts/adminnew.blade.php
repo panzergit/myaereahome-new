@@ -76,7 +76,7 @@
       $img_full_path = image_storage_domain();
       
          $logo_path = ($loggedInUser->propertyinfo && trim($loggedInUser->propertyinfo->company_logo)!="") 
-            ? Storage::disk('s3')->url($loggedInUser->propertyinfo->company_logo) : null;
+            ? Storage::disk('s3')->url(upload_path($loggedInUser->propertyinfo->company_logo)) : null;
 
       @endphp
       <section class="headersec">
