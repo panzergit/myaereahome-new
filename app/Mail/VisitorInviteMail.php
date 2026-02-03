@@ -27,7 +27,6 @@ class VisitorInviteMail extends Mailable
      */
     public function build()
     {
-        $viewData = $this->emailData;
         return $this->replyTo("no-reply@panzerplayground.com", 'Aerea Home') // Set Reply-To
             ->subject($this->emailData['subject']) // Email subject
             ->view('emails.visitorinvite', $this->emailData['viewData']); // Blade template for email body

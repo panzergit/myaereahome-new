@@ -17,16 +17,10 @@ class VisitorQRCodeMail extends Mailable
         $this->emailData = $eData;
     }
 
-    
-
     public function build()
     {
-        $viewData = $this->emailData;
         return $this->replyTo("no-reply@panzerplayground.com", 'Aerea Home') // Set Reply-To
-                    ->subject($this->emailData['subject']) // Email subject
-                    ->view('emails.visitorqrcode')// Email view file
-                    ->with($viewData);
+            ->subject($this->emailData['subject']) // Email subject
+            ->view('emails.visitorqrcode', $this->emailData['viewData']); // Blade template for email body
     }
-
-   
 }

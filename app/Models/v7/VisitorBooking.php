@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Services\PHPMailerService;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\VisitorInviteMail;
+use App\Mail\VisitorQRCodeMail;
 use Illuminate\Support\Facades\Mail;
 
 class VisitorBooking extends Model
@@ -92,10 +93,10 @@ class VisitorBooking extends Model
         $user_rec   = User::find($userId);
         $prop_rec   = Property::find($boking_rec->account_id);
       
-        $logo = Storage::url(upload_path($prop_rec->company_logo));
+        $logo = env('MAIN_URL')."/storage/app/". $prop_rec->company_logo;
         $companyname = $prop_rec->company_name;
         $companyemail = $prop_rec->company_email;
-        $qrcode_eurl = Storage::url(upload_path("visitorqr/".$qr_code));
+        $qrcode_eurl = env('APP_URL')."/assets/visitorqr/".$qr_code;
         $ticket = $boking_rec->ticket;
         $property = $boking_rec->propertyinfo->company_name;
         $invited_by = $user_rec->name;
@@ -157,6 +158,57 @@ class VisitorBooking extends Model
 
             @mail($email, $subject, $emailcontent, $headers);
            
+            
+    }
+
+    public static function qrcode_emailnew($bookId,$userId,$name,$email,$mobile,$vehicle_no,$qr_code,$id_number){
+
+       
+        $boking_rec   = VisitorBooking::find($bookId);
+        $user_rec   = User::find($userId);
+        $prop_rec   = Property::find($boking_rec->account_id);
+      
+        $logo = image_storage_domain().'/'.$prop_rec->company_logo;
+        $companyname = $prop_rec->company_name;
+        $companyemail = $prop_rec->company_email;
+        $qrcode_eurl = image_storage_domain()."/visitorqr/".$qr_code;
+        $ticket = $boking_rec->ticket;
+        $property = $boking_rec->propertyinfo->company_name;
+        $invited_by = Crypt::decryptString($user_rec->name);
+        
+        $date_of_visit = date('d/m/y',strtotime($boking_rec->visiting_date));
+        $unit = isset($boking_rec->user->userinfo->getunit->unit)?$boking_rec->user->userinfo->getunit->unit:'';
+        $purpose = isset($boking_rec->visitpurpose->visiting_purpose)?$boking_rec->visitpurpose->visiting_purpose:'';
+	
+			$companyname = 'Aerea Home';
+            $unitno = ($unit !='')?Crypt::decryptString($unit):'';
+
+           try
+            {
+                Mail::to($email)->send(
+                    new VisitorQRCodeMail([
+                        'subject' => $companyname .': Visitor Pre Registration QR Code',
+                        'viewData' => [
+                            'logo' => $logo,
+                            'companyname' => $companyname,
+                            'ticket' => $ticket,
+                            'property' => $property,
+                            'invited_by' => $invited_by,
+                            'date_of_visit' => $date_of_visit,
+                            'unit' => $unitno,
+                            'purpose' => $purpose,
+                            'name' => $name,
+                            'email' => $email,
+                            'mobile' => $mobile,
+                            'vehicle_no' => $vehicle_no,
+                            'id_number' => $id_number,
+                            'qrcode_eurl' => $qrcode_eurl,
+                        ]
+                    ])
+                );
+            } catch (\Throwable $e) {
+                \Log::error('SMTP Mail Error: ' . $e->getMessage());
+            }
             
     }
 

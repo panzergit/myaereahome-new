@@ -140,6 +140,7 @@
 																 <span style="color: #566ff7; text-decoration: underline;"> {{$email}} </span>
 															</td>
 														</tr>
+														@if($id_number !='')
 														<tr>
 															<td style="font-size:14px;color:#454545; width:40%;">
 																ID Number : 
@@ -148,6 +149,7 @@
 																 <span style="color: #566ff7; text-decoration: underline;"> {{$id_number}} </span>
 															</td>
 														</tr>
+														@endif
 													
 													</table>
 												</td>
