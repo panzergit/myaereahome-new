@@ -8,6 +8,7 @@ use App\Models\v7\User;
 use App\Models\v7\UserMoreInfo;
 use App\Mail\OTPEmail;
 use Illuminate\Database\Eloquent\Model;
+use App\Services\PHPMailerService;
 
 class LoginOTP extends Model
 {

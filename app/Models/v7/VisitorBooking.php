@@ -3,14 +3,12 @@
 namespace App\Models\v7;
 
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Contracts\Encryption\DecryptException;
-use DateTime;
 use Illuminate\Database\Eloquent\Model;
-use App\Services\PHPMailerService;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\VisitorInviteMail;
 use App\Mail\VisitorQRCodeMail;
 use Illuminate\Support\Facades\Mail;
+use Carbon\Carbon;
 
 class VisitorBooking extends Model
 {
@@ -45,10 +43,10 @@ class VisitorBooking extends Model
 
     public function ticketgen($code)
     {
-        $date = new DateTime('now');
-        $autonumver = rand(00000, 99999);	
-        return $code.$date->format('ymd') .$autonumver;
+        $autonumber = random_int(10000, 99999);
+        return $code . Carbon::now()->format('ymd') . $autonumber;
     }
+
 
     public static function invite_emailnew($bookId,$userId,$accountId,$email,$name)
     {
