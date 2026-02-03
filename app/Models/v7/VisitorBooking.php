@@ -8,6 +8,8 @@ use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\PHPMailerService;
 use Illuminate\Support\Facades\Storage;
+use App\Mail\VisitorInviteMail;
+use Illuminate\Support\Facades\Mail;
 
 class VisitorBooking extends Model
 {
@@ -47,7 +49,8 @@ class VisitorBooking extends Model
         return $code.$date->format('ymd') .$autonumver;
     }
 
-    public static function invite_emailnew($bookId,$userId,$accountId,$email,$name){
+    public static function invite_emailnew($bookId,$userId,$accountId,$email,$name)
+    {
 
         $boking_rec   = VisitorBooking::find($bookId);
         $user_rec   = User::find($userId);
@@ -56,56 +59,30 @@ class VisitorBooking extends Model
         $logo = Storage::url(upload_path($prop_rec->company_logo));
         $companyname = $prop_rec->company_name;
         $companyemail = $prop_rec->company_email;
-        $message = $boking_rec->email_message;
         $inviteurl = url("visitors/pre-registration/".$boking_rec->ticket);
         $invited_by = Crypt::decryptString($user_rec->name);
         $date = date('d-M-y',strtotime($boking_rec->visiting_date));
-        		
-			$companyname = 'Aerea Home';
-        /*
-			$adminemail = 'hello@myaereahome.com';
-            $replyto = 'no-reply@myaereahome.com';
-           
-			
-            $emailcontent = file_get_contents(public_path().'/emails/visitorinvite.php');
-            
-            $emailcontent = str_replace('#logo#', $logo, $emailcontent);
-            //$emailcontent = str_replace('#visitor#', $name, $emailcontent);
-            $emailcontent = str_replace('#name#', $user_rec->name, $emailcontent);
-            $emailcontent = str_replace('#date#', $date, $emailcontent);
-			$emailcontent = str_replace('#companyname#', $companyname, $emailcontent);
-            $emailcontent = str_replace('#message#', $message, $emailcontent);
-            $emailcontent = str_replace('#companyemail#', $companyemail, $emailcontent);
-            $emailcontent = str_replace('#url#', $inviteurl, $emailcontent);
-			$headers = 'From: '.$companyname.' <'.$adminemail.'/> ' . "\r\n" ;
-			$headers .='Reply-To: '. $replyto . "\r\n" ;
-			$headers .='X-Mailer: PHP/' . phpversion();
-			$headers .= "MIME-Version: 1.0\r\n";
-            $headers .= "Content-type: text/html; charset=iso-8859-1\r\n"; 
-
-            @mail($email, $subject, $emailcontent, $headers);*/
-           
-			$subject = $companyname .': Visitor Pre Registration';
-
-            $service = app(PHPMailerService::class);
-			$returnMailData = $service->sendMail(
-                trim($email),
-                $subject,
-                'emails.visitorinvite', 
-                [
-                    'logo' => $logo,
-					'companyname' => $companyname,
-					'name' => $invited_by,
-                    'date' => $date,
-					'message' => $message,
-                    'companyemail' => $companyemail,
-					'url' => $inviteurl,
-
-                ]
+        $companyname = 'Aerea Home';
+        
+        try
+        {
+            Mail::to($email)->send(
+                new VisitorInviteMail([
+                    'subject' => $companyname .': Visitor Pre Registration',
+                    'viewData' => [
+                        'logo' => $logo,
+                        'companyname' => $companyname,
+                        'name' => $invited_by,
+                        'date' => $date,
+                        'message' => $boking_rec->email_message,
+                        'companyemail' => $companyemail,
+                        'url' => $inviteurl
+                    ]
+                ])
             );
-			
-           
-            
+        } catch (\Throwable $e) {
+            \Log::error('SMTP Mail Error: ' . $e->getMessage());
+        }
     }
 
     public function qrcode_email($bookId,$userId,$name,$email,$mobile,$vehicle_no,$qr_code,$id_number){

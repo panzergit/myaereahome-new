@@ -11,7 +11,7 @@ class PHPMailerService
         $body = view($viewName, $viewData)->render();
         try {
             Mail::send([], [], function ($m) use ($toEmail,$subject,$body) {
-                $m->to($toEmail)->subject($subject)->setBody($body, 'text/html');
+                $m->to($toEmail)->subject($subject);
             });
             \Log::info("Mailgun executed");
         } catch (Exception $e) {
