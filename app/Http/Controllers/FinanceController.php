@@ -121,7 +121,7 @@ class FinanceController extends Controller
         }else{
                 session()->forget('page');
         }
-        $visitor_app_url = env('VISITOR_APP_URL');
+        $visitor_app_url = url('visitors');
         //$shares = FinanceShareSetting::paginate(150);   
         return view('admin.finance.index',compact('invoices','unit','status','invoice_no','batch_file_no','option','month','visitor_app_url'));
     }
@@ -141,7 +141,7 @@ class FinanceController extends Controller
         }else{
                 session()->forget('page');
         }
-        $visitor_app_url = env('VISITOR_APP_URL');
+        $visitor_app_url = url('visitors');
         //$shares = FinanceShareSetting::paginate(150);   
         return view('admin.finance.invoices',compact('invoices','unit','status','invoice_no','batch_file_no','option','month','visitor_app_url','info_id'));
     }
@@ -2212,7 +2212,7 @@ class FinanceController extends Controller
             }
         }*/
            
-            $visitor_app_url = env('VISITOR_APP_URL');
+            $visitor_app_url = url('visitors');
 
              return view('admin.finance.invoices',compact('invoices','unit','status','invoice_no','batch_file_no','option','month','visitor_app_url','info_id'));
         
@@ -2269,7 +2269,7 @@ class FinanceController extends Controller
     }*/
         
        
-        $visitor_app_url = env('VISITOR_APP_URL');
+        $visitor_app_url = url('visitors');
 
          return view('admin.finance.index',compact('invoices','batch_file_no','option','month','visitor_app_url'));
         
@@ -2325,7 +2325,7 @@ class FinanceController extends Controller
             $return_url = 'opslogin/invoice/lists/'.$invoiceObj->info_id;
         }
 
-        $visitor_app_url = env('VISITOR_APP_URL');
+        $visitor_app_url = url('visitors');
 
         return view('admin.finance.payment', compact('invoiceObj','amount_received','balance_amount','return_url','paymentHistory','visitor_app_url'));
     }
@@ -2875,7 +2875,7 @@ class FinanceController extends Controller
         }else{
                 session()->forget('page');
         }
-        $visitor_app_url = env('VISITOR_APP_URL');
+        $visitor_app_url = url('visitors');
         $buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
         $property_info = Property::where('id',$account_id)->first();
 		$file_path = image_storage_domain();
@@ -3007,7 +3007,7 @@ class FinanceController extends Controller
             $buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
             $property_info = Property::where('id',$account_id)->first();
             $file_path = image_storage_domain();
-            $visitor_app_url = env('VISITOR_APP_URL');
+            $visitor_app_url = url('visitors');
             session()->put('current_page', 'search_page' );
             $search_url = $_SERVER['REQUEST_URI'];
             session()->put('search_url', $search_url );

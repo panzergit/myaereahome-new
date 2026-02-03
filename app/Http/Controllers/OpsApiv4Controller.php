@@ -8697,7 +8697,7 @@ class OpsApiv4Controller extends Controller
 			$record['lists']['rectified_in_days']=($days >0)?$days:null;
 			$record['lists']['rectification_start_date']=($defect->inspection_owner_timestamp !='0000-00-00 00:00:00' &&$defect->inspection_owner_timestamp !='' )?date('d/m/y',strtotime($defect->inspection_owner_timestamp)):null;
 			$record['lists']['inspection_owner_timestamp']=($defect->inspection_owner_timestamp !='0000-00-00 00:00:00' &&$defect->inspection_owner_timestamp !='' )?$defect->inspection_owner_timestamp:null;
-			$record['lists']['pdf_link'] = env('VISITOR_APP_URL')."/generate-pdf/$defect->id";
+			$record['lists']['pdf_link'] = url("visitors/generate-pdf/$defect->id");
 
 			$record['lists']['created_at'] = date('d/m/y',strtotime($defect->created_at));
 			$record['lists']['updated_at'] = date('d/m/y',strtotime($defect->updated_at));
@@ -9058,11 +9058,11 @@ class OpsApiv4Controller extends Controller
             $handoverTeamUser = User::find($defect->handover_team_user)->name ?? null;
             $defect->handover_team_user = $handoverTeamUser!=null ? Crypt::decryptString($handoverTeamUser) : null;
             $defect->handover_team_timestamp = $defect->handover_team_timestamp;
-			$defect->pdf_link = env('VISITOR_APP_URL')."/generate-pdf/$defect->id";
+			$defect->pdf_link = url("visitors/generate-pdf/$defect->id");
 			if($defect->ref_id !=''){
 				$refRecord = Defect::where('ticket',$defect->ref_id)->first();
 				if($refRecord)
-					$defect->ref_pdf_link = env('VISITOR_APP_URL')."/generate-pdf/$refRecord->id";
+					$defect->ref_pdf_link = url("visitors/generate-pdf/$refRecord->id");
 				else
 					$defect->ref_pdf_link = null;
 			}else{
@@ -19999,7 +19999,7 @@ class OpsApiv4Controller extends Controller
 				$data['recent_payment_transaction'] = $Unitinvoice->payments;
 				$data['payment_received_history'] = $paymentHistory;
 
-				$visitor_app_url = env('VISITOR_APP_URL')."invoice-pdf/";
+				$visitor_app_url = url("visitors/invoice-pdf/");
 
 				return response()->json(['data'=>$data,'file_path'=>$visitor_app_url,'response' => 1, 'message' => 'Success']);
 			}
@@ -20121,12 +20121,11 @@ class OpsApiv4Controller extends Controller
 						$record['count'] = isset($inv->invoices)?$inv->invoices->count():0;
 						$record['created_by'] = isset($inv->admininfo->name)?Crypt::decryptString($inv->admininfo->name):null;
 						$record['created_date'] = date('d/m/y',strtotime($inv->created_at));
-						$record['pdf_path'] = env('VISITOR_APP_URL')."/batchinvoices/".$inv->id;
+						$record['pdf_path'] = url("visitors/batchinvoices/".$inv->id);
 						$data[] = $record;
 					}
 				}
-				$visitor_app_url = env('VISITOR_APP_URL')."/batchinvoices/";
-
+				$visitor_app_url = url("visitors/batchinvoices/");
 				return response()->json(['data'=>$data,'file_path'=>$visitor_app_url,'response' => 1, 'message' => 'Success']);
 			}
 	}
@@ -20178,7 +20177,7 @@ class OpsApiv4Controller extends Controller
 							$data[] = $record;
 						}
 					}
-					$visitor_app_url = env('VISITOR_APP_URL')."/batchinvoices/";
+					$visitor_app_url = url("visitors/batchinvoices/");
 					return response()->json(['data'=>$data,'file_path'=>$visitor_app_url,'response' => 1, 'message' => 'Success']);
 
 				}
@@ -20221,7 +20220,7 @@ class OpsApiv4Controller extends Controller
 			else{
 				$account_id = $adminObj->account_id;
 				$invoices = FinanceInvoice::where('account_id',$account_id)->where('info_id',$batch_id)->orderby('id','desc')->get(); 
-				$visitor_app_url = env('VISITOR_APP_URL')."/invoice-pdf/";
+				$visitor_app_url = url("visitors/invoice-pdf/");
 				$buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
 
 				$data =array();
@@ -20462,7 +20461,7 @@ class OpsApiv4Controller extends Controller
 				$dateS = date("Y-m-d",strtotime(Carbon::now()->startOfMonth()->subMonth(12)));
        			$invoices = FinanceInvoice::where('account_id',$account_id)->where('invoice_date', '>=', $dateS)->orderby('id','desc')->get(); 
 				
-				$visitor_app_url = env('VISITOR_APP_URL')."/invoice-pdf/";
+				$visitor_app_url = url('visitors/invoice-pdf/');
 				$buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
 
 				$data =array();
@@ -20636,7 +20635,7 @@ class OpsApiv4Controller extends Controller
 						$data[] = $record;
 					} 
 					
-					$visitor_app_url = env('VISITOR_APP_URL')."invoice-pdf/";
+					$visitor_app_url = url('visitors/invoice-pdf/');
 					$buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
 
 					return response()->json(['data'=>$data,'file_path'=>$visitor_app_url,'buildings'=>$buildings,'response' => 1, 'message' => 'Success']);
@@ -22755,7 +22754,7 @@ class OpsApiv4Controller extends Controller
 		}
 		else if($type== 60 && isset($rm_permission) && $rm_permission->view==1){
 			$invoices = FinanceInvoice::where('account_id',$account_id)->where('unit_no',$unit)->orderBy('id','DESC')->get();
-			$visitor_app_url = env('VISITOR_APP_URL')."invoice-pdf/";
+			$visitor_app_url = url("visitors/invoice-pdf/");
 			$data =array();
 				foreach ($invoices as $k => $invoice) {
 					$record =array();

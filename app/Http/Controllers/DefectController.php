@@ -46,7 +46,7 @@ class DefectController extends Controller
         $ticket  =  $name = $status = $option = $unit = $fromdate = $todate = $indays = '';
         $account_id = Auth::user()->account_id;
         $defects = Defect::where('account_id',$account_id)->orderby('id','desc')->paginate(env('PAGINATION_ROWS')); 
-        $visitor_app_url = env('VISITOR_APP_URL');
+        $visitor_app_url = url('visitors');
         $file_path = image_storage_domain();
         
         $defectBlocks = array_filter(array_unique(Defect::where('account_id',$account_id)->pluck('block_no')->toArray()));
@@ -180,7 +180,7 @@ class DefectController extends Controller
         $date = Carbon::now()->subDays(7);
         $account_id = Auth::user()->account_id;
         $defects = Defect::where('account_id',$account_id)->where('status',0)->where('view_status',0)->where('created_at', '>=', $date)->orderby('id','desc')->paginate(env('PAGINATION_ROWS'));
-        $visitor_app_url = env('VISITOR_APP_URL');
+        $visitor_app_url = url('visitors');
         $file_path = image_storage_domain();
 
         return view('admin.defect.index', compact('defects','ticket','unit','name','status','option','visitor_app_url','file_path'));
@@ -984,7 +984,7 @@ class DefectController extends Controller
         $types = DefectType::where('account_id',$account_id)->orderBy('defect_type')->get();
         $defectStatus = $this->defectStatus;
         $defactsByLocations = $totalDefects = $totalNewDefects = $totalInprogressDefects = $totalScheduledDefects = $totalCompletedDefects ='';
-            $visitor_app_url = env('VISITOR_APP_URL');
+            $visitor_app_url = url('visitors');
             return view('admin.defect.index', compact('defects', 'blocks', 'dates','defectStatus','defactsByLocations', 'totalDefects', 'totalNewDefects', 'totalInprogressDefects', 'totalScheduledDefects', 'totalCompletedDefects','ticket','unit','name','units','status','option','fromdate','todate','visitor_app_url','locations','types','defectStatus','indays')); 
     }
 

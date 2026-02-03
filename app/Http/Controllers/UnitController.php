@@ -591,7 +591,7 @@ class UnitController extends Controller
     {
         $account_id = Auth::user()->account_id;
         $file_path = image_storage_domain();
-        $visitor_app_url = env('VISITOR_APP_URL');
+        $visitor_app_url = url('visitors');
         $app_user_lists = explode(",",env('USER_APP_ROLE'));
         session()->forget('searchpage');
         session()->forget('search_url');

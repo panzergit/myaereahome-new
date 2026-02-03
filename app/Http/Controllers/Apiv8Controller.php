@@ -274,8 +274,7 @@ class Apiv8Controller extends Controller
 					if ($request->file('contract') != null && $input['role_id']==29) {
 						$input['contract_file'] = remove_upload_path($request->file('contract')->store(upload_path('user_request')));
 					}
-					$user = UserRegistrationRequest::create($input);
-					//return redirect()->route('thankyou', ['status' => 1]);
+					UserRegistrationRequest::create($input);
 					$data = response()->json(['response' => 2, 'message' => 'Registration Successful']);				
 				}
 			}
@@ -3678,11 +3677,11 @@ class Apiv8Controller extends Controller
         $handoverTeamUser = User::find($record->handover_team_user)->name ?? null;
         $record->handover_team_user = $handoverTeamUser!=null ? Crypt::decryptString($handoverTeamUser) : null;
         $record->handover_team_timestamp = $record->handover_team_timestamp;
- 		$record->pdf_link = env('VISITOR_APP_URL')."/generate-pdf/$record->id";
+ 		$record->pdf_link = url("generate-pdf/$record->id");
 		if($record->ref_id !=''){
 			$refRecord = Defect::where('ticket',$record->ref_id)->first();
 			if($refRecord)
-				$record->ref_pdf_link = env('VISITOR_APP_URL')."/generate-pdf/$refRecord->id";
+				$record->ref_pdf_link = url("generate-pdf/$refRecord->id");
 			else
 				$record->ref_pdf_link = null;
 		}else{
@@ -8093,7 +8092,7 @@ class Apiv8Controller extends Controller
 		}
 		$invoiceIds = array();
 		$invoice = FinanceInvoice::where('account_id',$input['property'])->where('unit_no',$userObj->unit_no)->where('user_access_status',1)->orderby('id','desc')->first(); 
-		$visitor_app_url = env('VISITOR_APP_URL');
+		
 		if(isset($invoice)){
 				$data = array();
 				$invoiceIds[] =$invoice->id;
@@ -8126,7 +8125,7 @@ class Apiv8Controller extends Controller
 				$balance_amount = ($invoice->payable_amount - $amount_received);
 				$data['amount_received'] =  number_format($amount_received,2);
 				$data['balance_amount'] =  number_format($balance_amount,2);
-				$data['pdf_file'] = $visitor_app_url."/invoice-pdf/".$invoice->id;
+				$data['pdf_file'] = url("visitors/invoice-pdf/".$invoice->id);
 				if(isset($invoice->status)){
 					if($invoice->status !=3){
 					   $financeObj = new \App\Models\v7\FinanceInvoice();
@@ -8160,7 +8159,7 @@ class Apiv8Controller extends Controller
 		$due_invoices[] = isset($invoice->id)?$invoice->id:null;
 
 		$invoices = FinanceInvoice::where('account_id',$input['property'])->where('unit_no',$userObj->unit_no)->whereNotIn('id',$due_invoices)->where('user_access_status',1)->orderby('id','desc')->get(); 
-		$visitor_app_url = env('VISITOR_APP_URL');
+		
 		if(isset($invoices)){
 			foreach($invoices as $invoice){
 				$data = array();
@@ -8194,7 +8193,7 @@ class Apiv8Controller extends Controller
 				$data['amount_received'] =  number_format($amount_received,2);
 				$data['balance_amount'] =  number_format($balance_amount,2);
 
-				$data['pdf_file'] = $visitor_app_url."/invoice-pdf/".$invoice->id;
+				$data['pdf_file'] = url("visitors/invoice-pdf/".$invoice->id);
 				if(isset($invoice->status)){
 					if($invoice->status !=3){
 					   $financeObj = new \App\Models\v7\FinanceInvoice();
@@ -8360,8 +8359,6 @@ class Apiv8Controller extends Controller
         //$amount_received = number_format($amount_received,2);
 		$balance_amount = ($Unitinvoice->payable_amount - $amount_received);
 
-		$visitor_app_url = env('VISITOR_APP_URL');
-
 		$data = array();
 		if(isset($Unitinvoice)){
 			$data['invoice_no'] = $Unitinvoice->invoice_no;
@@ -8369,7 +8366,7 @@ class Apiv8Controller extends Controller
 			$data['due_date'] = $Unitinvoice->due_date;
 			$data['batch_no'] = $Unitinvoice->batch_file_no;
 			$data['invoice_amount'] = $Unitinvoice->invoice_amount;
-			$data['pdf_file'] = $visitor_app_url."/invoice-pdf/".$Unitinvoice->id;
+			$data['pdf_file'] = url("visitors/invoice-pdf/".$Unitinvoice->id);
 			
 			//$data['details'] = $invoice->paymentdetails;
 		}
@@ -8570,8 +8567,6 @@ class Apiv8Controller extends Controller
 			$invoices = FinanceInvoice::where('account_id',$input['property'])->where('unit_no',$userObj->unit_no)->where('user_access_status',1)->orderby('id','desc')->get(); 
 		}
 		
-		
-		$visitor_app_url = env('VISITOR_APP_URL');
 		if(isset($invoices)){
 			foreach($invoices as $invoice){
 				$data = array();
@@ -8604,7 +8599,7 @@ class Apiv8Controller extends Controller
 				$balance_amount = ($invoice->payable_amount - $amount_received);
 				$data['amount_received'] =  number_format($amount_received,2);
 				$data['balance_amount'] =  number_format($balance_amount,2);
-				$data['pdf_file'] = $visitor_app_url."/invoice-pdf/".$invoice->id;
+				$data['pdf_file'] = url("visitors/invoice-pdf/".$invoice->id);
 				if(isset($invoice->status)){
 					if($invoice->status==1)
 					   $status= "Payment Pending";
@@ -11462,19 +11457,10 @@ class Apiv8Controller extends Controller
 		{
 			$property = Property::find($bookingObj->account_id);
 
-			$today = Carbon::now()->format('Y-m-d');
 			$visiting_time = Carbon::now()->format('Y-m-d H:i:s');
-			$qrcode_path = env('APP_URL').'/assets/visitorqr/';
-			/*echo $bookingObj->visiting_start_time;
-			echo  " ";
-			echo $visiting_time;
-			echo  " ";
-			echo $bookingObj->visiting_end_time; */
+			
 			if(isset($bookingObj->visiting_date) && $bookingObj->visiting_start_time <= $visiting_time && $bookingObj->visiting_end_time >= $visiting_time)
 			{
-				//if(isset($bookingObj->visiting_date) && $bookingObj->visiting_date >= $today){
-
-				//$env_max_scan_count = env('MAX_QR_SCAN_COUNT');
 				$env_max_scan_count = $bookingObj->qr_scan_limit;
 
 				$vid = $input['vid'];

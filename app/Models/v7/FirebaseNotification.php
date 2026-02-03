@@ -6,10 +6,7 @@ use Illuminate\Support\Facades\Log;
 
 use Mail;
 use App\Models\v7\User;
-
 use Illuminate\Database\Eloquent\Model;
-
-
 
 class FirebaseNotification extends Model
 {
@@ -88,8 +85,8 @@ class FirebaseNotification extends Model
             'additional_data'    => $data,
 			'to'    			 => 'ios',
 			'from'				 => 'staging'
-
         ];
+		
         $fields_string = json_encode($fields);
         $ch = curl_init();
 		$url = env('FIREBASE_URL');

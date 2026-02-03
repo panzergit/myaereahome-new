@@ -89,7 +89,7 @@ class VisitorsApiV8Controller extends Controller
         $input['unit_no'] = $UserObj->unit_no;
         $visitingTypeObj = VisitorType::find($input['visiting_purpose']);
 
-        $propObj = property::find($UserObj->account_id);
+        $propObj = Property::find($UserObj->account_id);
         $input['ticket'] = $ticket->ticketgen($propObj->short_code);
 
         $todate = (!empty($visitingTypeObj->end_date_required) && $visitingTypeObj->end_date_required == 1) ? $input['visiting_to_date'] : $input['visiting_date'];
@@ -287,7 +287,7 @@ class VisitorsApiV8Controller extends Controller
         $userid = $request->user;
         $UserObj = User::find($userid);
 
-        $file_path =  url('/assets/visitorqr/');
+        $file_path = image_storage_domain() . '/visitorqr/';
 
         $records = VisitorBooking::where('user_id', $userid)->where('unit_no', $UserObj->unit_no)->orderby('id', 'desc')->get();
         $data = array();
@@ -353,7 +353,7 @@ class VisitorsApiV8Controller extends Controller
         $userid = $request->user_id;
         $UserObj = User::find($userid);
 
-        $file_path = url('assets/visitorqr/');
+        $file_path = image_storage_domain() . '/visitorqr/';
 
         $record = VisitorBooking::where('id', $bookid)->first();
         if (empty($record)) return response()->json(['response' => 200, 'message' => 'Booking not found']);
@@ -440,14 +440,14 @@ class VisitorsApiV8Controller extends Controller
         }
 
         $input = $request->all();
-        $details = array();
+        $details = [];
         $UserObj = User::find($input['user_id']);
 
         $ticket = new \App\Models\v7\VisitorBooking();
         $visitingTypeObj = VisitorType::find($input['visiting_purpose']);
-        if (empty($visitingTypeObj)) return response()->json(['response' => 200, 'message' => 'Visiting purpose not found']);
+        if(!$visitingTypeObj) return response()->json(['response' => 200, 'message' => 'Visiting purpose not found']);
 
-        $propObj = property::find($UserObj->account_id);
+        $propObj = Property::find($UserObj->account_id);
         $input['ticket'] = $ticket->ticketgen($propObj->short_code);
 
         $todate = ($visitingTypeObj->end_date_required == 1) ? $input['visiting_to_date'] : $input['visiting_date'];
@@ -651,9 +651,7 @@ class VisitorsApiV8Controller extends Controller
             $locations = explode(",", $device_info->locations);
             if (!in_array($unitObj->building_id, $locations)) return response()->json(['code' => 99999, 'msg' => 'Permission denied']);
 
-            $today = Carbon::now()->format('Y-m-d');
             $visiting_time = Carbon::now()->format('Y-m-d H:i:s');
-            $qrcode_path = url('/assets/visitorqr/');
             
             if (isset($bookingObj->visiting_date) && $bookingObj->visiting_start_time <= $visiting_time && $bookingObj->visiting_end_time >= $visiting_time) {
                 $env_max_scan_count = $bookingObj->qr_scan_limit;
@@ -821,8 +819,6 @@ class VisitorsApiV8Controller extends Controller
             if (!in_array($unitObj->building_id, $locations)) return response()->json(['code' => 99999, 'msg' => 'Permission denied']);
 
             $today = Carbon::now()->format('Y-m-d');
-            $visiting_time = Carbon::now()->format('Y-m-d H:i:s');
-            $qrcode_path = url('/assets/visitorqr/');
             
             if (isset($bookingObj->visiting_date) && $bookingObj->visiting_date >= $today) {
 

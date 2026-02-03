@@ -41,7 +41,7 @@ class EformDoorAccessController extends Controller
 
         $ticket  =  $name = $status = $option = $unit ='';
         $account_id = Auth::user()->account_id;
-        $visitor_app_url = env('VISITOR_APP_URL');
+        $visitor_app_url = url('visitors');
 
         $forms = EformDoorAccess::where('account_id',$account_id)->orderby('id','desc')->paginate(env('PAGINATION_ROWS')); 
         return view('admin.eform_door.index', compact('forms','ticket','unit','name','status','option','visitor_app_url'));
@@ -569,7 +569,7 @@ class EformDoorAccessController extends Controller
 
         $account_id = Auth::user()->account_id;
         $option = $request->input('option'); 
-        $visitor_app_url = env('VISITOR_APP_URL');
+        $visitor_app_url = url('visitors');
         $unit = $request->input('unit');
         $units = array();
         if($unit !=''){   

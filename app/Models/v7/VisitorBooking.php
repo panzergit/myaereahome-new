@@ -7,6 +7,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\PHPMailerService;
+use Illuminate\Support\Facades\Storage;
 
 class VisitorBooking extends Model
 {
@@ -39,58 +40,11 @@ class VisitorBooking extends Model
         return $this->hasMany('App\Models\v7\VisitorInviteEmailList','book_id');
     }
 
-    public function ticketgen($code) {
+    public function ticketgen($code)
+    {
         $date = new DateTime('now');
         $autonumver = rand(00000, 99999);	
-        $ticket = $code.$date->format('ymd') .$autonumver;
-        return $ticket;
-        
-    }
-
-    public function invite_email($bookId,$userId,$accountId,$email,$name){
-
-        $boking_rec   = VisitorBooking::find($bookId);
-        $user_rec   = User::find($userId);
-        $prop_rec   = Property::find($accountId);
-
-      
-
-        $logo = env('MAIN_URL')."/storage/app/". $prop_rec->company_logo;
-        $companyname = $prop_rec->company_name;
-        $companyemail = $prop_rec->company_email;
-        $message = $boking_rec->email_message;
-        $inviteurl = env('APP_URL')."/pre-registration/".$boking_rec->ticket;
-        $invited_by = $user_rec->name;
-        $date = date('d-M-y',strtotime($boking_rec->visiting_date));
-        		
-			$companyname = 'Aerea Home';
-			$adminemail = 'hello@myaereahome.com';
-            $replyto = 'no-reply@myaereahome.com';
-           
-			
-            $emailcontent = file_get_contents(public_path().'/emails/visitorinvite.php');
-            
-            $emailcontent = str_replace('#logo#', $logo, $emailcontent);
-            //$emailcontent = str_replace('#visitor#', $name, $emailcontent);
-            $emailcontent = str_replace('#name#', $user_rec->name, $emailcontent);
-            $emailcontent = str_replace('#date#', $date, $emailcontent);
-			$emailcontent = str_replace('#companyname#', $companyname, $emailcontent);
-            $emailcontent = str_replace('#message#', $message, $emailcontent);
-            $emailcontent = str_replace('#companyemail#', $companyemail, $emailcontent);
-            $emailcontent = str_replace('#url#', $inviteurl, $emailcontent);
-            
-           
-			$subject = $companyname .': Visitor Pre Registration';
-			
-			$headers = 'From: '.$companyname.' <'.$adminemail.'/> ' . "\r\n" ;
-			$headers .='Reply-To: '. $replyto . "\r\n" ;
-			$headers .='X-Mailer: PHP/' . phpversion();
-			$headers .= "MIME-Version: 1.0\r\n";
-            $headers .= "Content-type: text/html; charset=iso-8859-1\r\n"; 
-
-            @mail($email, $subject, $emailcontent, $headers);
-           
-            
+        return $code.$date->format('ymd') .$autonumver;
     }
 
     public static function invite_emailnew($bookId,$userId,$accountId,$email,$name){
@@ -99,13 +53,11 @@ class VisitorBooking extends Model
         $user_rec   = User::find($userId);
         $prop_rec   = Property::find($accountId);
 
-      
-
-        $logo = env('MAIN_URL')."/storage/app/". $prop_rec->company_logo;
+        $logo = Storage::url(upload_path($prop_rec->company_logo));
         $companyname = $prop_rec->company_name;
         $companyemail = $prop_rec->company_email;
         $message = $boking_rec->email_message;
-        $inviteurl = env('VISITOR_APP_URL')."/pre-registration/".$boking_rec->ticket;
+        $inviteurl = url("visitors/pre-registration/".$boking_rec->ticket);
         $invited_by = Crypt::decryptString($user_rec->name);
         $date = date('d-M-y',strtotime($boking_rec->visiting_date));
         		
@@ -163,11 +115,10 @@ class VisitorBooking extends Model
         $user_rec   = User::find($userId);
         $prop_rec   = Property::find($boking_rec->account_id);
       
-
-        $logo = env('MAIN_URL')."/storage/app/". $prop_rec->company_logo;
+        $logo = Storage::url(upload_path($prop_rec->company_logo));
         $companyname = $prop_rec->company_name;
         $companyemail = $prop_rec->company_email;
-        $qrcode_eurl = env('APP_URL')."/assets/visitorqr/".$qr_code;
+        $qrcode_eurl = Storage::url(upload_path("visitorqr/".$qr_code));
         $ticket = $boking_rec->ticket;
         $property = $boking_rec->propertyinfo->company_name;
         $invited_by = $user_rec->name;

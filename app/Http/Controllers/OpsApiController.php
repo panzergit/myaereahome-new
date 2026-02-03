@@ -17059,7 +17059,7 @@ class OpsApiController extends Controller
 				$data['recent_payment_transaction'] = $Unitinvoice->payments;
 				$data['payment_received_history'] = $paymentHistory;
 
-				$visitor_app_url = env('VISITOR_APP_URL')."invoice-pdf/";
+				$visitor_app_url = url("visitors/invoice-pdf/");
 
 				return response()->json(['data'=>$data,'file_path'=>$visitor_app_url,'response' => 1, 'message' => 'Success']);
 			}
@@ -17203,12 +17203,11 @@ class OpsApiController extends Controller
 						$record['count'] = isset($inv->invoices)?$inv->invoices->count():0;
 						$record['created_by'] = isset($inv->admininfo->name)?$inv->admininfo->name:null;
 						$record['created_date'] = date('d/m/y',strtotime($inv->created_at));
-						$record['pdf_path'] = env('VISITOR_APP_URL')."/batchinvoices/".$inv->id;
+						$record['pdf_path'] = url("visitors/batchinvoices/".$inv->id);
 						$data[] = $record;
 					}
 				}
-				$visitor_app_url = env('VISITOR_APP_URL')."/batchinvoices/";
-
+				$visitor_app_url = url("visitors/batchinvoices/");
 				return response()->json(['data'=>$data,'file_path'=>$visitor_app_url,'response' => 1, 'message' => 'Success']);
 			}
 	}
@@ -17276,7 +17275,7 @@ class OpsApiController extends Controller
 							$data[] = $record;
 						}
 					}
-					$visitor_app_url = env('VISITOR_APP_URL')."/batchinvoices/";
+					$visitor_app_url = url("visitors/batchinvoices/");
 					return response()->json(['data'=>$data,'file_path'=>$visitor_app_url,'response' => 1, 'message' => 'Success']);
 
 				}
@@ -17322,7 +17321,7 @@ class OpsApiController extends Controller
 			else{
 				$account_id = $adminObj->account_id;
 				$invoices = FinanceInvoice::where('account_id',$account_id)->where('info_id',$batch_id)->orderby('id','desc')->get(); 
-				$visitor_app_url = env('VISITOR_APP_URL')."/invoice-pdf/";
+				$visitor_app_url = url("visitors/invoice-pdf/");
 				$buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
 
 				$data =array();
@@ -17583,7 +17582,7 @@ class OpsApiController extends Controller
 				$dateS = date("Y-m-d",strtotime(Carbon::now()->startOfMonth()->subMonth(12)));
        			$invoices = FinanceInvoice::where('account_id',$account_id)->where('invoice_date', '>=', $dateS)->orderby('id','desc')->get(); 
 				
-				$visitor_app_url = env('VISITOR_APP_URL')."/invoice-pdf/";
+				$visitor_app_url = url("visitors/invoice-pdf/");
 				$buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
 
 				$data =array();
@@ -17752,7 +17751,7 @@ class OpsApiController extends Controller
 						$data[] = $record;
 					} 
 					
-					$visitor_app_url = env('VISITOR_APP_URL')."invoice-pdf/";
+					$visitor_app_url = url("visitors/invoice-pdf/");
 					$buildings = Building::where('account_id',$account_id)->pluck('building', 'id')->all();
 
 					return response()->json(['data'=>$data,'file_path'=>$visitor_app_url,'buildings'=>$buildings,'response' => 1, 'message' => 'Success']);
@@ -19796,7 +19795,7 @@ class OpsApiController extends Controller
 		}
 		else if($type== 60 && isset($rm_permission) && $rm_permission->view==1){
 			$invoices = FinanceInvoice::where('account_id',$account_id)->where('unit_no',$unit)->orderBy('id','DESC')->get();
-			$visitor_app_url = env('VISITOR_APP_URL')."invoice-pdf/";
+			$visitor_app_url = url("visitors/invoice-pdf/");
 			$data =array();
 				foreach ($invoices as $k => $invoice) {
 					$record =array();

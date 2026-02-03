@@ -362,7 +362,7 @@ class DigitalAccessController extends Controller
                 
             })->paginate(env('PAGINATION_ROWS'));
         
-            $visitor_app_url = env('VISITOR_APP_URL');
+            $visitor_app_url = url('visitors');
             return view('admin.digital.remote', compact('records','devices','doorName','name','option','unit','startDate','endDate','startTime','endTime'));
 
     }
@@ -470,7 +470,7 @@ class DigitalAccessController extends Controller
                 
             })->paginate(env('PAGINATION_ROWS'));
         
-            $visitor_app_url = env('VISITOR_APP_URL');
+            $visitor_app_url = url('visitors');
             return view('admin.digital.bluetooth', compact('records','devices','doorName','name','option','unit','startDate','endDate','startTime','endTime'));
 
     }
