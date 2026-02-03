@@ -287,7 +287,7 @@ class VisitorsApiV8Controller extends Controller
         $userid = $request->user;
         $UserObj = User::find($userid);
 
-        $file_path = image_storage_domain() . '/visitorqr/';
+        $file_path = image_storage_domain() . '/';
 
         $records = VisitorBooking::where('user_id', $userid)->where('unit_no', $UserObj->unit_no)->orderby('id', 'desc')->get();
         $data = array();
@@ -353,7 +353,7 @@ class VisitorsApiV8Controller extends Controller
         $userid = $request->user_id;
         $UserObj = User::find($userid);
 
-        $file_path = image_storage_domain() . '/visitorqr/';
+        $file_path = image_storage_domain() . '/';
 
         $record = VisitorBooking::where('id', $bookid)->first();
         if (empty($record)) return response()->json(['response' => 200, 'message' => 'Booking not found']);

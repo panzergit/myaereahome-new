@@ -92,7 +92,7 @@ class VisitorsFrontController extends Controller
 
             $today = Carbon::now()->format('Y-m-d');
 
-            $qrcode_path = image_storage_domain() . '/visitorqr/';
+            $qrcode_path = image_storage_domain() . '/';
             
             if ($visiting_time <= $bookingObj->visiting_end_time) {
                 return view('visitors.user.visitor-summary', compact('bookingObj', 'property', 'qrcode_path'));
