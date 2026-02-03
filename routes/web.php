@@ -73,6 +73,8 @@ use App\Http\Controllers\EformParticularController;
 use App\Http\Controllers\FirebaseController;
 use App\Http\Controllers\PayrollController;
 
+// Route::get('test-notify', [StaticController::class, 'testNotify']);
+
 Route::get('/', [StaticController::class, 'landing']);
 Route::any('privacypolicy', [StaticController::class, 'privacypolicy']);
 Route::any('termsconditions', [StaticController::class, 'termsconditions']);
@@ -659,5 +661,10 @@ Route::get('getmanagerlists', [UserMoreInfoController::class, 'getmanagerlists']
 
 Route::get('firebase', [FirebaseController::class, 'index']);
 Route::get('logout', [UserMoreInfoController::class, 'logout']);
+
+// Visitor Routes
+Route::prefix('visitors')->group(function () {
+	require base_path('routes/visitors_web.php');
+});
 
 require __DIR__ . '/auth.php';

@@ -253,6 +253,11 @@ Route::prefix('/v7')->group(function(){
 
 Route::prefix('/v8')->group(function(){
 
+    // Visitor APIs
+    Route::prefix('visitors')->group(function () {
+        require base_path('routes/visitors_api.php');
+    });
+
     Route::any('userRegistration', [Apiv8Controller::class, 'user_registration']);
     Route::any('getProperties', [Apiv8Controller::class, 'property_lists']);
     Route::any('propertyBlock', [Apiv8Controller::class, 'property_block']);
@@ -293,6 +298,7 @@ Route::prefix('/v8')->group(function(){
     Route::any('getandroidversion', [Apiv8Controller::class, 'getandroidversion']);
     Route::any('getiosversion', [Apiv8Controller::class, 'getiosversion']);
     Route::any('getaccesstoken', [Apiv8Controller::class, 'getaccesstoken']);
+    
     Route::middleware('auth:sanctum')->group(function(){
         
         Route::prefix('account-delete')->group(function(){
@@ -896,6 +902,7 @@ Route::prefix('/cron')->group(function(){
     Route::any('announcement_send', [CronController::class, 'announcement_send']);
 
 });
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
