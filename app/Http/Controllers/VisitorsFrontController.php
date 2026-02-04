@@ -26,6 +26,13 @@ use App\Models\v7\FinanceInvoicePayment;
 use App\Models\v7\FinanceInvoicePaymentDetail;
 use App\Models\v7\Unit;
 use App\Models\v7\Building;
+use App\Models\v7\VisitorList;
+use App\Models\v7\UserNotification;
+use App\Models\v7\UserNotificationSetting;
+use App\Models\v7\UserLog;
+use Illuminate\Support\Facades\Storage;
+
+use QrCode;
 use Carbon\Carbon;
 use PDF;
 
@@ -40,6 +47,168 @@ class VisitorsFrontController extends Controller
     public function index(Request $request)
     {
         return view('visitors.user.visitor-expired');
+    }
+
+    public function visitorSave(Request $request)
+    {
+        $details = array();
+        $data['book_id'] = $request->input('BookId');
+        $bookingObj = VisitorBooking::find($data['book_id']);
+        $property = Property::find($bookingObj->account_id);
+
+        $bookingObj->qr_scan_type =$property->security_option;
+            if($property->security_option == 2){
+                $inviteurl = url("/opslogin/visitor-summary/".$bookingObj->id."/manualscan");
+                $qr_content = "bid=".$bookingObj->ticket."&type=2";
+                $qrsize = 350;
+                $randnum = rand(10000, 99999) . '-' . now()->format('YmdHis');
+                $filename = "visitorqr/{$randnum}.png";
+
+                // $img =  base64_encode(QrCode::format('png')->size($qrsize)->errorCorrection('H')->margin(5)->generate($qr_content));
+                // $qrdata = base64_decode($img);
+                // $file = $_SERVER['DOCUMENT_ROOT'].'/assets/visitorqr/'.$randnum.'.png';	
+                // file_put_contents($file, $qrdata);
+
+                $qrPng = QrCode::format('png')
+                    ->size($qrsize)
+                    ->errorCorrection('H')
+                    ->margin(5)
+                    ->generate($qr_content);
+
+                Storage::put(upload_path($filename), $qrPng);
+
+                $bookingObj->qrcode_file = $filename;
+                $bookingObj->save();
+            }
+        $now = Carbon::now()->format('Y-m-d');
+
+        $visiting_purpose = VisitorType::where('account_id',$bookingObj->account_id)->where('id',$bookingObj->visiting_purpose)->first();
+            
+            if(isset($visiting_purpose) && $visiting_purpose->limit_set ==0){
+                $slot_available = 5;
+            }else{
+                $visitor_types = VisitorType::where('account_id',$bookingObj->account_id)->where('limit_set',1)->where('status',1)->get();
+                $types = array();
+                foreach($visitor_types as $type) $types[] = $type->id;
+                
+                $total_visitor =0;
+                $visitor_records = VisitorBooking::where('account_id',$bookingObj->account_id)->where('visiting_date',$bookingObj->visiting_date)->whereIn('visiting_purpose',$types)->whereIn('status',[0,2])->get();
+                foreach($visitor_records as $records){
+                    $total_visitor +=$records->visitors->count();
+                }
+                $count = $property->visitors_allowed - $total_visitor;
+                $slot_available = ($count >=0)?$count:0;
+            }
+
+        
+        for($i=1;$i<=$slot_available;$i++){
+
+            $name = 'name_'.$i;
+            $mobile = 'mobile_'.$i;
+            $vehicle ='vehicle_no_'.$i;
+            $id_number = 'id_number_'.$i;
+            $email = 'email_'.$i;
+            $qrcode_file = 'qrcode_file_'.$i;
+
+            if(!empty($request->input($name)) && !empty($request->input($mobile))){
+                
+                $data['name'] = $request->input($name);
+                $data['mobile'] = $request->input($mobile);
+                $data['vehicle_no'] = $request->input($vehicle);
+                if($request->input($id_number) !='')
+                    $data['id_number'] = $request->input($id_number);
+                else
+                    $data['id_number'] = '';
+
+                $data['email'] = $request->input($email);
+                
+                $data['created_at'] = $now;
+                $data['updated_at'] = $now;
+            
+                $record = VisitorList::create($data);
+
+                if($property->security_option != 2){
+                    $visitorObj = VisitorList::find($record->id);
+                    
+                    $inviteurl = ($property->security_option == 3 && 1==2) ? 
+                        url("/opslogin/visitor-summary/".$bookingObj->id."/facialscan/") : '';
+                    
+                    $qr_content = $inviteurl."bid=".$bookingObj->ticket."&vid=".$visitorObj->id;
+                    $qrsize = 350;
+                    $randnum = rand(10000, 99999) . '-' . now()->format('YmdHis');
+                    $filename = "visitorqr/{$randnum}.png";
+
+                    // $img =  base64_encode(QrCode::format('png')->size($qrsize)->errorCorrection('H')->margin(5)->generate($qr_content));
+                    // $qrdata = base64_decode($img);
+                    // $file = $_SERVER['DOCUMENT_ROOT'].'/assets/visitorqr/'.$randnum.'.png';	
+                    // file_put_contents($file, $qrdata);
+
+                    $qrPng = QrCode::format('png')
+                    ->size($qrsize)
+                    ->errorCorrection('H')
+                    ->margin(5)
+                    ->generate($qr_content);
+
+                    Storage::put(upload_path($filename), $qrPng);
+                    
+                    $visitorObj->qrcode_file = $filename;
+                    $visitorObj->save();      
+
+                }
+
+                //Start Insert into notification module
+                $notification = [];
+                $notification['account_id'] = $bookingObj->account_id;
+                $notification['user_id'] = $bookingObj->user_id;
+                $notification['unit_no'] = $bookingObj->unit_no;
+                $notification['module'] = 'vistor management';
+                $notification['ref_id'] = $bookingObj->id;
+                $notification['title'] = 'Visitor Update';
+                $notification['message'] = 'Visitor registration is successful';
+                $notification['created_at'] = date('Y-m-d H:i:s');
+                $notification['updated_at'] = date('Y-m-d H:i:s');
+                
+                UserNotification::insert($notification);
+                
+                $SettingsObj = UserNotificationSetting::where('user_id',$bookingObj->user_id)->where('account_id',$bookingObj->account_id)->first();
+                if(empty($SettingsObj) || $SettingsObj->visitor_management ==1){
+                    $fcm_token_array ='';
+                    $user_token = ',';
+                    $ios_devices_to_send = array();
+                    $android_devices_to_send = array();
+                    $logs = UserLog::where('user_id',$bookingObj->user_id)->where('status',1)->orderby('id','desc')->first();
+                    if(isset($logs->fcm_token) && $logs->fcm_token !=''){
+                        $user_token .=$logs->fcm_token.",";
+                        $fcm_token_array .=$logs->fcm_token.',';
+                        $appSipAccountList[] = $bookingObj->id;
+                        if($logs->login_from ==1) $ios_devices_to_send[] = $logs->fcm_token;
+                        if($logs->login_from ==2) $android_devices_to_send[] = $logs->fcm_token;
+                    }
+            
+                    $title = "Aerea Home - ".$property->company_name;
+                    $message = $notification['message'];
+                    $notofication_data = [];
+                    $notofication_data['body'] =$title;
+                    $notofication_data['unit_no'] =$bookingObj->unit_no;   
+                    $notofication_data['user_id'] =$bookingObj->user_id;   
+                    $notofication_data['property'] =$bookingObj->account_id;
+                    $purObj = UserPurchaserUnit::where('property_id',$bookingObj->account_id)->where('unit_id',$bookingObj->unit_no)->where('user_id',$bookingObj->user_id)->first(); 
+                    if(isset($purObj)) $notofication_data['switch_id'] =$purObj->id;     
+
+                    $NotificationObj = new \App\Models\v7\FirebaseNotification();
+                    $NotificationObj->ios_msg_notification($title,$message,$ios_devices_to_send,$notofication_data); //ios notification
+                    $NotificationObj->android_msg_notification($title,$message,$android_devices_to_send,$notofication_data); //android notification
+                    //End Insert into notification module
+                }
+
+                $qrcodefile_email = $property->security_option != 2 ? $visitorObj->qrcode_file : $bookingObj->qrcode_file;
+                
+                //Email
+                VisitorBooking::qrcode_emailnew($bookingObj->id, $bookingObj->user_id, $data['name'],$data['email'],$data['mobile'],$data['vehicle_no'],$qrcodefile_email,$data['id_number']);
+            }
+        }
+        return redirect('/visitors/visitor-summary/'.$bookingObj->ticket)->with('status', 'Booking updated'); 
+
     }
 
     public function pre_registration($ticket)

@@ -6,7 +6,7 @@ use App\Http\Controllers\QrCodeController;
 use App\Http\Controllers\FirebaseController;
 
 Route::any('/', [VisitorsFrontController::class, 'index']);
-Route::any('visitor-save', [VisitorsFrontController::class, 'store'])->name('visitor-save');
+Route::any('visitor-save', [VisitorsFrontController::class, 'visitorSave'])->name('visitor-save');
 
 Route::any('/pre-registration_test/{ticket}',[VisitorsFrontController::class, 'pre_registration_test']);
 Route::any('/pre-registration/{ticket}',[VisitorsFrontController::class, 'pre_registration']);
