@@ -8,11 +8,14 @@ use App\Models\v7\Building;
 use App\Models\v7\Unit;
 use App\Models\v7\UserPurchaserUnit;
 use App\Models\v7\Role;
+use App\Traits\Syncable;
 
 use Illuminate\Database\Eloquent\Model;
 
 class UserMoreInfo extends Model
 {
+    use Syncable;
+    
     protected $table = 'user_more_infos_new';
 
     protected $fillable = [

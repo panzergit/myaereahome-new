@@ -3,11 +3,13 @@
 namespace App\Models\v7;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
-
+use App\Traits\Syncable;
 use Illuminate\Database\Eloquent\Model;
 
 class UserFacialId extends Model
 {
+    use Syncable;
+    
     protected $fillable = [
       'user_id','option_id','account_id','unit_no','status','others','thinmoo_id','thinmoo_uuid','face_picture','face_picture_base64','reason'
     ]; 
