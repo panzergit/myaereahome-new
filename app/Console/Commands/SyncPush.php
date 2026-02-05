@@ -29,6 +29,7 @@ class SyncPush extends Command
     {
         $logs = DB::table('change_logs')
             ->where(['synced' => 0, 'server_id' => config('sync.server_id')])
+            ->orderBy('id')
             ->limit(100)->get();
 
         if ($logs->isEmpty()) {
