@@ -30,14 +30,14 @@ class ChangeLogService
 
         \Log::info("Change log inserted: {$action} on {$model->getTable()} ID {$model->getKey()}");
         // Insert change log
-        // DB::table('change_logs')->insert([
-        //     'server_id'  => config('sync.server_id'),
-        //     'table_name' => $model->getTable(),
-        //     'record_id'  => $model->getKey(),
-        //     'action'     => $action,
-        //     'payload'    => $payload ? json_encode($payload) : null,
-        //     'created_at' => now(),
-        // ]);
+        DB::table('change_logs')->insert([
+            'server_id'  => config('sync.server_id'),
+            'table_name' => $model->getTable(),
+            'record_id'  => $model->getKey(),
+            'action'     => $action,
+            'payload'    => $payload ? json_encode($payload) : null,
+            'created_at' => now(),
+        ]);
     }
 
     /**
