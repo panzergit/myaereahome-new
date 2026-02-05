@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class SyncPull extends Command
 {
@@ -46,11 +48,11 @@ class SyncPull extends Command
             return;
         }
 
-        \Model::withoutEvents(function () use ($changes) {
+        Model::withoutEvents(function () use ($changes) {
 
             foreach ($changes as $log) {
 
-                if (!\Schema::hasTable($log['table_name']))  continue;
+                if (!Schema::hasTable($log['table_name']))  continue;
 
                 DB::transaction(function () use ($log) {
 
