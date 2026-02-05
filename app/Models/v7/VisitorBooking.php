@@ -169,7 +169,7 @@ class VisitorBooking extends Model
         $logo = image_storage_domain().'/'.$prop_rec->company_logo;
         $companyname = $prop_rec->company_name;
         $companyemail = $prop_rec->company_email;
-        $qrcode_eurl = image_storage_domain()."/visitorqr/".$qr_code;
+        $qrcode_eurl = image_storage_domain()."/".$qr_code;
         $ticket = $boking_rec->ticket;
         $property = $boking_rec->propertyinfo->company_name;
         $invited_by = Crypt::decryptString($user_rec->name);
