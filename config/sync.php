@@ -21,5 +21,6 @@ return [
 
     'secondary' => [
         'sync_url' => env('SECONDARY_SYNC_URL',''),
+        'fetch_url' => env('SECONDARY_FETCH_URL',''),
     ],
 ];

@@ -55,4 +55,33 @@ class SyncController extends Controller
 
         return response()->json(['message' => 'Sync applied'], 200);
     }
+
+    public function fetch(Request $request)
+    {
+        // Token validation
+        if ((!$request->header('X-SYNC-TOKEN')) || $request->header('X-SYNC-TOKEN') !== config('sync.api_token')) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // How many records to send
+        $limit = $request->input('limit', config('sync.batch_size', 100));
+
+        // Fetch unsynced changes
+        $changes = DB::table('change_logs')
+            ->where('synced', 0)->orderBy('id')
+            ->limit($limit)->get()
+            ->map(function ($log) {
+                // Decode payload here
+                $log->payload = $log->payload
+                    ? json_decode($log->payload, true)
+                    : null;
+
+                return $log;
+            });
+
+        return response()->json([
+            'changes' => $changes,
+            'count'   => $changes->count(),
+        ]);
+    }
 }

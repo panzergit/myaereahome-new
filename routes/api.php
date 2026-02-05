@@ -22,12 +22,13 @@ use App\Http\Controllers\OpsApiv4Controller;
 use App\Http\Controllers\CronController;
 use App\Http\Controllers\Apiv2Controller;
 use App\Http\Controllers\ApiController;
-
+use App\Http\Controllers\SyncController;
 
 Route::any('twiliosms', [Apiv7Controller::class, 'twiliosms']);
 
 // Sync API
 Route::post('/sync/apply', [SyncController::class, 'apply']);
+Route::post('/sync/fetch', [SyncController::class, 'fetch']);
 
 Route::controller(ApiController::class)->group(function () {
     Route::any('retrieveInfoApi', 'retrieveInfoApi');
