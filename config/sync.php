@@ -2,6 +2,8 @@
 
 return [
     'server_id' => env('SERVER_ID', 'primary'),
+    
+    'api_token' => env('SYNC_API_TOKEN', ''),
 
     'ignore_tables' => [
         'change_logs',

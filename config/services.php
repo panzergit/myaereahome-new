@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'secondary' => [
+        'sync_url' => env('SECONDARY_SYNC_URL',''),
+    ],
+
 ];
