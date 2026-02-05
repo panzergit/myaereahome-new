@@ -110,7 +110,7 @@ use App\Models\v7\MpAdsType;
 use App\Models\v7\MpAdsSubmission;
 use App\Models\v7\MpAdsImage;
 
-class Apiv1Controller extends Controller
+class ApiController extends Controller
 {
     public function retrieveInfoApi(Request $request) {
 
