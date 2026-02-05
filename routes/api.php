@@ -20,9 +20,16 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\OpnController;
 use App\Http\Controllers\OpsApiv4Controller;
 use App\Http\Controllers\CronController;
-
+use App\Http\Controllers\Apiv2Controller;
 
 Route::any('twiliosms', [Apiv7Controller::class, 'twiliosms']);
+
+Route::prefix('/v2')->group(function(){
+    Route::any('PushCallAction', [Apiv2Controller::class, 'call_from_thinmoo']);
+    Route::any('FailOpenDoorRecordPush', [Apiv2Controller::class, 'FailOpenDoorRecordPush']);
+    Route::any('CallUnitRecordPush', [Apiv2Controller::class, 'CallUnitRecordPush']); 
+    Route::any('ParkingRecordPush', [Apiv2Controller::class, 'ParkingRecordPush']);
+});
 
 Route::prefix('/v7')->group(function(){
     Route::any('test_firebase', [Apiv7Controller::class, 'test_firebase']);
