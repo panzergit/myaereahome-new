@@ -77,7 +77,7 @@ class SyncPull extends Command
 
         Http::withHeaders([
             'X-SYNC-TOKEN' => config('sync.api_token'),
-        ])->post(config('sync.secondary_mark_synced_url'), [
+        ])->post(config('sync.secondary.secondary_mark_synced_url'), [
             'ids' => $ids,
         ]);
 
