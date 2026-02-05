@@ -27,9 +27,9 @@ class SyncPull extends Command
      */
     public function handle()
     {
-        $response = Http::get(
-            config('sync.secondary.fetch_url')
-        );
+        $response = Http::withHeaders([
+            'X-SYNC-TOKEN' => config('sync.api_token'),
+        ])->post(config('sync.secondary.fetch_url'), []);
 
         if (! $response->successful()) {
             \Log::error('Failed to fetch logs');
