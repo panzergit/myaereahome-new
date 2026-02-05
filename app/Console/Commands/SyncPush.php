@@ -27,6 +27,11 @@ class SyncPush extends Command
      */
     public function handle()
     {
+        if(config('sync.disable_push')) {
+            $this->info('Push sync is disabled');
+            return;
+        }
+
         $logs = DB::table('change_logs')
             ->where(['synced' => 0, 'server_id' => config('sync.server_id')])
             ->orderBy('id')
