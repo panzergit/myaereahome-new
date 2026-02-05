@@ -28,7 +28,7 @@ class SyncPush extends Command
     public function handle()
     {
         if(config('sync.disable_push')) {
-            $this->info('Push sync is disabled');
+            \Log::info('Push sync is disabled');
             return;
         }
 
@@ -38,7 +38,7 @@ class SyncPush extends Command
             ->limit(100)->get();
 
         if ($logs->isEmpty()) {
-            $this->info('No changes to sync');
+            \Log::info('No changes to sync');
             return;
         }
 
@@ -54,6 +54,6 @@ class SyncPush extends Command
         if ($response->successful()) DB::table('change_logs')->whereIn('id', $logs->pluck('id'))
             ->update(['synced' => 1]);
 
-        $this->info('Push sync completed');
+        \Log::info('Push sync completed');
     }
 }
