@@ -29,6 +29,7 @@ Route::any('twiliosms', [Apiv7Controller::class, 'twiliosms']);
 // Sync API
 Route::post('/sync/apply', [SyncController::class, 'apply']);
 Route::post('/sync/fetch', [SyncController::class, 'fetch']);
+Route::post('/sync/mark-synced', [SyncController::class, 'markSynced']);
 
 Route::controller(ApiController::class)->group(function () {
     Route::any('retrieveInfoApi', 'retrieveInfoApi');

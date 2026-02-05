@@ -27,6 +27,8 @@ class SyncPull extends Command
      */
     public function handle()
     {
+        config(['sync.disable_logging' => true]);
+
         $response = Http::withHeaders([
             'X-SYNC-TOKEN' => config('sync.api_token'),
         ])->post(config('sync.secondary.fetch_url'), []);
@@ -36,29 +38,46 @@ class SyncPull extends Command
             return;
         }
 
-        foreach ($response->json('changes') as $log) {
+        $changes = $response->json('changes', []);
 
-            DB::transaction(function () use ($log) {
-
-                match ($log['action']) {
-                    'insert' => DB::table($log['table_name'])
-                        ->insert((array) $log['payload']),
-
-                    'update' => DB::table($log['table_name'])
-                        ->where('id', $log['record_id'])
-                        ->update((array) $log['payload']),
-
-                    'delete' => DB::table($log['table_name'])
-                        ->where('id', $log['record_id'])
-                        ->delete(),
-                };
-
-                DB::table('change_logs')->updateOrInsert(
-                    ['id' => $log['id']],
-                    array_merge($log, ['synced' => 1])
-                );
-            });
+        if (empty($changes)){
+            config(['sync.disable_logging' => false]);
+            \Log::info('No changes to apply');
+            return;
         }
+
+        \Model::withoutEvents(function () use ($changes) {
+
+            foreach ($changes as $log) {
+
+                if (!\Schema::hasTable($log['table_name']))  continue;
+
+                DB::transaction(function () use ($log) {
+
+                    match ($log['action']) {
+                        'insert', 'update' =>
+                            DB::table($log['table_name'])->updateOrInsert(
+                                ['id' => $log['record_id']],
+                                $log['payload'] ?? []
+                            ),
+
+                        'delete' =>
+                            DB::table($log['table_name'])
+                                ->where('id', $log['record_id'])
+                                ->delete(),
+                    };
+                });
+            }
+
+        });
+
+        $ids = collect($changes)->pluck('id')->toArray();
+
+        Http::withHeaders([
+            'X-SYNC-TOKEN' => config('sync.api_token'),
+        ])->post(config('sync.secondary_mark_synced_url'), [
+            'ids' => $ids,
+        ]);
 
         \Log::info('Pull sync completed');
     }

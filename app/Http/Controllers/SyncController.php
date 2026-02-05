@@ -84,4 +84,30 @@ class SyncController extends Controller
             'count'   => $changes->count(),
         ]);
     }
+
+    public function markSynced(Request $request)
+    {
+        // 🔐 Token validation
+        if ((!$request->header('X-SYNC-TOKEN')) || $request->header('X-SYNC-TOKEN') !== config('sync.api_token')) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $ids = $request->input('ids', []);
+
+        if (empty($ids) || !is_array($ids)) {
+            return response()->json(['message' => 'No IDs'], 200);
+        }
+
+        \DB::table('change_logs')
+            ->whereIn('id', $ids)
+            ->update([
+                'synced' => 1,
+                'synced_at' => now(),
+            ]);
+
+        return response()->json([
+            'message' => 'Marked as synced',
+            'count' => count($ids),
+        ]);
+    }
 }
