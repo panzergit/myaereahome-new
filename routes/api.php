@@ -152,6 +152,11 @@ Route::controller(ApiController::class)->group(function () {
     Route::any('eformsubmittedsearchlists', 'eformsubmittedsearchlists');
 });
 
+// Visitor APIs
+Route::prefix('visitors')->group(function () {
+    require base_path('routes/visitors_api.php');
+});
+
 Route::prefix('/v2')->group(function () {
     Route::any('PushCallAction', [Apiv2Controller::class, 'call_from_thinmoo']);
     Route::any('FailOpenDoorRecordPush', [Apiv2Controller::class, 'FailOpenDoorRecordPush']);
@@ -386,11 +391,6 @@ Route::prefix('/v7')->group(function () {
 });
 
 Route::prefix('/v8')->group(function () {
-
-    // Visitor APIs
-    Route::prefix('visitors')->group(function () {
-        require base_path('routes/visitors_api.php');
-    });
 
     Route::any('userRegistration', [Apiv8Controller::class, 'user_registration']);
     Route::any('getProperties', [Apiv8Controller::class, 'property_lists']);

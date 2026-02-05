@@ -1,15 +1,60 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\VisitorsApiV8Controller;
+use App\Http\Controllers\Visitors\ApiController;
+use App\Http\Controllers\Visitors\Apiv2Controller;
+use App\Http\Controllers\Visitors\Apiv7Controller;
+use App\Http\Controllers\Visitors\ApiV8Controller;
 
-Route::any('visitingPurpose', [VisitorsApiV8Controller::class, 'visitingPurpose']);
-Route::any('visitorRegisitration', [VisitorsApiV8Controller::class, 'visitorRegisitration']);
-Route::any('visitorRegSummary', [VisitorsApiV8Controller::class, 'visitorRegSummary']);
-Route::any('visitorBookingInfo', [VisitorsApiV8Controller::class, 'visitorBookingInfo']);
-Route::any('visitorBookingCancel', [VisitorsApiV8Controller::class, 'visitorBookingCancel']);
-Route::any('visitorSendInvite', [VisitorsApiV8Controller::class, 'visitorSendInvite']);
-Route::any('visitorRegValidation', [VisitorsApiV8Controller::class, 'visitorRegValidation']);
-Route::any('testfirebase', [VisitorsApiV8Controller::class, 'testfirebase']);
-Route::any('getqrstatus', [VisitorsApiV8Controller::class, 'getqrstatus']);
-Route::any('trailgetqrstatus', [VisitorsApiV8Controller::class, 'trailgetqrstatus']);
+Route::controller(ApiController::class)->group(function () {
+    Route::any('visitingPurpose', 'visitingPurpose');
+    Route::any('visitorRegisitration', 'visitorRegisitration');
+    Route::any('visitorRegSummary', 'visitorRegSummary');
+    Route::any('visitorBookingInfo', 'visitorBookingInfo');
+    Route::any('visitorBookingCancel', 'visitorBookingCancel');
+    Route::any('visitorSendInvite', 'visitorSendInvite');
+    Route::any('visitorRegValidation', 'visitorRegValidation');
+    Route::any('testfirebase', 'testfirebase');
+    Route::any('getqrstatus', 'getqrstatus');
+});
+
+Route::prefix('/v2')->controller(Apiv2Controller::class)->group(function(){
+    Route::any('visitingPurpose', 'visitingPurpose');
+    Route::any('visitorRegisitration', 'visitorRegisitration');
+    Route::any('visitorRegSummary', 'visitorRegSummary');
+    Route::any('visitorBookingInfo', 'visitorBookingInfo');
+    Route::any('visitorBookingCancel', 'visitorBookingCancel');
+    Route::any('visitorSendInvite', 'visitorSendInvite');
+    Route::any('visitorRegValidation', 'visitorRegValidation');
+    Route::any('testfirebase', 'testfirebase');
+    Route::any('getqrstatus', 'getqrstatus');
+    Route::any('trailgetqrstatus', 'trailgetqrstatus');
+});
+
+Route::prefix('/v7')->controller(Apiv7Controller::class)->group(function(){
+    Route::any('visitingPurpose', 'visitingPurpose');
+    Route::any('visitorRegisitration', 'visitorRegisitration');
+    Route::any('visitorRegSummary', 'visitorRegSummary');
+    Route::any('visitorBookingInfo', 'visitorBookingInfo');
+    Route::any('visitorBookingCancel', 'visitorBookingCancel');
+    Route::any('visitorSendInvite', 'visitorSendInvite');
+    Route::any('visitorRegValidation', 'visitorRegValidation');
+    Route::any('testfirebase', 'testfirebase');
+    Route::any('getqrstatus', 'getqrstatus');
+    Route::any('trailgetqrstatus', 'trailgetqrstatus');
+});
+
+Route::prefix('/v8')->controller(ApiV8Controller::class)->group(function(){
+
+    Route::any('visitingPurpose', 'visitingPurpose');
+    Route::any('visitorRegisitration', 'visitorRegisitration');
+    Route::any('visitorRegSummary', 'visitorRegSummary');
+    Route::any('visitorBookingInfo', 'visitorBookingInfo');
+    Route::any('visitorBookingCancel', 'visitorBookingCancel');
+    Route::any('visitorSendInvite', 'visitorSendInvite');
+    Route::any('visitorRegValidation', 'visitorRegValidation');
+    Route::any('testfirebase', 'testfirebase');
+    Route::any('getqrstatus', 'getqrstatus');
+    Route::any('trailgetqrstatus', 'trailgetqrstatus');
+
+});

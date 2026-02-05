@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Visitors;
 use Illuminate\Http\Request;
 
 use App\Models\v7\User;
@@ -14,21 +14,18 @@ use App\Models\v7\VisitorInviteEmailList;
 use App\Models\v7\QrcodeOpenRecord;
 use App\Models\v7\InboxMessage;
 use App\Models\v7\UserManagerLog;
-use App\Models\v7\FirebaseNotification;
 use App\Models\v7\UserNotification;
 use App\Models\v7\UserPurchaserUnit;
 use App\Models\v7\UserLog;
 use App\Models\v7\UserNotificationSetting;
 
 use Carbon\Carbon;
-use Auth;
-use DB;
 use QrCode;
 use Validator;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 
-class VisitorsApiV8Controller extends Controller
+class ApiV8Controller extends Controller
 {
     public function visitingPurpose(Request $request)
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Visitors;
 
 use Illuminate\Http\Request;
 
@@ -36,7 +36,7 @@ use QrCode;
 use Carbon\Carbon;
 use PDF;
 
-class VisitorsFrontController extends Controller
+class FrontController extends Controller
 {
     /**
      * Handles Registration Request
