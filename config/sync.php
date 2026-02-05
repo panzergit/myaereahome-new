@@ -17,6 +17,8 @@ return [
     // Used during sync:pull
     'disable_logging' => false,
 
+    'disable_push' => env('DISABLE_PUSH', false),
+
     'secondary' => [
         'sync_url' => env('SECONDARY_SYNC_URL',''),
     ],

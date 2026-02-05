@@ -26,6 +26,9 @@ use App\Http\Controllers\ApiController;
 
 Route::any('twiliosms', [Apiv7Controller::class, 'twiliosms']);
 
+// Sync API
+Route::post('/sync/apply', [SyncController::class, 'apply']);
+
 Route::controller(ApiController::class)->group(function () {
     Route::any('retrieveInfoApi', 'retrieveInfoApi');
     Route::any('verifyOtpApi', 'verifyOtpApi');
