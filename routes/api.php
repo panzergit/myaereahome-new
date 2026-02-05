@@ -21,17 +21,145 @@ use App\Http\Controllers\OpnController;
 use App\Http\Controllers\OpsApiv4Controller;
 use App\Http\Controllers\CronController;
 use App\Http\Controllers\Apiv2Controller;
+use App\Http\Controllers\ApiController;
+
 
 Route::any('twiliosms', [Apiv7Controller::class, 'twiliosms']);
 
-Route::prefix('/v2')->group(function(){
+Route::controller(ApiController::class)->group(function () {
+    Route::any('retrieveInfoApi', 'retrieveInfoApi');
+    Route::any('verifyOtpApi', 'verifyOtpApi');
+    Route::any('setPasswordApi', 'setPasswordApi');
+    Route::any('verifyLoginApi', 'verifyLoginApi');
+    Route::any('resendOtpApi', 'resendOtpApi');
+    Route::any('updatePassword', 'updatePassword');
+    Route::any('updatePicture', 'updatePicture');
+    Route::any('updateProfile', 'updateProfile');
+    Route::any('getUserinfo', 'userinfo');
+    Route::any('getUserthinmooinfo', 'user_thinmoo_info');
+
+    Route::any('forgotPassword', 'forgotPassword');
+    Route::any('FacialRegPicOption', 'FacialRegPicOption');
+    Route::any('FacialRegPic', 'FacialRegPic');
+    Route::any('FacialRegPicAdd', 'FacialRegPicAdd');
+    Route::any('FacialRegPicDelete', 'FacialRegPicDelete');
+    Route::any('FacialRegPicUpdate', 'FacialRegPicUpdate');
+    Route::any('PushCallAction', 'call_from_thinmoo');
+    Route::any('CallPushAppNotification', 'call_push_notification');
+    Route::any('HackingworkEnddate', 'hackingwork_enddate');
+
+    Route::any('BluetoothDevices', 'bluetooth_device_info');
+    Route::any('UserBluetoothDevices', 'user_bluetooth_device_list');
+    Route::any('UserRemoteDevices', 'user_remote_device_list');
+    Route::any('InsertBluetoothOpenRecord', 'BluetoothDoorOpenRecord');
+
+    Route::any('FailOpenDoorRecordPush', 'FailOpenDoorRecordPush');
+    Route::any('CallUnitRecordPush', 'CallUnitRecordPush');
+    Route::any('FailOpenDoorRecordPush2', 'FailOpenDoorRecordPush2');
+    Route::any('CallUnitRecordPush2', 'CallUnitRecordPush2');
+    Route::any('ChecktimeInterval', 'ChecktimeInterval');
+    Route::any('ParkingRecordPush', 'ParkingRecordPush');
+
+    Route::any('getAnnouncement', 'announcement');
+    Route::any('getDefectslist', 'defectslist');
+    Route::any('getfeedbacklist', 'feedbacklist');
+
+    Route::any('getFeedbackoption', 'feedbackoption');
+    Route::any('getDefectslocation', 'defectslocation');
+    Route::any('getDefectstype', 'defectstype');
+
+    Route::any('checkUnitTakeover', 'checkunittakeover');
+    Route::any('checkJointInspection', 'checkjointinspection');
+    Route::any('gettakeovertimeslots', 'gettakeovertimeslots');
+
+    Route::any('bookunittakeover', 'bookunittakeover');
+    Route::any('bookjointinspection', 'bookjointinspection');
+    Route::any('getinspectiontimeslots', 'getinspectiontimeslots');
+
+    Route::any('submitdefects', 'submitdefects');
+    Route::any('getdefects', 'getdefects');
+    Route::any('submitfeedbacks', 'submitfeedbacks');
+    Route::any('updatesingnature', 'updatesingnature');
+    Route::any('submitdefectreview', 'submitdefectreview');
+    Route::any('inspectionsingnature', 'inspectionsingnature');
+    Route::any('handoversingnature', 'handoversingnature');
+
+    Route::any('bookfacility', 'bookfacility');
+    Route::any('cancelfacilitybooking', 'cancelfacilitybooking');
+    Route::any('getfacilitiestype', 'facilitiestype');
+    Route::any('getfacilitytimeslots', 'getfacilitytimeslots');
+    Route::any('getfacilitybooking', 'getfacilitybooking');
+
+    Route::any('facilitydetail', 'facilityDetail');
+    Route::any('feedbackdetail', 'feedbackDetail');
+    Route::any('defectdetail', 'defectDetail');
+    Route::any('announcementdetail', 'announcementDetail');
+
+    Route::any('announcementstatusupdated', 'announcementStatusUpdate');
+
+    Route::any('takeoverapptdetails', 'takeoverapptdetails');
+    Route::any('inspectionapptdetails', 'inspectionapptdetails');
+
+    Route::any('inboxMessage', 'inboxMessage');
+    Route::any('upcomingEvents', 'upcomingEvents');
+
+    Route::any('enquiry', 'enquiry');
+
+    Route::any('getandroidversion', 'getandroidversion');
+    Route::any('getiosversion', 'getiosversion');
+    Route::any('getaccesstoken', 'getaccesstoken');
+
+    Route::any('getdocumentcategories', 'documentCategories');
+    Route::any('getcategoryfiles', 'categoryFiles');
+    Route::any('faciltybookingvalidation', 'validateFacilityBoooking');
+
+    Route::any('getDocumentType', 'getDocumentType');
+    Route::any('residentFileUpload', 'residentFileUpload');
+    Route::any('residentFileUploadDetail', 'residentFileUploadDetail');
+    Route::any('getUploadedlist', 'uploadedlist');
+    Route::any('getUploadedFilelist', 'uploadedFilelist');
+
+    Route::any('password_reset_mannual', 'password_reset_mannual');
+
+    Route::any('loginHistoryLogs', 'loginHistoryLogs');
+    Route::any('logoutHistoryLogs', 'logoutHistoryLogs');
+
+    Route::any('visitingPurpose', 'visitingPurpose');
+    Route::any('visitorRegisitration', 'visitorRegisitration');
+    Route::any('visitorRegSummary', 'visitorRegSummary');
+    Route::any('visitorBookingInfo', 'visitorBookingInfo');
+    Route::any('visitorBookingCancel', 'visitorBookingCancel');
+    Route::any('visitorSendInvite', 'visitorSendInvite');
+
+    Route::any('dooropenmenulists', 'dooropenmenulists');
+
+    Route::any('eformslists', 'eformslists');
+    Route::any('eformsettingdetail', 'eformsettingdetail');
+    Route::any('eformMovingIO', 'eform_movinginout');
+    Route::any('eformMovingIOInfo', 'eform_movinginout_info');
+    Route::any('eformRenovation', 'eform_renovation');
+    Route::any('eformRenovationInfo', 'eform_renovation_info');
+    Route::any('eformDooraccess', 'eform_dooraccess');
+    Route::any('eformDooraccessInfo', 'eform_dooraccess_info');
+    Route::any('eformRegVehicleIU', 'eform_reg_vehicle');
+    Route::any('eformRegVehicleIUInfo', 'eform_reg_vehicle_info');
+    Route::any('eformRegVehicleFileCat', 'eform_reg_vehicle_file_category');
+    Route::any('eformChangeAddress', 'eform_change_address');
+    Route::any('eformAddressInfo', 'eform_address_info');
+    Route::any('eformUpdateParticulars', 'eform_update_particulars');
+    Route::any('eformParticularsInfo', 'eform_reg_particulars_info');
+    Route::any('eformsubmittedlists', 'eformsubmittedlists');
+    Route::any('eformsubmittedsearchlists', 'eformsubmittedsearchlists');
+});
+
+Route::prefix('/v2')->group(function () {
     Route::any('PushCallAction', [Apiv2Controller::class, 'call_from_thinmoo']);
     Route::any('FailOpenDoorRecordPush', [Apiv2Controller::class, 'FailOpenDoorRecordPush']);
-    Route::any('CallUnitRecordPush', [Apiv2Controller::class, 'CallUnitRecordPush']); 
+    Route::any('CallUnitRecordPush', [Apiv2Controller::class, 'CallUnitRecordPush']);
     Route::any('ParkingRecordPush', [Apiv2Controller::class, 'ParkingRecordPush']);
 });
 
-Route::prefix('/v7')->group(function(){
+Route::prefix('/v7')->group(function () {
     Route::any('test_firebase', [Apiv7Controller::class, 'test_firebase']);
     Route::any('release_notification', [Apiv7Controller::class, 'release_notification']);
     Route::any('retrieveInfoApi', [Apiv7Controller::class, 'retrieveInfoApi']);
@@ -190,7 +318,7 @@ Route::prefix('/v7')->group(function(){
     Route::any('eformMovingIO', [Apiv7Controller::class, 'eform_movinginout']);
     Route::any('eformMovingIOInfo', [Apiv7Controller::class, 'eform_movinginout_info']);
     Route::any('eformRenovation', [Apiv7Controller::class, 'eform_renovation']);
-    Route::any('eformRenovationInfo', [Apiv7Controller::class, 'eform_renovation_info']);	
+    Route::any('eformRenovationInfo', [Apiv7Controller::class, 'eform_renovation_info']);
     Route::any('eformDooraccess', [Apiv7Controller::class, 'eform_dooraccess']);
     Route::any('eformDooraccessInfo', [Apiv7Controller::class, 'eform_dooraccess_info']);
     Route::any('eformRegVehicleIU', [Apiv7Controller::class, 'eform_reg_vehicle']);
@@ -255,10 +383,9 @@ Route::prefix('/v7')->group(function(){
 
 
     Route::any('visitorRegValidation', [Apiv7Controller::class, 'visitorRegValidation']);
-
 });
 
-Route::prefix('/v8')->group(function(){
+Route::prefix('/v8')->group(function () {
 
     // Visitor APIs
     Route::prefix('visitors')->group(function () {
@@ -305,10 +432,10 @@ Route::prefix('/v8')->group(function(){
     Route::any('getandroidversion', [Apiv8Controller::class, 'getandroidversion']);
     Route::any('getiosversion', [Apiv8Controller::class, 'getiosversion']);
     Route::any('getaccesstoken', [Apiv8Controller::class, 'getaccesstoken']);
-    
-    Route::middleware('auth:sanctum')->group(function(){
-        
-        Route::prefix('account-delete')->group(function(){
+
+    Route::middleware('auth:sanctum')->group(function () {
+
+        Route::prefix('account-delete')->group(function () {
             Route::get('reasons', [Apiv8Controller::class, 'accountDeleteReasons']);
             Route::post('request', [Apiv8Controller::class, 'accountDeleteRequest']);
         });
@@ -421,7 +548,7 @@ Route::prefix('/v8')->group(function(){
         Route::any('password_reset_mannual', [Apiv8Controller::class, 'password_reset_mannual']);
         Route::any('loginHistoryLogs', [Apiv8Controller::class, 'loginHistoryLogs']);
         Route::any('logoutHistoryLogs', [Apiv8Controller::class, 'logoutHistoryLogs']);
-            
+
         Route::any('visitingPurpose', [Apiv8Controller::class, 'visitingPurpose']);
         Route::any('visitorRegisitration', [Apiv8Controller::class, 'visitorRegisitration']);
         Route::any('visitorRegSummary', [Apiv8Controller::class, 'visitorRegSummary']);
@@ -430,12 +557,12 @@ Route::prefix('/v8')->group(function(){
         Route::any('visitorSendInvite', [Apiv8Controller::class, 'visitorSendInvite']);
         Route::any('submenulists', [Apiv8Controller::class, 'submenulists']);
         Route::any('eformslists', [Apiv8Controller::class, 'eformslists']);
-        
+
         Route::any('eformsettingdetail', [Apiv8Controller::class, 'eformsettingdetail']);
         Route::any('eformMovingIO', [Apiv8Controller::class, 'eform_movinginout']);
         Route::any('eformMovingIOInfo', [Apiv8Controller::class, 'eform_movinginout_info']);
         Route::any('eformRenovation', [Apiv8Controller::class, 'eform_renovation']);
-        Route::any('eformRenovationInfo', [Apiv8Controller::class, 'eform_renovation_info']);	
+        Route::any('eformRenovationInfo', [Apiv8Controller::class, 'eform_renovation_info']);
         Route::any('eformDooraccess', [Apiv8Controller::class, 'eform_dooraccess']);
         Route::any('eformDooraccessInfo', [Apiv8Controller::class, 'eform_dooraccess_info']);
         Route::any('eformRegVehicleIU', [Apiv8Controller::class, 'eform_reg_vehicle']);
@@ -492,14 +619,14 @@ Route::prefix('/v8')->group(function(){
     Route::any('charges', [PaymentController::class, 'charges']);
 });
 
-Route::prefix('/ops/v4')->group(function(){
+Route::prefix('/ops/v4')->group(function () {
 
     Route::any('getiosversion', [OpsApiv4Controller::class, 'getiosversion']);
     Route::any('getandroidversion', [OpsApiv4Controller::class, 'getandroidversion']);
-    
+
     //Auth
     Route::any('login', [OpsApiv4Controller::class, 'login']);
-    Route::any('verifyotp', [OpsApiv4Controller::class, 'verifyotp']);    
+    Route::any('verifyotp', [OpsApiv4Controller::class, 'verifyotp']);
     Route::any('resendotp', [OpsApiv4Controller::class, 'resendotp']);
 
     Route::any('verifyOtpApi', [OpsApiv4Controller::class, 'verifyOtpApi']);
@@ -508,15 +635,15 @@ Route::prefix('/ops/v4')->group(function(){
     Route::any('setPasswordApi', [OpsApiv4Controller::class, 'setPasswordApi']);
     Route::any('release_notification', [OpsApiv4Controller::class, 'release_notification']);
 
-    Route::middleware('auth:sanctum')->group(function(){
-        
-        Route::prefix('account-delete')->group(function(){
+    Route::middleware('auth:sanctum')->group(function () {
+
+        Route::prefix('account-delete')->group(function () {
             Route::post('request-lists', [OpsApiv4Controller::class, 'accountDeleteRequestLists']);
             Route::post('request-view/{requestId}', [OpsApiv4Controller::class, 'accountDeleteRequestView']);
             Route::post('request-approve', [OpsApiv4Controller::class, 'accountDeleteRequestApprove']);
         });
-        
-        Route::prefix('charts')->group(function(){
+
+        Route::prefix('charts')->group(function () {
             Route::post('users', [OpsApiv4Controller::class, 'chartUsers']);
             Route::post('key-collections', [OpsApiv4Controller::class, 'chartKeyCollection']);
         });
@@ -560,24 +687,24 @@ Route::prefix('/ops/v4')->group(function(){
         Route::any('bulkuseraccess', [OpsApiv4Controller::class, 'bulkuseraccess']);
         Route::any('bulkuseraccesssearch', [OpsApiv4Controller::class, 'bulkuseraccesssearch']);
         Route::any('bulkuseraccessupdate', [OpsApiv4Controller::class, 'bulkuseraccessupdate']);
-        Route::any('userunits',[OpsApiv4Controller::class, 'userunits']);
-        Route::any('assignunit',[OpsApiv4Controller::class, 'assignunit']);
-        Route::any('deleteunit',[OpsApiv4Controller::class, 'deleteunit']);
-        Route::any('unitcards',[OpsApiv4Controller::class, 'unitcards']);
-        Route::any('usercards',[OpsApiv4Controller::class, 'usercards']);
-        Route::any('assigncard',[OpsApiv4Controller::class, 'assigncard']);
-        Route::any('deleteusercard',[OpsApiv4Controller::class, 'deleteusercard']);
+        Route::any('userunits', [OpsApiv4Controller::class, 'userunits']);
+        Route::any('assignunit', [OpsApiv4Controller::class, 'assignunit']);
+        Route::any('deleteunit', [OpsApiv4Controller::class, 'deleteunit']);
+        Route::any('unitcards', [OpsApiv4Controller::class, 'unitcards']);
+        Route::any('usercards', [OpsApiv4Controller::class, 'usercards']);
+        Route::any('assigncard', [OpsApiv4Controller::class, 'assigncard']);
+        Route::any('deleteusercard', [OpsApiv4Controller::class, 'deleteusercard']);
         Route::any('userdevicelists', [OpsApiv4Controller::class, 'userdevicelists']);
         Route::any('userdeviceupdate', [OpsApiv4Controller::class, 'userdeviceupdate']);
-        Route::any('userunitdelete',[OpsApiv4Controller::class, 'userunitDelete']);
-        Route::any('userunitactivate',[OpsApiv4Controller::class, 'userunitactivate']);
-        Route::any('userunitdeactivate',[OpsApiv4Controller::class, 'userunitdeactivate']);
+        Route::any('userunitdelete', [OpsApiv4Controller::class, 'userunitDelete']);
+        Route::any('userunitactivate', [OpsApiv4Controller::class, 'userunitactivate']);
+        Route::any('userunitdeactivate', [OpsApiv4Controller::class, 'userunitdeactivate']);
         Route::any('RemoteDoorOpen', [OpsApiv4Controller::class, 'remote_door_open']);
-        Route::any('userlicenseplates',[OpsApiv4Controller::class, 'userlicenseplates']);
-        Route::any('licenseplateinfo',[OpsApiv4Controller::class, 'licenseplateinfo']);
-        Route::any('editlicenseplate',[OpsApiv4Controller::class, 'editlicenseplate']);
-        Route::any('assignlicenseplate',[OpsApiv4Controller::class, 'assignlicenseplates']);
-        Route::any('deletelicenseplate',[OpsApiv4Controller::class, 'deletlicenseplate']);
+        Route::any('userlicenseplates', [OpsApiv4Controller::class, 'userlicenseplates']);
+        Route::any('licenseplateinfo', [OpsApiv4Controller::class, 'licenseplateinfo']);
+        Route::any('editlicenseplate', [OpsApiv4Controller::class, 'editlicenseplate']);
+        Route::any('assignlicenseplate', [OpsApiv4Controller::class, 'assignlicenseplates']);
+        Route::any('deletelicenseplate', [OpsApiv4Controller::class, 'deletlicenseplate']);
 
         Route::any('regSummary', [OpsApiv4Controller::class, 'regsummary']);
         Route::any('regDetails', [OpsApiv4Controller::class, 'regdetails']);
@@ -644,7 +771,7 @@ Route::prefix('/ops/v4')->group(function(){
         Route::any('defectsupdate', [OpsApiv4Controller::class, 'defectsupdate']);
         Route::any('defectsinspectionupdate', [OpsApiv4Controller::class, 'defectsinspectionupdate']);
         Route::any('defectscancelinspection', [OpsApiv4Controller::class, 'defectscancelinspection']);
-        
+
         //Final
         Route::any('defectfinalinspectionupdate', [OpsApiv4Controller::class, 'defectFinalInspectionUpdate']);
         Route::any('defectfinalcancelinspection', [OpsApiv4Controller::class, 'defectFinalInspectionCancel']);
@@ -887,7 +1014,7 @@ Route::prefix('/ops/v4')->group(function(){
         Route::any('resichataddtoblocklist', [OpsApiv4Controller::class, 'resichataddtoblocklist']);
     });
 
-	Route::resource('invoice', OpsApiv4Controller::class);
+    Route::resource('invoice', OpsApiv4Controller::class);
     Route::any('mpadslikes', [OpsApiv4Controller::class, 'mpadslikes']);
     Route::any('mpadsreports', [OpsApiv4Controller::class, 'mpadsreports']);
     Route::any('mpadsactivate', [OpsApiv4Controller::class, 'mpadsactivate']);
@@ -895,19 +1022,18 @@ Route::prefix('/ops/v4')->group(function(){
     Route::any('mpadssearch', [OpsApiv4Controller::class, 'mpadssearch']);
 });
 
-Route::prefix('/payment')->group(function(){
+Route::prefix('/payment')->group(function () {
     Route::any('charges', [PaymentController::class, 'charges']);
     Route::any('testwebhook', [PaymentController::class, 'TestWebhook']);
     Route::any('livewebhook', [PaymentController::class, 'LiveWebhook']);
     Route::any('cronfacilitycharges', [PaymentController::class, 'charges']);
 });
 
-Route::prefix('/cron')->group(function(){
+Route::prefix('/cron')->group(function () {
     Route::any('facility_pre_auth_charges', [CronController::class, 'facility_pre_auth_charges']);
     Route::any('facility_refund_charges', [CronController::class, 'facility_refund_charges']);
     Route::any('facility_deposit_charges', [CronController::class, 'facility_deposit_charges']);
     Route::any('announcement_send', [CronController::class, 'announcement_send']);
-
 });
 
 
