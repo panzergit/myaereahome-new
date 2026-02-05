@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Visitors;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 use App\Models\v7\User;
 use App\Models\v7\VisitorType;
