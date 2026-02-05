@@ -12,6 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        $schedule->command('aereahome:sync_push')->everyMinute();
+
         $schedule->command('send_invoice_notification:command')->everyMinute();
         $schedule->command('announcement_user:command')->everyMinute();
         $schedule->command('announcement:command')->everyFiveMinutes();
