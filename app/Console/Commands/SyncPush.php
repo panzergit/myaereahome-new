@@ -37,19 +37,17 @@ class SyncPush extends Command
             return;
         }
 
-        if(empty(config('services.secondary.sync_url'))) {
+        if(empty(config('sync.secondary.sync_url'))) {
             $this->error('Secondary sync URL not configured');
             return;
         }
 
-        foreach ($logs as $log) {
-            $response = Http::withHeaders([
-                'X-SYNC-TOKEN' => config('sync.api_token'),
-            ])->post(config('services.secondary.sync_url'), ['log' => $log]);
+        $response = Http::withHeaders([
+            'X-SYNC-TOKEN' => config('sync.api_token'),
+        ])->post(config('sync.secondary.sync_url'), ['changes' => $logs->toArray()]);
 
-            if ($response->successful()) DB::table('change_logs')->where('id', $log->id)
-                ->update(['synced' => 1]);
-        }
+        if ($response->successful()) DB::table('change_logs')->whereIn('id', $logs->pluck('id'))
+            ->update(['synced' => 1]);
 
         $this->info('Push sync completed');
     }
