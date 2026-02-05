@@ -36,7 +36,7 @@ class SyncPull extends Command
             return;
         }
 
-        foreach ($response->json() as $log) {
+        foreach ($response->json('changes') as $log) {
 
             DB::transaction(function () use ($log) {
 
