@@ -12,6 +12,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        // setup in secondary server
+        // $schedule->command('aereahome:check_primary_down')->everyMinute();
+
         $schedule->command('aereahome:system_state_update')->everyMinute();
         $schedule->command('aereahome:sync_push')->everyMinute();
 

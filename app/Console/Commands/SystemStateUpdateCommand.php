@@ -27,7 +27,7 @@ class SystemStateUpdateCommand extends Command
      */
     public function handle()
     {
-        $upTime = now();
+        $upTime = now()->toDateTimeString();
         DB::table('system_state')->updateOrInsert(
             ['key_name' => 'primary_status'],
             ['value' => 'up', 'updated_at' => $upTime]
