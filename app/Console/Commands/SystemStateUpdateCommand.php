@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class SystemStateUpdateCommand extends Command
 {
@@ -26,9 +27,16 @@ class SystemStateUpdateCommand extends Command
      */
     public function handle()
     {
+        $upTime = now();
         DB::table('system_state')->updateOrInsert(
             ['key_name' => 'primary_status'],
-            ['value' => 'up', 'updated_at' => now()]
+            ['value' => 'up', 'updated_at' => $upTime]
         );
+
+        $response = Http::withHeaders([
+            'X-SYNC-TOKEN' => config('sync.api_token'),
+        ])->post(config('sync.secondary.primary_state_url'), ['up_time' => $upTime]);
+
+        \Log::info('Primary state updated.');
     }
 }

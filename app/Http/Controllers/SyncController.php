@@ -87,7 +87,7 @@ class SyncController extends Controller
 
     public function markSynced(Request $request)
     {
-        // 🔐 Token validation
+        // Token validation
         if ((!$request->header('X-SYNC-TOKEN')) || $request->header('X-SYNC-TOKEN') !== config('sync.api_token')) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
@@ -98,7 +98,7 @@ class SyncController extends Controller
             return response()->json(['message' => 'No IDs'], 200);
         }
 
-        \DB::table('change_logs')
+        DB::table('change_logs')
             ->whereIn('id', $ids)
             ->update([
                 'synced' => 1,
@@ -108,6 +108,23 @@ class SyncController extends Controller
         return response()->json([
             'message' => 'Marked as synced',
             'count' => count($ids),
+        ]);
+    }
+
+    public function updatePrimaryState(Request $request)
+    {
+        // Token validation
+        if ((!$request->header('X-SYNC-TOKEN')) || $request->header('X-SYNC-TOKEN') !== config('sync.api_token')) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        DB::table('system_state')->updateOrInsert(
+            ['key_name' => 'primary_status'],
+            ['value' => 'up', 'updated_at' => $request->input('up_time', now())]
+        );
+        
+        return response()->json([
+            'message' => 'Updated primary state',
         ]);
     }
 }

@@ -23,5 +23,6 @@ return [
         'sync_url' => env('SECONDARY_SYNC_URL',''),
         'fetch_url' => env('SECONDARY_FETCH_URL',''),
         'secondary_mark_synced_url' => env('SECONDARY_MARK_SYNCED_URL',''),
+        'primary_state_url' => env('PRIMARY_STATE_URL',''),
     ],
 ];
