@@ -3,6 +3,8 @@
 return [
     'server_id' => env('SERVER_ID', 'primary'),
 
+    'primary_dwon' => env('PRIMARY_DOWN', false),
+
     'api_token' => env('SYNC_API_TOKEN', ''),
 
     'ignore_tables' => [

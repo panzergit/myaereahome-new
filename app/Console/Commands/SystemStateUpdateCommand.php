@@ -27,6 +27,11 @@ class SystemStateUpdateCommand extends Command
      */
     public function handle()
     {
+        if(config('sync.primary_dwon')) {
+            \Log::info('Primary is marked as down. Skipping state update.');
+            return;
+        }
+
         $upTime = now()->toDateTimeString();
         DB::table('system_state')->updateOrInsert(
             ['key_name' => 'primary_status'],
