@@ -123,6 +123,11 @@ class SyncController extends Controller
             ['value' => 'up', 'updated_at' => $request->input('up_time', now())]
         );
         
+        DB::table('system_settings')->updateOrInsert(
+            ['action_key' => 'secondary_change_log_enabled'],
+            ['value' => 0, 'updated_at' => now()]
+        );
+        
         return response()->json([
             'message' => 'Updated primary state',
         ]);

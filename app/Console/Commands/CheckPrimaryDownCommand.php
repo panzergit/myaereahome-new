@@ -29,15 +29,20 @@ class CheckPrimaryDownCommand extends Command
     {
         $domain = $request->getHost();
 
-        \Log::info("Checking primary status for domain: $domain");
-        
         if ($domain === 'aereanew.panzerplayground.com')
         {
             $last = DB::table('system_state')
                 ->where('key_name', 'primary_status')
                 ->value('updated_at');
+            
+            \Log::info(now()->toDateTimeString());
+            \Log::info(now()->diffInMinutes($last) > 3 ? 'do log' : 'no log');
+            
+            DB::table('system_settings')->updateOrInsert(
+                ['action_key' => 'secondary_change_log_enabled'],
+                ['value' => (now()->diffInMinutes($last) > 3 ? 1 : 0), 'updated_at' => now()]
+            );
  
-            config(['sync.disable_logging' => (now()->diffInMinutes($last) > 3 ? false : true)]);
         }
     }
 }

@@ -13,8 +13,14 @@ class ChangeLogService
     public static function log(string $action, Model $model): void
     {
         // Disable logging during sync replay
-        if (config('sync.disable_logging', false)) {
-            return;
+        if(config('sync.server_id') === 'primary') {
+            if (config('sync.disable_logging', false)) return;
+        }else{
+            $changeLogEnabled = DB::table('system_settings')
+                ->where('action_key', 'secondary_change_log_enabled')
+                ->value('value');
+
+            if($changeLogEnabled == 0) return;
         }
 
         // Ignore specific tables

@@ -15,7 +15,7 @@ return [
     'batch_size' => 100,
 
     // Used during sync:pull
-    'disable_logging' => env('DISABLE_LOGGING', false),
+    'disable_logging' => false,
 
     'disable_push' => env('DISABLE_PUSH', false),
 
