@@ -36,8 +36,8 @@ class CheckPrimaryDownCommand extends Command
             $last = DB::table('system_state')
                 ->where('key_name', 'primary_status')
                 ->value('updated_at');
-
-            if (now()->diffInMinutes($last) > 3) config(['sync.secondary.disable_logging' => false]);
+ 
+            config(['sync.disable_logging' => (now()->diffInMinutes($last) > 3 ? false : true)]);
         }
     }
 }
