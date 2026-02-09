@@ -24,7 +24,8 @@ use Validator;
 use Illuminate\Support\Facades\Storage;
 use App\Services\SMSService;
 use App\Services\PHPMailerService;
-
+use App\Services\VoipPushService;
+use Illuminate\Support\Str;
 
 class FrontController extends Controller
 {
@@ -37,13 +38,22 @@ class FrontController extends Controller
 
 	public function landing()
     {
-        
 		return view('user.landing');
-
 	}
 	
 	public function testMySmsm(Request $request)
 	{
+		$service = new VoipPushService();
+		$service->sendCallPush(
+			'123',
+			[
+				'caller_id' => '123',
+				'caller_name' => 'Sasthri',
+				'call_id' => Str::uuid(),
+			]
+		);
+
+		die();
         $invoice = FinanceInvoice::find(518);
 	    $logo = url('public/assets/admin/img/aerea-logo.png');
 			
