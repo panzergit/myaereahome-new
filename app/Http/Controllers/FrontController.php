@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Services\SMSService;
 use App\Services\PHPMailerService;
 use App\Services\VoipPushService;
+use App\Services\ApplePushService;
 use Illuminate\Support\Str;
 
 class FrontController extends Controller
@@ -41,8 +42,22 @@ class FrontController extends Controller
 		return view('user.landing');
 	}
 	
-	public function testMySmsm(Request $request)
+	public function testMySmsm(Request $request, ApplePushService $apns)
 	{
+		$deviceToken = '123';
+		$payload = [
+			'aps' => [
+				'alert' => 'Incoming Call',
+				'sound' => 'default',
+			],
+			'call_id' => 12345,
+		];
+
+		$result = $apns->sendVoip($deviceToken, $payload);
+
+		return response()->json($result);
+
+		die();
 		$service = new VoipPushService();
 		$service->sendCallPush(
 			'123',
