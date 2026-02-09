@@ -44,19 +44,21 @@ class FrontController extends Controller
 	
 	public function testMySmsm(Request $request, ApplePushService $apns)
 	{
-		$deviceToken = '123';
-		$payload = [
-			'aps' => [
-				'alert' => 'Incoming Call',
-				'sound' => 'default',
-			],
-			'call_id' => 12345,
-		];
+		if($request->filled('token'))
+		{
+			$deviceToken = trim($request->token);
+			// $deviceToken = '23008100333fa46753bed4de19d8afd429ecdd3c2c46ce2fac219eade7a1403a';
+			$payload = [
+				'aps' => [
+					'alert' => 'Incoming Call',
+					'sound' => 'default',
+				],
+				'call_id' => 12345,
+			];
 
-		$result = $apns->sendVoip($deviceToken, $payload);
-
-		return response()->json($result);
-
+			return $apns->sendVoip($deviceToken, $payload);
+			// return response()->json($result);
+		}
 		die();
 		$service = new VoipPushService();
 		$service->sendCallPush(
