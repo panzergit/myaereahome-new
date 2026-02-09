@@ -1,10 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Contracts\Encryption\DecryptException;
 
-use Session;
+use Illuminate\Support\Facades\Crypt;
 use Validator;
 use App\Models\v7\Role;
 use App\Models\v7\User;
@@ -21,6 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
 use Mail;
+use Illuminate\Support\Str;
 use Hash;
 use DB;
 use App\Models\v7\LoginOTP;
@@ -61,8 +60,6 @@ use App\Models\v7\VisitorInviteEmailList;
 use App\Models\v7\PaymentSetting;
 use App\Models\v7\FacialRecoOption;
 use App\Models\v7\Employee;
-use App\Models\v7\Ad;
-use App\Models\v7\Econcierge;
 use App\Models\v7\UserNotification;
 use App\Models\v7\UserPermission;
 use App\Models\v7\EformSetting;
@@ -92,12 +89,8 @@ use App\Models\v7\DefectSubmissionReview;
 
 use App\Models\v7\FinanceShareSetting;
 use App\Models\v7\FinanceInvoice;
-use App\Models\v7\FinanceInvoiceInfo;
-use App\Models\v7\FinanceInvoiceDetail;
 use App\Models\v7\FinanceInvoicePayment;
-use App\Models\v7\FinanceReferenceType;
 use App\Models\v7\FinanceInvoicePaymentDetail;
-use App\Models\v7\FinanceInvoicePaymentPaidDetail;
 use App\Models\v7\FinancePaymentLog;
 use App\Models\v7\UserDevice;
 use App\Models\v7\UserRemoteDevice;
@@ -130,7 +123,7 @@ use App\Models\v7\ContactBook;
 use App\Models\v7\UserRegistrationRequest;
 use App\Models\v7\CallUnitAnswerRecord;
 use App\Models\v7\AccountDeleteRequest;
-use Illuminate\Database\Eloquent\Builder;
+use App\Services\ApplePushService;
 
 class Apiv8Controller extends Controller
 {
@@ -2581,16 +2574,6 @@ class Apiv8Controller extends Controller
 				$data['DOOR_DEVICES_CACHE_TTL'] = $config_res->value;
 			$config_res = ConfigSetting::where('id',2)->first();
 				$data['SLIDER_TIME_INTERVAL'] = $config_res->value;
-			//$data['OPN_PKEY'] = env('APPID');
-
-			/*$ads = Ad::where('status',1)->get();
-			if(isset($ads))
-				$data['help_banner'] = $ads;
-			
-			$econcierge = Econcierge::where('status',1)->get();
-			if(isset($econcierge))
-				$data['econcierge'] = $econcierge;
-			*/
 			
 			$user_mp_permissions = UserPermission::where('user_id', $UserObj->id)->where('account_id', $UserObj->account_id)->where('unit_no', $UserObj->unit_no)->where('module_id',77)->first();
 
@@ -6642,83 +6625,79 @@ class Apiv8Controller extends Controller
 		]);
 	}
 
-	public function call_from_thinmoo(Request $request)
+	public function call_from_thinmoo(Request $request, ApplePushService $apns)
     {
 		$start_time = microtime(true);
-		$input = array();
+		$input = [];
 		$rawPostData = file_get_contents("php://input");
-		$special_char = array("{", "}");
+		$special_char = ["{", "}"];
 		$string = str_replace($special_char, "", $rawPostData);
-		$values = explode(",",$string );
-		$quote_char = array('"','"'," ");
-		foreach($values as $value){
-			//echo $value;;
-			//$var_string = str_replace($quote_char, "", trim($value));
-			//$var_string = str_replace($quote_char, "", trim($value));
+		$values = explode(",", $string);
+		$quote_char = ['"','"'," "];
+		foreach($values as $value)
+		{
 			$var_string = explode(":",trim($value));
-			//echo $var_string[0]." ".$var_string[1];
-			if(isset($var_string[0]) && isset($var_string[1])){
+			if(isset($var_string[0]) && isset($var_string[1]))
+			{
 				$key_array = explode('"',trim($var_string[0]));
 				$val_array = explode('"',trim($var_string[1]));
-				$val ='';
 				$key = trim($key_array[1]);
-				if($key =='eventTime')
-					$val = trim($val_array[1]).":".$var_string[2].":".substr($var_string[3],0,-1);
-				else if($key =='captureImage' && isset($val_array[1]) && isset($var_string[2])){
-					$val = trim($val_array[1]).":".$var_string[2];
-				}
-					
-				else if($key =='eventType')
-					$val = trim($var_string[1]);
-				else if(isset($val_array[1]))
-					$val = trim($val_array[1]);
 				
+				if($key =='eventTime'){
+					$val = trim($val_array[1]).":".$var_string[2].":".substr($var_string[3],0,-1);
+				}else if($key =='captureImage' && isset($val_array[1]) && isset($var_string[2])){
+					$val = trim($val_array[1]).":".$var_string[2];
+				}else if($key =='eventType'){
+					$val = trim($var_string[1]);
+				}else if(isset($val_array[1])){
+					$val = trim($val_array[1]);
+				}else{
+					$val = '';
+				}
 				
 				$input[$key] = $val;
 			}
 		}
 		
-		if(empty($input['roomCode'])){
-			return response()->json([
-				'code'=>1001,
-				'msg'=>'room code is empty.',
-				
-			]);
-		}
+		if(empty($input['roomCode'])) return response()->json([
+			'code' => 1001,
+			'msg' => 'room code is empty.'
+		]);
+
 		$device = Device::where('device_serial_no',$input['devSn'])->first();
-		if(empty($device)){
-			return response()->json([
-				'code' =>99999,
-				'msg'=>'Device not available in community.'
-			]);
-		}
-		//
-		if($input['buildingCode'] !=''){
-			$building = Building::select('id')->where('building_no',$input['buildingCode'])->where('account_id',$device->account_id)->first();
-			if(empty($building)){
-				return response()->json([
+		
+		if(!$device) return response()->json([
+			'code' => 99999,
+			'msg' => 'Device not available in community.'
+		]);
+		
+		if($input['buildingCode'] !='')
+		{
+			$building = Building::select('id')->where(['building_no' => $input['buildingCode'], 'account_id' => $device->account_id])
+				->first();
+
+			if(!$building) return response()->json([
+					'code' => 99999,
+					'msg' => 'Building not available!'
+				]);
+			
+			$deviceObj = Device::WhereRaw("CONCAT(',',locations,',') LIKE ?", '%,'.$building->id .',%')
+				->where(['account_id' => $device->account_id, 'device_serial_no' => $input['devSn']])->first();
+
+			if(!$deviceObj) return response()->json([
+					'code' => 99999,
+					'msg' => 'Device not available in Block!'
+				]);
+		}else{
+			
+			$building = Building::select('buildings.id')
+				->join('devices', 'devices.locations', '=', 'buildings.id')
+				->where('devices.device_serial_no',$input['devSn'])->first();
+
+			if(!$building) return response()->json([
 					'code' =>99999,
 					'msg'=>'Building not available!'
 				]);
-			}
-			$deviceObj = Device::WhereRaw("CONCAT(',',locations,',') LIKE ?", '%,'.$building->id .',%')->where('account_id',$device->account_id)->where('device_serial_no',$input['devSn'])->first();
-
-			if(empty($deviceObj)){
-				return response()->json([
-					'code' =>99999,
-					'msg'=>'Device not available in Block!'
-				]);
-			}
-		}
-		else{
-			$building = Building::select('buildings.id')->join('devices', 'devices.locations', '=', 'buildings.id')->where('devices.device_serial_no',$input['devSn'])->first();
-
-			if(empty($building)){
-				return response()->json([
-					'code' =>99999,
-					'msg'=>'Building not available!'
-				]);
-			}
 		}
 
 		$roomCode = $input['roomCode'];
@@ -6726,74 +6705,62 @@ class Apiv8Controller extends Controller
 
 		$unitObj = Unit::where('building_id',$building->id)->get();
 
-		if(empty($unitObj)){
-			return response()->json([
+		if($unitObj->isEmpty()) return response()->json([
 				'code' =>99999,
 				'msg'=>'Unit not available!'
 			]);
-		}
+		
 		$unit_id ='';
-		if(isset($unitObj)){
-			foreach($unitObj as $unit){
-				//echo Crypt::decryptString($unit->code)." ".$roomCode;
-				if(Crypt::decryptString($unit->code) == $roomCode || Crypt::decryptString($unit->code) ==$unitcode){
-					$unit_id = $unit->id;
-					break;
+		foreach($unitObj as $unit){
+			if(Crypt::decryptString($unit->code) == $roomCode || Crypt::decryptString($unit->code) ==$unitcode){
+				$unit_id = $unit->id;
+				break;
+			}
+		}
+
+		if($unit_id =='') return response()->json([
+				'code' =>99999,
+				'msg'=>'Unit not available!'
+			]);
+		
+		$unit = Unit::where('id',$unit_id)->first();
+		$allowedUsers = UserDevice::where(['unit_no' => $unit->id, 'device_svn' => $input['devSn']])
+			->pluck('user_id')->toArray();
+		
+		$users_lists = UserPurchaserUnit::whereIn('user_id',$allowedUsers)
+			->where(['unit_id' => $unit->id, 'receive_call' => 1])->get();
+
+		$user_rec = $user_token = ',';
+		$fcm_token_array = '';
+		$ios_devices_to_send = $android_devices_to_send = $appSipAccountList = [];
+		
+		foreach($users_lists as $user)
+		{
+			$user_rec .=$user->user_id.",";
+			$logs = UserLog::where(['user_id' => $user->user_id, 'status' => 1])->orderbyDesc('id')->first();
+
+			if($logs)
+			{
+				//iOs
+				if(trim($logs->call_device_token) !='')
+				{
+					if($logs->login_from ==1) $ios_devices_to_send[] = $logs->call_device_token;
+				}
+
+				if(isset($logs->fcm_token) && $logs->fcm_token !=''){
+					$user_token .=$logs->fcm_token.",";
+					$fcm_token_array .=$logs->fcm_token.',';
+					$appSipAccountList[] = $user->user_id;
+					// if($logs->login_from ==1) $ios_devices_to_send[] = $logs->fcm_token;
+					if($logs->login_from ==2) $android_devices_to_send[] = $logs->fcm_token;
 				}
 			}
 		}
 
-		if($unit_id ==''){
-			return response()->json([
-				'code' =>99999,
-				'msg'=>'Unit not available!'
-			]);
-		}
-		
-		$unit = Unit::where('id',$unit_id)->first();
-		$DeviceAllowedUsers = UserDevice::where('unit_no',$unit->id)->where('device_svn',$input['devSn'])->get();
-		$allowedUsers = array();
-		if($DeviceAllowedUsers){
-			foreach($DeviceAllowedUsers as $DeviceAllowedUser){
-				$allowedUsers[] = $DeviceAllowedUser->user_id;
-			}
-		}
-		
-		$users_lists = UserPurchaserUnit::whereIn('user_id',$allowedUsers)->where('unit_id',$unit->id)->where('receive_call',1)->get();
-		//$users_lists = UserPurchaserUnit::where('unit_id',$unit->id)->where('receive_call',1)->get();
-		//$users_lists = User::select('users.id')->where('users.status',1)->where('users.unit_no',$unit->id)->join('user_more_infos', 'users.id', '=', 'user_more_infos.user_id')->where('user_more_infos.receive_device_cal',1)->orderby('users.id','desc')->get();
-
-		$user_rec = ',';
-		$user_token = ',';
-		$fcm_token_array ='';
-		$ios_devices_to_send = array();
-		$android_devices_to_send = array();
-		$appSipAccountList = array();
-		foreach($users_lists as $user){
-			$user_rec .=$user->user_id.",";
-			$logs = UserLog::where('user_id',$user->user_id)->where('status',1)->orderby('id','desc')->first();
-			if(isset($logs->fcm_token) && $logs->fcm_token !=''){
-				$user_token .=$logs->fcm_token.",";
-				$fcm_token_array .=$logs->fcm_token.',';
-				//echo "U Id :".$user->user_id;
-				//echo "Id :".$logs->id;
-				//echo "Token :".$logs->fcm_token;
-				//echo "Property :".$logs->account_id;
-				$appSipAccountList[] = $user->user_id;
-				if($logs->login_from ==1)
-					$ios_devices_to_send[] = $logs->fcm_token;
-				if($logs->login_from ==2)
-					$android_devices_to_send[] = $logs->fcm_token;
-			}
-		}
-
-		//$building = Building::where('building_no',$input['buildingCode'])->first();
 		$input['account_id'] = $unit->account_id;
 		$input['building_no'] = '';
 		$input['user_ids'] = $user_rec;
 		$input['fcm_token'] = $user_token;
-		$input['created_at'] = date("Y-m-d H:i:s");
-		$input['updated_at'] = date("Y-m-d H:i:s");
 		
 		$result = CallPushRecord::create($input);
 
@@ -6802,87 +6769,88 @@ class Apiv8Controller extends Controller
 		
 		$thinmoo_appId = env('APPID');
 
-		
 		//Push notification to Mobile app for IOS
 		$probObj = Property::find($unit->account_id);
 		$title = "Incoming call - ".$probObj->company_name;
-		$body ="Call notification for Room ".$input['roomCode'];
-		$data = array('body'=>$body,'devSn'=>$input['devSn'],'accessToken' =>$thinmoo_access_token,'extCommunityuuid'=>$unit->account_id,'unitId'=>$unit->id,'appId'=>$thinmoo_appId,"sound"=> "ring.mp3");
+		$body = "Call notification for Room ".$input['roomCode'];
+		$data = ['body'=>$body,'devSn'=>$input['devSn'],'accessToken' =>$thinmoo_access_token,'extCommunityuuid'=>$unit->account_id,'unitId'=>$unit->id,'appId'=>$thinmoo_appId,"sound"=> "ring.mp3"];
 		$fields = [
-            'project_id'         => 'aerea-staging',
-            'device_tokens'      => array_unique($ios_devices_to_send),
-            'title'              => $title,
-            'message'            => $body,
+            'project_id' => 'aerea-staging',
+            'device_tokens' => array_unique($ios_devices_to_send),
+            'title' => $title,
+            'message' => $body,
             'additional_data'    => $data,
 			'to'    => 'ios',
 			'sound'=>'ring.mp3'
         ];
 		$fields_string = json_encode($fields);
-		//print_r($fields_string);
-        $ch = curl_init();
+		/*$ch = curl_init();
 		$url = env('FIREBASE_URL');
         curl_setopt($ch,CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POST, true );
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string); 
         curl_setopt($ch,CURLOPT_RETURNTRANSFER, true); 
-		curl_setopt($ch, CURLOPT_HTTPHEADER,     array('accept: application/json',
-    'content-type: application/json')); 
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('accept: application/json', 'content-type: application/json')); 
         $result = curl_exec($ch);
         $json = json_decode($result,true);
         $err = curl_error($ch);
-        curl_close($ch);
-        //return $json;
-		//return $response; 
+        curl_close($ch);*/
 
+		$payload = [
+			'aps' => [
+				'alert' => [
+					'title' => $title,
+					'body' => $body
+				],
+				'sound' => 'default',
+			],
+			'additional_data' => $data,
+			'call_id' => Str::uuid(),
+		];
+		foreach(array_unique($ios_devices_to_send) as $iOSDeviceTokens){
+			\Log::info('Call notification send to Ios token => '.$iOSDeviceTokens);
+			$result = $apns->sendVoip($iOSDeviceTokens, $payload);
+			\Log::info('Call notification send to Ios result => ',$result);
+		}
 
-		//print_r($android_devices_to_send);
 		$title = "Incoming call - ".$probObj->company_name;
 		$body ="Call notification for Room ".$input['roomCode'];
 		$data = array('body'=>$body,'devSn'=>$input['devSn'],'accessToken' =>$thinmoo_access_token,'extCommunityuuid'=>$unit->account_id,'unitId'=>$unit->id,'appId'=>$thinmoo_appId,'title'=> $title,'message'=> $body);
 		$fields = [
-            'project_id'         => 'aerea-staging',
-            'device_tokens'      => array_unique($android_devices_to_send),
-            'title'              => $title,
-            'message'            => $body,
-            'additional_data'    => $data,
-			'to'    			 => 'android'
+            'project_id' => 'aerea-staging',
+            'device_tokens' => array_unique($android_devices_to_send),
+            'title' => $title,
+            'message' => $body,
+            'additional_data' => $data,
+			'to' => 'android'
         ];
 		$fields_string = json_encode($fields);
-		//print_r($fields_string);
         $ch = curl_init();
 		$url = env('FIREBASE_URL');
-		//echo $url ;
-		//print_r($fields);
         curl_setopt($ch,CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POST, true );
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string); 
         curl_setopt($ch,CURLOPT_RETURNTRANSFER, true); 
-		curl_setopt($ch, CURLOPT_HTTPHEADER,     array('accept: application/json',
-    'content-type: application/json')); 
+		curl_setopt($ch, CURLOPT_HTTPHEADER,     array('accept: application/json', 'content-type: application/json')); 
         $result = curl_exec($ch);
-		//print_r($result);
         $json = json_decode($result,true);
         $err = curl_error($ch);
         curl_close($ch);
-        //return $json;
 
-	 $devSnList = str_replace('"','',$input['devSn']);
-
-	 $endtime = microtime(true) - $start_time ;
-
-	 $returntime =  (int)round($endtime * 1000);
+		$devSnList = str_replace('"','',$input['devSn']);
+	 	$endtime = microtime(true) - $start_time ;
+		$returntime =  (int)round($endtime * 1000);
 		
-	 return response()->json([
-		 'code'=>0,
-		 'msg'=>'success',
-		 'data' =>array(
-			 'appSipAccountList'=>$appSipAccountList,
-			 'devSnList'=>[],
-			 'time'=>$returntime." ms",
-		 )
-	 ]);
-	 
-	 //response to thinmoo server end
+		return response()->json([
+			'code' => 0,
+			'msg' =>'success',
+			'data' => [
+				'appSipAccountList' => $appSipAccountList,
+				'devSnList' => [],
+				'time' => $returntime." ms",
+			]
+	 	]);
+
 	}
 
 	public function call_push_notification(Request $request)
