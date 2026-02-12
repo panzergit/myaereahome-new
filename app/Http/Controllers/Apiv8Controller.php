@@ -19,7 +19,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Auth;
 use Mail;
-use Illuminate\Support\Str;
 use Hash;
 use DB;
 use App\Models\v7\LoginOTP;
@@ -124,6 +123,7 @@ use App\Models\v7\UserRegistrationRequest;
 use App\Models\v7\CallUnitAnswerRecord;
 use App\Models\v7\AccountDeleteRequest;
 use App\Services\ApplePushService;
+use Illuminate\Support\Str;
 
 class Apiv8Controller extends Controller
 {
