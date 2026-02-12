@@ -1,5 +1,10 @@
 @extends('layouts.adminnew')
-
+<style>
+.sortby {
+    color: #5D5D5D;
+    margin-top: 10px;
+    font: normal normal bold 18px/24px Helvetica;
+}</style>
 
 @section('content')
 
@@ -264,8 +269,40 @@
                               </div>
                            </div>
                            </div>
-						   
-						    <div class="col-lg-6 col-12 mt0-4">
+						        <div class="col-lg-12 asignFace1">
+                  <h2 class="sortby">Sort By :</h2>
+               </div>
+			   <div class="col-lg-12">
+                           <div class="form-group row">
+                              <div  class="col-sm-2 filerl  col-5">
+                                 <label class="containerbut">earliest date
+                                 <input type="radio" name="filter" value="created_at" checked="">
+                                 <span class="checkmarkbut"></span>
+                                 </label>
+                                                      </div>
+                                                         <div  class="col-sm-1 filerl  col-3">
+                                          <label class="containerbut">facility
+                                 <input type="radio" name="filter" value="type_id" {{($filter=='type_id')?'checked':''}}>
+                                 <span class="checkmarkbut"></span>
+                                 </label>
+                                    
+                                                            </div>
+															  <div  class="col-sm-2 filerl  col-3 ml-5">
+                                          <label class="containerbut">date of event
+                                 <input type="radio" name="filter" value="booking_date" {{($filter=='booking_date')?'checked':''}}>
+                                 <span class="checkmarkbut"></span>
+                                 </label>
+                                    
+                                                            </div>
+                                                      <div  class="col-sm-2 filerl  col-4">
+                                                      <label class="containerbut"> status
+                                 <input type="radio" name="filter" value="status" {{($filter=='status')?'checked':''}}>
+                                 <span class="checkmarkbut"></span>
+                                 </label>
+                              </div>
+                           </div>
+					 </div>
+						    <div class="col-lg-12 col-12 ">
 						   <div class="form-group ">
 							
                    
@@ -276,41 +313,8 @@
 							</div>
 						    
                      </div>
-                       <div class="col-lg-12 asignFace">
-                  <h2>filter</h2>
-               </div>
-					  <div class="asignbg">
-					  <div class="col-lg-5">
-                           <div class="form-group row">
-                              <div  class="col-sm-5 filerl  col-5">
-                                 <label class="containerbut">earliest date
-                                 <input type="radio" name="filter" value="created_at" checked="">
-                                 <span class="checkmarkbut"></span>
-                                 </label>
-                                                      </div>
-                                                         <div  class="col-sm-4 filerl  col-3">
-                                          <label class="containerbut">facility
-                                 <input type="radio" name="filter" value="type_id" {{($filter=='type_id')?'checked':''}}>
-                                 <span class="checkmarkbut"></span>
-                                 </label>
-                                    
-                                                            </div>
-                                                            <div  class="col-sm-2 filerl  col-3">
-                                          <label class="containerbut">date of event
-                                 <input type="radio" name="filter" value="booking_date" {{($filter=='booking_date')?'checked':''}}>
-                                 <span class="checkmarkbut"></span>
-                                 </label>
-                                    
-                                                            </div>
-                                                      <div  class="col-sm-3 filerl  col-4">
-                                                      <label class="containerbut"> status
-                                 <input type="radio" name="filter" value="status" {{($filter=='status')?'checked':''}}>
-                                 <span class="checkmarkbut"></span>
-                                 </label>
-                              </div>
-                           </div>
-					 </div>
-					 </div>
+                   
+					 
                   </form>
 
                   <div>
@@ -321,8 +325,8 @@
                         <th>facility</th>
                            <th>booked by</th>
                            
-                           <th>block</th>
-                           <th>unit</th>
+                          <th style="width:100px;">block</th>
+                           <th style="width:100px;">unit</th>
                            <th>booking date</th>
                            <th>booking time</th>
                            <th>Booking status</th>
