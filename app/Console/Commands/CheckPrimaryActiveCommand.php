@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use App\Models\v7\ConfigSetting;
 
 class CheckPrimaryActiveCommand extends Command
 {
@@ -27,10 +27,8 @@ class CheckPrimaryActiveCommand extends Command
      */
     public function handle()
     {
-        $lastKnown = DB::table('system_state')
-            ->where('key_name', 'primary_status')
-            ->value('updated_at');
-
-        if (now()->diffInMinutes($lastKnown) > 3) Artisan::call('aereahome:sync_pull');
+        $lastKnown = ConfigSetting::where(['name' => 'PRIMARY_STATE', 'status' => 1])->value('updated_at');
+        
+        if (!empty($lastKnown) && now()->diffInMinutes($lastKnown) > 3) Artisan::call('aereahome:sync_pull');
     }
 }
