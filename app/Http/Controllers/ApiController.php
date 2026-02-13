@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
+
 use Session;
 use Validator;
 use App\Models\v7\Role;
-use App\Models\v\User;
+use App\Models\v7\User;
 use App\Models\v7\UserMoreInfo;
 use App\Models\v7\UserFacialId;
 use App\Models\v7\UserFavMenu;
@@ -109,6 +109,8 @@ use App\Models\v7\ChatBoxTnc;
 use App\Models\v7\MpAdsType;
 use App\Models\v7\MpAdsSubmission;
 use App\Models\v7\MpAdsImage;
+use App\Services\ApplePushService;
+use Illuminate\Support\Str;
 
 class ApiController extends Controller
 {
@@ -5332,7 +5334,7 @@ class ApiController extends Controller
 		]);
 	}
 
-	public function call_from_thinmoo(Request $request)
+	public function call_from_thinmoo(Request $request, ApplePushService $apns)
     {
 		
 		$start_time = microtime(true);
@@ -5340,6 +5342,7 @@ class ApiController extends Controller
 		$rawPostData = file_get_contents("php://input");
 		$special_char = array("{", "}");
 		$string = str_replace($special_char, "", $rawPostData);
+		$string = str_replace("'", '"', $rawPostData);
 		$values = explode(",",$string );
 		$quote_char = array('"','"'," ");
 		foreach($values as $value){
@@ -5384,6 +5387,7 @@ class ApiController extends Controller
 			]);
 		}
 		//
+		$CommunityDoor =0;
 		if($input['buildingCode'] !=''){
 			$building = Building::select('id')->where('building_no',$input['buildingCode'])->where('account_id',$device->account_id)->first();
 			if(empty($building)){
@@ -5402,35 +5406,35 @@ class ApiController extends Controller
 			}
 		}
 		else{
-			$building = Building::select('buildings.id')->join('devices', 'devices.locations', '=', 'buildings.id')->where('devices.device_serial_no',$input['devSn'])->first();
+			if($device->device_type ==3)
+			{
+				$CommunityDoor =1;
+			}else{
+				$building = Building::select('buildings.id')
+					->join('devices', 'devices.locations', '=', 'buildings.id')
+					->where('devices.device_serial_no',$input['devSn'])->first();
 
-			if(empty($building)){
-				return response()->json([
-					'code' =>99999,
-					'msg'=>'Building not available!'
-				]);
+				if(!$building) return response()->json([
+						'code' =>99999,
+						'msg'=>'Building not available!'
+					]);
 			}
 		}
-		
-
-		
-
 
 		$roomCode = $input['roomCode'];
 		$unitcode = "0".$input['roomCode'];
 
-		$unitObj = Unit::where('building_id',$building->id)->get();
-
-		if(empty($unitObj)){
-			return response()->json([
+		$unitObj = Unit::where($CommunityDoor ==1 ? ['account_id' => $device->account_id] 
+			: ['building_id' => $building->id])->get();
+		
+		if($unitObj->isEmpty()) return response()->json([
 				'code' =>99999,
 				'msg'=>'Unit not available!'
 			]);
-		}
+		
 		$unit_id ='';
 		if(isset($unitObj)){
 			foreach($unitObj as $unit){
-				//echo Crypt::decryptString($unit->code)." ".$roomCode;
 				if(Crypt::decryptString($unit->code) == $roomCode || Crypt::decryptString($unit->code) ==$unitcode){
 					$unit_id = $unit->id;
 					break;
@@ -5444,34 +5448,34 @@ class ApiController extends Controller
 				'msg'=>'Unit not available!'
 			]);
 		}
-		
+
 		$unit = Unit::where('id',$unit_id)->first();
+		$allowedUsers = UserRemoteDevice::where(['unit_no' => $unit->id, 'device_svn' => $input['devSn']])
+			->pluck('user_id')->toArray();
+		
+		$users_lists = UserPurchaserUnit::whereIn('user_id',$allowedUsers)->where('unit_id',$unit->id)->where('receive_call',1)->get();
 
-		$users_lists = UserPurchaserUnit::where('unit_id1',$unit->id)->where('receive_call',1)->get();
-		//$users_lists = User::select('users.id')->where('users.status',1)->where('users.unit_no',$unit->id)->join('user_more_infos', 'users.id', '=', 'user_more_infos.user_id')->where('user_more_infos.receive_device_cal',1)->orderby('users.id','desc')->get();
-
-
-		$user_rec = ',';
-		$user_token = ',';
+		$user_rec =  $user_token = ',';
 		$fcm_token_array ='';
-		$ios_devices_to_send = array();
-		$android_devices_to_send = array();
-		$appSipAccountList = array();
+		$ios_devices_to_send = $android_devices_to_send = $appSipAccountList = [];
+
 		foreach($users_lists as $user){
 			$user_rec .=$user->user_id.",";
 			$logs = UserLog::where('user_id',$user->user_id)->where('status',1)->orderby('id','desc')->first();
-			if(isset($logs->fcm_token) && $logs->fcm_token !=''){
-				$user_token .=$logs->fcm_token.",";
-				$fcm_token_array .=$logs->fcm_token.',';
-				//echo "U Id :".$user->user_id;
-				//echo "Id :".$logs->id;
-				//echo "Token :".$logs->fcm_token;
-				//echo "Property :".$logs->account_id;
-				$appSipAccountList[] = $user->user_id;
-				if($logs->login_from ==1)
-					$ios_devices_to_send[] = $logs->fcm_token;
-				if($logs->login_from ==2)
-					$android_devices_to_send[] = $logs->fcm_token;
+			
+			if($logs)
+			{
+				//iOs
+				if(trim($logs->call_device_token) !='' && $logs->login_from ==1) $ios_devices_to_send[] = $logs->call_device_token;
+
+				if(trim($logs->fcm_token) !='')
+				{
+					$user_token .=$logs->fcm_token.",";
+					$fcm_token_array .=$logs->fcm_token.',';
+					$appSipAccountList[] = $user->user_id;
+					// if($logs->login_from ==1) $ios_devices_to_send[] = $logs->fcm_token;
+					if($logs->login_from ==2) $android_devices_to_send[] = $logs->fcm_token;
+				}
 			}
 		}
 
@@ -5485,7 +5489,7 @@ class ApiController extends Controller
 		
 		$result = CallPushRecord::create($input);
 
-		$auth = new \App\Models\v2\Property();
+		$auth = new \App\Models\v7\Property();
 		$thinmoo_access_token = $auth->thinmoo_auth_api(); 
 		
 		$thinmoo_appId = env('APPID');
@@ -5506,7 +5510,7 @@ class ApiController extends Controller
 			'sound'=>'ring.mp3'
         ];
 		$fields_string = json_encode($fields);
-        $ch = curl_init();
+        /*$ch = curl_init();
 		$url = env('FIREBASE_URL');
         curl_setopt($ch,CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POST, true );
@@ -5517,40 +5521,52 @@ class ApiController extends Controller
         $result = curl_exec($ch);
         $json = json_decode($result,true);
         $err = curl_error($ch);
-        curl_close($ch);
-        //return $json;
-		//return $response; 
+        curl_close($ch);*/
 
+		$payload = [
+			'aps' => [
+				'alert' => [
+					'title' => $title,
+					'body' => $body
+				],
+				'sound' => 'default',
+			],
+			'additional_data' => $data,
+			'call_id' => Str::uuid(),
+		];
 
-		//print_r($android_devices_to_send);
-		$title = "Incoming call - ".$probObj->company_name;
-		$body ="Call notification for Room ".$input['roomCode'];
-		$data = array('body'=>$body,'devSn'=>$input['devSn'],'accessToken' =>$thinmoo_access_token,'extCommunityuuid'=>$unit->account_id,'unitId'=>$unit->id,'appId'=>$thinmoo_appId,'title'=> $title,'message'=> $body);
-		$fields = [
-            'project_id'         => 'aerea-staging',
-            'device_tokens'      => array_unique($android_devices_to_send),
-            'title'              => $title,
-            'message'            => $body,
-            'additional_data'    => $data,
-			'to'    			 => 'android'
-        ];
-		$fields_string = json_encode($fields);
-        $ch = curl_init();
-		$url = env('FIREBASE_URL');
-		//echo $url ;
-		//print_r($fields);
-        curl_setopt($ch,CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_POST, true );
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string); 
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER, true); 
-		curl_setopt($ch, CURLOPT_HTTPHEADER,     array('accept: application/json',
-    'content-type: application/json')); 
-        $result = curl_exec($ch);
-		//print_r($result);
-        $json = json_decode($result,true);
-        $err = curl_error($ch);
-        curl_close($ch);
-        //return $json;
+		foreach(array_unique($ios_devices_to_send) as $iOSDeviceTokens){
+			\Log::info('Call notification send to Ios token => '.$iOSDeviceTokens);
+			$result = $apns->sendVoip($iOSDeviceTokens, $payload);
+			\Log::info('Voip result',$result);
+		}
+
+		$unique_android_devices_to_send = array_unique($android_devices_to_send);
+		if(!empty($unique_android_devices_to_send))
+		{
+			$data = ['body'=>$body,'devSn'=>$input['devSn'],'accessToken' =>$thinmoo_access_token,'extCommunityuuid'=>$unit->account_id,'unitId'=>$unit->id,'appId'=>$thinmoo_appId,'title'=> $title,'message'=> $body];
+			$fields = [
+				'project_id'         => 'aerea-staging',
+				'device_tokens'      => $unique_android_devices_to_send,
+				'title'              => $title,
+				'message'            => $body,
+				'additional_data'    => $data,
+				'to'    			 => 'android'
+			];
+			$fields_string = json_encode($fields);
+			$ch = curl_init();
+			$url = env('FIREBASE_URL');
+			curl_setopt($ch,CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_POST, true );
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string); 
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER, true); 
+			curl_setopt($ch, CURLOPT_HTTPHEADER,     array('accept: application/json',
+		'content-type: application/json')); 
+			$result = curl_exec($ch);
+			$json = json_decode($result,true);
+			$err = curl_error($ch);
+			curl_close($ch);
+		}
 
 	 $devSnList = str_replace('"','',$input['devSn']);
 
@@ -6140,7 +6156,7 @@ class ApiController extends Controller
 			$data['created_at'] = date('Y-m-d H:i:s');
 			$data['updated_at'] = date('Y-m-d H:i:s');
 
-			$record = NormalDoorOpenRecord ::insert($data);  
+			$record = NormalDoorOpenRecord ::insert($data);
 		}
 		
 		return response()->json([
