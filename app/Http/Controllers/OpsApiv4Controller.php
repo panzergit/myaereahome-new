@@ -1348,7 +1348,7 @@ class OpsApiv4Controller extends Controller
 		if(empty($permission) || (isset($permission->view) && $permission->view !=1)) return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
 
 		$announcements = Announcement::where('account_id',$user->account_id)->orderByDesc('id')->get();
-		
+
 		return response()->json(['data'=>$announcements,'file_path'=> image_storage_domain(),'response' => 1, 'message' => 'Success']);
 	}
 
@@ -10483,6 +10483,10 @@ class OpsApiv4Controller extends Controller
 		$login_id = Auth::id();
 		$id = $request->id;
 		$adminObj = User::find($login_id); 
+
+		$feedbackObj = FeedbackSubmission::find($id);
+
+		if(!$feedbackObj) return response()->json(['data'=>null, 'response' => 200, 'message' => 'Invalid feedback ID.']);
 
 		if(empty($adminObj)){
 			return response()->json(['data'=>null,'response' => 300, 'message' => 'Login not found']);
