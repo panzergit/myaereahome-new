@@ -472,6 +472,7 @@ Route::prefix('/v8')->group(function () {
         Route::any('update_notification', [Apiv8Controller::class, 'update_notification']);
         Route::any('switchunit', [Apiv8Controller::class, 'switchunit']);
         Route::any('getunitlist', [Apiv8Controller::class, 'getunitlist']);
+        Route::any('getunituserlist', [Apiv8Controller::class,'getunituserlist']);
         Route::any('getSwitchId', [Apiv8Controller::class, 'getswitchid']);
         Route::any('FacialRegPicOption', [Apiv8Controller::class, 'FacialRegPicOption']);
         Route::any('FacialRegPic', [Apiv8Controller::class, 'FacialRegPic']);

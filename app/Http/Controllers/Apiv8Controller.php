@@ -127,6 +127,15 @@ use Illuminate\Support\Str;
 
 class Apiv8Controller extends Controller
 {
+	public function serverStatus(Request $request)
+    {
+         return response()->json([
+            'status' => true,
+            'code' => 1,
+            'message' => 'Success'
+        ]);
+    }
+
 	public function accountDeleteReasons(Request $request)
     {
         return response()->json([
@@ -720,26 +729,23 @@ class Apiv8Controller extends Controller
 
 	public function getunituserlist(Request $request) 
     {
-		$id = Auth::id();
-		$userObj = User::find($id); 
-		if(empty($userObj)){
-			return response()->json(['data'=>'','response' => 300, 'message' => 'User not found']);
-		}
-		$account_id = $userObj->account_id;
-		$unit_id = $userObj->unit_no;
-		$unitids_byusers = UserPurchaserUnit::where('property_id', $account_id)->where('unit_id', $unit_id)->get();
+		$user = $request->user();
 
-        $prop_userids =array();
-        foreach($unitids_byusers as $k =>$v){
-            $prop_userids[] = $v->user_info_id;
-        }
-        $users = UserMoreInfo::WhereIn('id',$prop_userids)->where('status',1)->orderBy('user_id','DESC')->get();
-		$data = array();
-		$data['id'] = isset($userinfo->id)?$userinfo->id:null;
-		$data['first_name'] = isset($userinfo->first_name)?Crypt::decryptString($userinfo->first_name):null;
-		$data['last_name'] = isset($userinfo->last_name)?Crypt::decryptString($userinfo->last_name):null;
-		$data['profile_picture'] = isset($userinfo->profile_picture)?$userinfo->profile_picture:null;
-		return response()->json(['data'=>$data,'response' => 1, 'message' => 'Success']);
+		$prop_userids = UserPurchaserUnit::where(['property_id' => $user->account_id, 'unit_id' => $user->unit_no])
+			->pluck('user_info_id')->toArray();
+
+        $userdata = UserMoreInfo::WhereIn('id',$prop_userids)->where('status',1)->orderByDesc('user_id')
+			->get()->map(function($e) {
+				return [
+					'id' => $e->id,
+					'first_name' => !empty(trim($e->first_name)) ? Crypt::decryptString($e->first_name) : null,
+					'last_name' => !empty(trim($e->last_name)) ? Crypt::decryptString($e->last_name) : null,
+					'role' => isset($e->getuser->role->name) ? $e->getuser->role->name : null,
+					'profile_picture' => !empty($e->profile_picture) ? $e->profile_picture : null
+				];
+			});
+
+		return response()->json(['data' => $userdata,'file_path'=> image_storage_domain(), 'response' => 1, 'message' => 'Success']);
 		
 	}
 
@@ -1637,7 +1643,7 @@ class Apiv8Controller extends Controller
         $details = [];
 
         $ticket = new \App\Models\v7\Defect();
-		
+
 		$input['user_id'] = $user->id;
 		$input['account_id'] = $user->account_id;
 		$input['block_no'] = $user->building_no;
@@ -1651,7 +1657,7 @@ class Apiv8Controller extends Controller
         $data['user_id'] = $input['user_id'];
         $data['def_id'] = $defect->id;
 
-        for($i=1;$i<=100;$i++)
+		for($i=1;$i<=100;$i++)
 		{
         	$location = 'defect_location_'.$i;
             $type = 'defect_type_'.$i;
@@ -1687,8 +1693,7 @@ class Apiv8Controller extends Controller
 		if($probObj->manager_push_notification ==1){ //if push notification activated for manager app
 			$fcm_token_array ='';
 			$user_token = ',';
-			$ios_devices_to_send = [];
-			$android_devices_to_send = [];
+			$ios_devices_to_send = $android_devices_to_send = [];
 			
 			$allowed_roles = ModuleSetting::where(['module_id' => 3, 'view' => 1])->whereNotIn('role_id',[3])->get();
 			if($allowed_roles->isNotEmpty()){
@@ -2461,7 +2466,7 @@ class Apiv8Controller extends Controller
 			}
 			//print_r($prop_banner_array);
 
-			$homeBanner = HomeBanner::whereIn('id', $prop_banner_array)->where('status',1)->orderby('display_order','desc')->get();
+			$homeBanner = HomeBanner::whereIn('id', $prop_banner_array)->where('status',1)->orderby('display_order','asc')->get();
 			if(isset($UserObj->propertyinfo)){
 				$data['sliders'] = $homeBanner;
 			}
@@ -3701,28 +3706,38 @@ class Apiv8Controller extends Controller
 	}
 
 
-	public function announcement(Request $request)
-	{
-		$UserObj = $request->user();
-		$data = AnnouncementDetail::where([
-				'user_id' => $UserObj->id, 
-				'account_id'=>$UserObj->account_id
-			])
-			->groupBy('a_id')
-			->orderByDesc('id')->get()
-			->map(fn($r) => [
-				'list' => $r,
-				'announce' => $r->announcement,
-			]);
+	public function announcement(Request $request) {
 
-		return $data->isEmpty() ? response()->json(['message' => "No Record"], 402) 
-			: response()->json([
-			'record' => $data, 
-			'file_path' => image_storage_domain(),
-			'response' => 1, 
-			'message' => 'Success!'
-		]);
+		$userid = Auth::id();
+
+		$UserObj = User::find($userid);
+
+		$list_array =array();
+		$lists = AnnouncementDetail::where('user_id',$userid)->where('account_id',$UserObj->account_id)->groupBy('a_id')->orderBy('id','DSC')->get();
+		$data =array();
+		foreach($lists as $list){
+			$record = array();
+			$record['list'] = $list;
+			$record['announce'] = $list->announcement;
+			$data[] = $record ;
+
+		}
+
+		$file_path = image_storage_domain();
+
+		if(isset($lists)){
+	    	return response()->json(['record'=>$data,'file_path'=>$file_path,'response' => 1, 'message' => 'Success!']);
+		}
+		else{
+			return response()->json([
+                'message' => "No Record",
+            ], 402);
+		}
+
 	}
+
+
+
 
 	public function announcementDetail(Request $request){
 		$rules=array(
@@ -6737,7 +6752,7 @@ class Apiv8Controller extends Controller
 		foreach($users_lists as $user)
 		{
 			$user_rec .=$user->user_id.",";
-			$logs = UserLog::where(['user_id' => $user->user_id, 'status' => 1])->orderbyDesc('id')->first();
+			$logs = UserLog::where(['user_id' => $user->user_id, 'status' => 1])->orderByDesc('id')->first();
 
 			if($logs)
 			{
@@ -6751,7 +6766,6 @@ class Apiv8Controller extends Controller
 					$user_token .=$logs->fcm_token.",";
 					$fcm_token_array .=$logs->fcm_token.',';
 					$appSipAccountList[] = $user->user_id;
-					// if($logs->login_from ==1) $ios_devices_to_send[] = $logs->fcm_token;
 					if($logs->login_from ==2) $android_devices_to_send[] = $logs->fcm_token;
 				}
 			}
@@ -6767,24 +6781,30 @@ class Apiv8Controller extends Controller
 		$auth = new \App\Models\v2\Property();
 		$thinmoo_access_token = $auth->thinmoo_auth_api(); 
 		
-		$thinmoo_appId = env('APPID');
-
 		//Push notification to Mobile app for IOS
 		$probObj = Property::find($unit->account_id);
 		$title = "Incoming call - ".$probObj->company_name;
 		$body = "Call notification for Room ".$input['roomCode'];
-		$data = ['body'=>$body,'devSn'=>$input['devSn'],'accessToken' =>$thinmoo_access_token,'extCommunityuuid'=>$unit->account_id,'unitId'=>$unit->id,'appId'=>$thinmoo_appId,"sound"=> "ring.mp3"];
-		$fields = [
+		$data = [
+			'body' => $body,
+			'devSn' => $input['devSn'],
+			'accessToken' => $thinmoo_access_token,
+			'extCommunityuuid' => $unit->account_id,
+			'unitId' => $unit->id,
+			'appId' => env('APPID', '')
+		];
+
+		/*$fields = [
             'project_id' => 'aerea-staging',
             'device_tokens' => array_unique($ios_devices_to_send),
             'title' => $title,
             'message' => $body,
-            'additional_data'    => $data,
-			'to'    => 'ios',
+            'additional_data' => $data + ["sound"=> "ring.mp3"],
+			'to' => 'ios',
 			'sound'=>'ring.mp3'
         ];
 		$fields_string = json_encode($fields);
-		/*$ch = curl_init();
+		$ch = curl_init();
 		$url = env('FIREBASE_URL');
         curl_setopt($ch,CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POST, true );
@@ -6804,34 +6824,30 @@ class Apiv8Controller extends Controller
 				],
 				'sound' => 'default',
 			],
-			'additional_data' => $data,
+			'additional_data' => $data + ["sound"=> "ring.mp3"],
 			'call_id' => Str::uuid(),
 		];
 		foreach(array_unique($ios_devices_to_send) as $iOSDeviceTokens){
 			\Log::info('Call notification send to Ios token => '.$iOSDeviceTokens);
 			$result = $apns->sendVoip($iOSDeviceTokens, $payload);
-			\Log::info('Call notification send to Ios result => ',$result);
+			\Log::info('Voip result',$result);
 		}
 
-		$title = "Incoming call - ".$probObj->company_name;
-		$body ="Call notification for Room ".$input['roomCode'];
-		$data = array('body'=>$body,'devSn'=>$input['devSn'],'accessToken' =>$thinmoo_access_token,'extCommunityuuid'=>$unit->account_id,'unitId'=>$unit->id,'appId'=>$thinmoo_appId,'title'=> $title,'message'=> $body);
-		$fields = [
+		$fields_string = json_encode([
             'project_id' => 'aerea-staging',
             'device_tokens' => array_unique($android_devices_to_send),
             'title' => $title,
             'message' => $body,
-            'additional_data' => $data,
+            'additional_data' => $data + ['title'=> $title,'message'=> $body],
 			'to' => 'android'
-        ];
-		$fields_string = json_encode($fields);
+        ]);
         $ch = curl_init();
 		$url = env('FIREBASE_URL');
         curl_setopt($ch,CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POST, true );
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string); 
         curl_setopt($ch,CURLOPT_RETURNTRANSFER, true); 
-		curl_setopt($ch, CURLOPT_HTTPHEADER,     array('accept: application/json', 'content-type: application/json')); 
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('accept: application/json', 'content-type: application/json')); 
         $result = curl_exec($ch);
         $json = json_decode($result,true);
         $err = curl_error($ch);
@@ -8059,9 +8075,9 @@ class Apiv8Controller extends Controller
 			]);
 		}
 		$invoiceIds = array();
-		$invoice = FinanceInvoice::where('account_id',$input['property'])->where('unit_no',$userObj->unit_no)->where('user_access_status',1)->orderby('id','desc')->first(); 
-		
-		if(isset($invoice)){
+		$invoice = FinanceInvoice::where(['account_id' => $input['property'], 'unit_no' => $userObj->unit_no, 'user_access_status' => 1])->orderByDesc('id')->first();
+
+		if($invoice){
 				$data = array();
 				$invoiceIds[] =$invoice->id;
 				$data['id'] = $invoice->id;
@@ -11426,7 +11442,7 @@ class Apiv8Controller extends Controller
 			$property = Property::find($bookingObj->account_id);
 
 			$visiting_time = Carbon::now()->format('Y-m-d H:i:s');
-			
+
 			if(isset($bookingObj->visiting_date) && $bookingObj->visiting_start_time <= $visiting_time && $bookingObj->visiting_end_time >= $visiting_time)
 			{
 				$env_max_scan_count = $bookingObj->qr_scan_limit;

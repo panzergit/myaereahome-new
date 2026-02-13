@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Crypt;
 use Validator;
 use App\Models\v7\Role;
-use App\Models\v\User;
+use App\Models\v7\User;
 use App\Models\v7\UserMoreInfo;
 use App\Models\v7\UserFacialId;
 use App\Models\v7\UserFavMenu;
