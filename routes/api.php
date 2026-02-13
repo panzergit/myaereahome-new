@@ -398,6 +398,8 @@ Route::prefix('/v7')->group(function () {
 
 Route::prefix('/v8')->group(function () {
 
+    Route::any('serverStatus', 'Apiv8Controller@serverStatus');
+
     Route::any('userRegistration', [Apiv8Controller::class, 'user_registration']);
     Route::any('getProperties', [Apiv8Controller::class, 'property_lists']);
     Route::any('propertyBlock', [Apiv8Controller::class, 'property_block']);
@@ -627,6 +629,7 @@ Route::prefix('/v8')->group(function () {
 
 Route::prefix('/ops/v4')->group(function () {
 
+    Route::any('serverStatus', 'OpsApiv4Controller@serverStatus');
     Route::any('getiosversion', [OpsApiv4Controller::class, 'getiosversion']);
     Route::any('getandroidversion', [OpsApiv4Controller::class, 'getandroidversion']);
 
@@ -771,6 +774,7 @@ Route::prefix('/ops/v4')->group(function () {
         Route::any('cancelkeycollection', [OpsApiv4Controller::class, 'cancelkeycollection']);
         Route::any('confirmkeycollection', [OpsApiv4Controller::class, 'confirmkeycollection']);
 
+        Route::any('alertdefectscount', 'OpsApiv4Controller@alertdefectscount');
         Route::any('defectslist', [OpsApiv4Controller::class, 'defectslist']);
         Route::any('defectsnewlist', [OpsApiv4Controller::class, 'defectsnewlist']);
         Route::any('defectsinfo', [OpsApiv4Controller::class, 'defectsinfo']);

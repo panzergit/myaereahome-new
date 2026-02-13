@@ -110,6 +110,7 @@ use App\Models\v7\UserNotification;
 use App\Models\v7\UserPurchaserUnit;
 use App\Models\v7\UserDevice;
 use App\Models\v7\UserRemoteDevice;
+use App\Models\v7\UserFaceidDevice;
 use App\Models\v7\Country;
 use App\Models\v7\UserCard;
 
@@ -147,6 +148,15 @@ use App\Models\v7\DefectUpdateLog;
 
 class OpsApiv4Controller extends Controller
 {
+
+	public function serverStatus(Request $request)
+    {
+         return response()->json([
+            'status' => true,
+            'code' => 1,
+            'message' => 'Success'
+        ]);
+    }
 
 	public function accountDeleteRequestLists(Request $request)
     {
@@ -314,7 +324,7 @@ class OpsApiv4Controller extends Controller
                     'status' => 1
                 ])
                 ->whereIn('user_id',$totalHomeUsersLists->pluck('user_id'))
-                ->whereIn('id', function ($q) use ($accountId, $totalHomeUsersLists) {
+				->whereIn('id', function ($q) use ($accountId, $totalHomeUsersLists) {
                     $q->selectRaw('MAX(id)')
                     ->from('user_logs')
                     ->where([
@@ -375,37 +385,37 @@ class OpsApiv4Controller extends Controller
                     ],
                     'chart_two' => [
                         'app_using' => [
-                                'percentage' => number_format((($app_using_count/$totalHomeUsers)*100),2),
+                                'percentage' => ($totalHomeUsers != 0)?number_format((($app_using_count/$totalHomeUsers)*100),2):0,
                                 'numbers' => $app_using_count
                             ],
                         'app_not_using' => [
-                                'percentage' => number_format((($app_notusing_count/$totalHomeUsers)*100),2),
+                                'percentage' => ($totalHomeUsers != 0)?number_format((($app_notusing_count/$totalHomeUsers)*100),2):0,
                                 'numbers' => $app_notusing_count
                             ],
                     ],
                     'chart_three' => [
                         'total' => $totalPropUsers,
                         'android_usage' => [
-                                'percentage' => $totalUsers->isNotEmpty() ? number_format((($androidUsageNumbers/$totalHomeUsers)*100),2) : 0,
+                                'percentage' => ($totalHomeUsers != 0) ? number_format((($androidUsageNumbers/$totalHomeUsers)*100),2) : 0,
                                 'numbers' => $androidUsageNumbers
                             ],
                         'ios_usage' => [
-                                'percentage' => $totalUsers->isNotEmpty() ? number_format((($iOsUsageNumbers/$totalHomeUsers)*100),2) : 0,
+                                'percentage' => ($totalHomeUsers != 0) ? number_format((($iOsUsageNumbers/$totalHomeUsers)*100),2) : 0,
                                 'numbers' => $iOsUsageNumbers
                             ],
                     ],
                    
 					'chart_four' => [
                         'one_car_usage' => [
-                                'percentage' => number_format((($one_car/$totalUnits)*100),2),
+                                'percentage' => ($totalUnits != 0)?number_format((($one_car/$totalUnits)*100),2):0,
                                 'numbers' => $one_car
                             ],
                         'two_car_usage' => [
-                                'percentage' => number_format((($two_cars/$totalUnits)*100),2),
+                                'percentage' => ($totalUnits != 0)?number_format((($two_cars/$totalUnits)*100),2):0,
                                 'numbers' => $two_cars
                             ],
                         'no_car_usage' => [
-                                'percentage' =>  number_format((($no_cars/$totalUnits)*100),2),
+                                'percentage' =>  ($totalUnits != 0)?number_format((($no_cars/$totalUnits)*100),2):0,
                                 'numbers' => $no_cars
                             ],
                     ]
@@ -1520,9 +1530,9 @@ class OpsApiv4Controller extends Controller
 			if($adminObj->role_id ==1){
 				$users = User::where('role_id',3)->get();
 				$roles = Role::pluck('name', 'id')->all(); 
-		   	} else{
+			} else{
 				$prop_userids = array();
-				$userids = UserProperty::where('property_id',$account_id)->orderby('id','desc')->get();        
+				$userids = UserProperty::where('property_id',$account_id)->orderby('id','desc')->get();
 				
 				foreach($userids as $k =>$v) $prop_userids[] = $v->user_id;
 				
@@ -1532,7 +1542,7 @@ class OpsApiv4Controller extends Controller
 				})->orderby('id','desc')->get();
 
 				$roles = Role::WhereRaw("CONCAT(',',account_id,',') LIKE ?", '%,'.$account_id .',%')->orWhere('type',1)->pluck('name', 'id')->all();
-		   }
+		   	}
 
 			$app_user_lists = explode(",",env('USER_APP_ROLE'));
 			$data = [];
@@ -2586,7 +2596,8 @@ class OpsApiv4Controller extends Controller
 						$record['building'] = isset($PurchasedUnit->addubuildinginfo->building)?$PurchasedUnit->addubuildinginfo->building:null;
 						$record['unit_no'] = $PurchasedUnit->unit_id;
 						$record['unit'] = isset($PurchasedUnit->addunitinfo->unit)?Crypt::decryptString($PurchasedUnit->addunitinfo->unit):null;
-						$devices = Device::where('locations',$PurchasedUnit->building_id)->where('account_id',$account_id)->get();
+						$devices = Device::WhereRaw("CONCAT(',',locations,',') LIKE ? or locations  LIKE ?", ['%,'.$PurchasedUnit->building_id .',%','0'])->where('account_id',$account_id)->get();
+				
 						$available_devices = array();
 						if(isset($devices)){
 							foreach($devices as $device){
@@ -2603,6 +2614,10 @@ class OpsApiv4Controller extends Controller
 								
 								$user_remote_device = UserRemoteDevice::where('account_id',$account_id)->where('unit_no',$PurchasedUnit->unit_id)->where('user_id',$user)->where('device_id',$device->id)->first();
 									$devices_array['user_remote_checked_status'] = isset($user_remote_device)?1:0;
+								
+								$user_faceid_device = UserFaceidDevice::where('account_id',$account_id)->where('unit_no',$PurchasedUnit->unit_id)->where('user_id',$user)->where('device_id',$device->id)->first();
+                                    $devices_array['user_faceid_checked_status'] = isset($user_faceid_device)?1:0;
+
 								$available_devices[] = $devices_array;
 								
 							}
@@ -2729,14 +2744,16 @@ class OpsApiv4Controller extends Controller
 			$user_roles = explode(",",env('USER_APP_ROLE'));
 			UserDevice::where('account_id',$account_id)->where('user_id',$user)->delete();
 			UserRemoteDevice::where('account_id',$account_id)->where('user_id',$user)->delete();
+        	UserFaceidDevice::where('account_id',$account_id)->where('user_id',$user)->delete();
 
-
+			$user_faceid_devices = '';
 			if(in_array($UserObj->role_id,$user_roles))
 			   { // userapp devices
 				$PurchasedUnits = UserPurchaserUnit::where('user_info_id', $UserMoreInfoObj->id)->where('property_id',$account_id)->get();
 				$data =array();
 				if(isset($PurchasedUnits)){
 					foreach($PurchasedUnits as $PurchasedUnit){
+						$roomuuids = $PurchasedUnit->unit_id.",";
 
 						$devices = Device::where('locations',$PurchasedUnit->building_id)->where('account_id',$account_id)->get();
 						if(isset($devices)){
@@ -2762,7 +2779,19 @@ class OpsApiv4Controller extends Controller
 									$device_input['device_id'] = $device->id;
 									$device_input['device_svn'] = $device->device_serial_no;
 									UserRemoteDevice::create($device_input);  
-								}        
+								}  
+								$faceid_device_checked = "unit_".$PurchasedUnit->id."_device_faceid_".$device->id;
+								if(isset($input[$faceid_device_checked]) && $input[$faceid_device_checked] ==1)
+								{      
+									$user_faceid_devices .= $device->device_serial_no.",";    
+									$device_input['user_id'] = $user;
+									$device_input['account_id'] = $account_id;
+									$device_input['building_id'] = $PurchasedUnit->building_id;
+									$device_input['unit_no'] = $PurchasedUnit->unit_id;
+									$device_input['device_id'] = $device->id;
+									$device_input['device_svn'] = $device->device_serial_no;
+									UserFaceidDevice::create($device_input);  
+								}       
 							}
 						}
 						$receive_device_call ="receive_device_cal_".$PurchasedUnit->id;
@@ -2782,6 +2811,17 @@ class OpsApiv4Controller extends Controller
 				$log['ref_id'] = $UserMoreInfoObj->id;
 				$log['notes'] = 'User Device Updated from Manager App';
 				$log = ActivityLog::create($log);
+
+				if($user_faceid_devices !=''){
+					$devices = substr($user_faceid_devices,0,-1);
+					$roomuuids = substr($roomuuids,0,-1);
+					$auth = new \App\Models\v7\Property();
+					$thinmoo_access_token = $auth->thinmoo_auth_api();
+					$api_obj = new \App\Models\v7\User();
+					$name = Crypt::decryptString($UserMoreInfoObj->first_name)." ".Crypt::decryptString($UserMoreInfoObj->last_name);
+					$household = $api_obj->household_device_update_api($thinmoo_access_token, $account_id,$name,$UserObj->id,$roomuuids,$devices);
+
+				}
 
 				return response()->json(['response' => 1, 'message' => 'User Device(s) Updated']);
 
@@ -7190,7 +7230,14 @@ class OpsApiv4Controller extends Controller
 			//if($request->login_id ==2)
 			//print_r($input['locations']);
 			//exit;
-			$input['locations'] = implode(",",$input['locations']);
+			if( $request->input('device_type') ==2){
+				$DeviceObj->locations = implode(",", $request->input('locations'));
+			}else if( $request->input('device_type') ==3){
+				$DeviceObj->locations = 0;
+			}
+			else{
+				$DeviceObj->locations = $request->input('location');
+			}
 
 			$device = Device::create($input);
 
@@ -7465,6 +7512,16 @@ class OpsApiv4Controller extends Controller
 			$DeviceObj->entry_allowed_in_advance = $request->input('entry_allowed_in_advance');
 			$DeviceObj->start_time = $request->input('start_time');
 			$DeviceObj->end_time = $request->input('end_time');
+
+			if( $request->input('device_type') ==2){
+				$DeviceObj->locations = implode(",", $request->input('locations'));
+			}else if( $request->input('device_type') ==3){
+				$DeviceObj->locations = 0;
+			}
+			else{
+				$DeviceObj->locations = $request->input('location');
+			}
+
 			$DeviceObj->locations = implode(",",$request->input('locations'));
 
 			$device = $DeviceObj->save();
@@ -8650,6 +8707,28 @@ class OpsApiv4Controller extends Controller
 	//Key Collection Module End
 
 	//Defects Module Start
+	public function alertdefectscount(Request $request) 
+    {
+		$login_id = Auth::id();
+		$adminObj = User::find($login_id); 
+		if(empty($adminObj)){
+			return response()->json(['data'=>null,'response' => 300, 'message' => 'User not found']);
+		}
+		
+		$permission = $adminObj->check_permission(3,$adminObj->role_id); 
+		if(empty($permission) ){
+			return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
+		}
+		else if(isset($permission->view) && $permission->view !=1){
+				return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
+		}
+		else{
+			$defect_due_count = $adminObj->noOfDueDefects($adminObj->account_id);
+			return response()->json(['data'=>$defect_due_count,'response' => 1, 'message' => "You have $defect_due_count defects that are over 21 days that are not completed."]);
+
+
+		}
+	}
 	public function defectslist(Request $request) 
     {
 		$login_id = Auth::id();
@@ -8753,18 +8832,20 @@ class OpsApiv4Controller extends Controller
 
 	public function defectsnewlist(Request $request) 
     {
-		$login_id = Auth::id();
+				$login_id = Auth::id();
 		$adminObj = User::find($login_id); 
-		
-		if(empty($adminObj)) return response()->json(['data'=>null,'response' => 300, 'message' => 'User not found']);
+		if(empty($adminObj)){
+			return response()->json(['data'=>null,'response' => 300, 'message' => 'User not found']);
+		}
 		
 		$permission = $adminObj->check_permission(3,$adminObj->role_id); 
 		if(empty($permission) ){
 			return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
 		}
 		else if(isset($permission->view) && $permission->view !=1){
-			return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
-		}else{
+				return response()->json(['data'=>null,'response' => 200, 'message' => 'Permission denied']);
+		}
+		else{
 
         $account_id = $adminObj->account_id;
 
@@ -8784,9 +8865,9 @@ class OpsApiv4Controller extends Controller
 				$user_data["building_no"]= $defect->user->building_no;
 				$user_data["unit_no"]= $defect->user->unit_no;
 				$user_data["primary_contact"]= $defect->user->primary_contact;
-				$user_data["name"]=Crypt::decryptString($defect->user->name);	
+				$user_data["name"]=Crypt::decryptString($defect->user->name);
+				
 			}
-
 			$record['user_info'] = !empty($user_data)?$user_data:null;
 			$unitObj = Unit::find($defect->unit_no);
 			$unit_data =array();
@@ -8795,11 +8876,17 @@ class OpsApiv4Controller extends Controller
 				$unit_data["unit"]= Crypt::decryptString($unitObj->unit);
 			}
 			$record['unit_info'] = !empty($unit_data)?$unit_data:null;
+
+			//$record['user_info'] = $defect->user;
+			//$record['unit_info'] = isset($defect->getunit)?$defect->getunit:null;
+
 			$record['inspection'] = isset($defect->inspection)?$defect->inspection:null;
-			
+
 			$data[] = $record;
 		}
-			return response()->json(['data'=>$data,'response' => 1, 'message' => 'Success']);
+				
+						
+		return response()->json(['data'=>$data,'response' => 1, 'message' => 'Success']);
 		}
 	}
 	
