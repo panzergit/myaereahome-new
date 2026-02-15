@@ -19,6 +19,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('aereahome:system_state_update')->everyMinute();
         $schedule->command('aereahome:sync_push')->everyMinute()->withoutOverlapping();
+        $schedule->command('aereahome:clear_change_logs')->daily()->withoutOverlapping();
 
         $schedule->command('send_invoice_notification:command')->everyMinute();
         $schedule->command('announcement_user:command')->everyMinute();
