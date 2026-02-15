@@ -24,7 +24,7 @@ class ClearChangeLogs extends Command
                 $totalDeleted += $deleted;
             });
 
-        $this->info("Deleted {$totalDeleted} old records.");
+        \Log::info("Deleted {$totalDeleted} old records.");
 
         return Command::SUCCESS;
     }
