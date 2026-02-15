@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-
+use App\Models\v7\ConfigSetting;
 class CheckPrimaryDownCommand extends Command
 {
     /**
@@ -31,18 +31,15 @@ class CheckPrimaryDownCommand extends Command
 
         if ($domain === 'aereanew.panzerplayground.com')
         {
-            $last = DB::table('system_state')
-                ->where('key_name', 'primary_status')
-                ->value('updated_at');
+            // Fecth last updated primary sync time
+            $last = ConfigSetting::where(['name' => 'PRIMARY_STATE', 'status' => 1])->value('updated_at') === '1';
             
-            \Log::info(now()->toDateTimeString());
-            \Log::info(now()->diffInMinutes($last) > 3 ? 'do log' : 'no log');
-            
-            DB::table('system_settings')->updateOrInsert(
-                ['action_key' => 'secondary_change_log_enabled'],
-                ['value' => (now()->diffInMinutes($last) > 3 ? 1 : 0), 'updated_at' => now()]
-            );
- 
+            // Enable secondary change log if primary sync time more than 3 min
+            // Disable secondary change log if primary sync time more less than 3 min
+            ConfigSetting::updateOrInsert(
+                ['name' => 'SECONDARY_CHANGE_LOG', 'status' => 1],
+                ['value' => (now()->diffInMinutes($last ?? now()) > 3 ? '1' : '0'), 'updated_at' => now()]
+            ); 
         }
     }
 }

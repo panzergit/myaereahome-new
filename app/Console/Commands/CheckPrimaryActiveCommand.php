@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\v7\ConfigSetting;
+use Illuminate\Support\Facades\Cache;
 
 class CheckPrimaryActiveCommand extends Command
 {
@@ -29,6 +30,14 @@ class CheckPrimaryActiveCommand extends Command
     {
         $lastKnown = ConfigSetting::where(['name' => 'PRIMARY_STATE', 'status' => 1])->value('updated_at');
         
-        if (!empty($lastKnown) && now()->diffInMinutes($lastKnown) > 3) Artisan::call('aereahome:sync_pull');
+        if (!empty($lastKnown) && now()->diffInMinutes($lastKnown) > 3){ 
+
+            $lock = Cache::lock('sync-pull-lock', 120);
+
+            if ($lock->get()) {
+                Artisan::call('aereahome:sync_pull');
+                $lock->release();
+            }
+        }
     }
 }

@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
+use App\Models\v7\ConfigSetting;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\App;
 
 class SyncPull extends Command
 {
@@ -29,7 +32,11 @@ class SyncPull extends Command
      */
     public function handle()
     {
-        config(['sync.disable_logging' => true]);
+        $this->makeSiteDownUp('down',true);
+
+        //Stop primary logs
+        $whereCondition = ['name' => 'PRIMARY_CHANGE_LOG', 'status' => 1];
+        ConfigSetting::where($whereCondition)->update(['value' => '0']);
 
         $response = Http::withHeaders([
             'X-SYNC-TOKEN' => config('sync.api_token'),
@@ -37,13 +44,20 @@ class SyncPull extends Command
 
         if (! $response->successful()) {
             \Log::error('Failed to fetch logs');
+            $this->makeSiteDownUp('up',false);
             return;
         }
 
         $changes = $response->json('changes', []);
 
-        if (empty($changes)){
-            config(['sync.disable_logging' => false]);
+        if (empty($changes))
+        {
+            //Start primary logs
+            ConfigSetting::where($whereCondition)->update(['value' => '1']);
+
+            // Make site up
+            $this->makeSiteDownUp('up',false);
+
             \Log::info('No changes to apply');
             return;
         }
@@ -53,9 +67,8 @@ class SyncPull extends Command
             foreach ($changes as $log) {
 
                 if (!Schema::hasTable($log['table_name']))  continue;
-
+                
                 DB::transaction(function () use ($log) {
-
                     match ($log['action']) {
                         'insert', 'update' =>
                             DB::table($log['table_name'])->updateOrInsert(
@@ -70,7 +83,6 @@ class SyncPull extends Command
                     };
                 });
             }
-
         });
 
         $ids = collect($changes)->pluck('id')->toArray();
@@ -82,5 +94,23 @@ class SyncPull extends Command
         ]);
 
         \Log::info('Pull sync completed');
+    }
+
+    public function makeSiteDownUp($action,$check = false) {
+        if($action=='up'){
+            if($check){
+                if (App::isDownForMaintenance()) Artisan::call('up');
+            }else{
+                Artisan::call('up');
+            }
+        }
+
+        if($action=='down'){
+            if($check){
+                if (!App::isDownForMaintenance()) Artisan::call('down');
+            }else{
+                Artisan::call('down');
+            }
+        }
     }
 }

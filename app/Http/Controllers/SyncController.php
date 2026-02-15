@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\v7\ChangeLog;
+use App\Models\v7\ConfigSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -12,31 +14,26 @@ class SyncController extends Controller
     public function apply(Request $request)
     {
         // Token validation
-        if ((!$request->header('X-SYNC-TOKEN')) || $request->header('X-SYNC-TOKEN') !== config('sync.api_token')) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
+        if ((!$request->header('X-SYNC-TOKEN')) || 
+            $request->header('X-SYNC-TOKEN') !== config('sync.api_token')) return response()->json(['message' => 'Unauthorized'], 401);
 
         $changes = $request->input('changes', []);
 
-        if (empty($changes)) {
-            return response()->json(['message' => 'No data'], 200);
-        }
+        if (empty($changes)) return response()->json(['message' => 'No data'], 200);
 
         // Prevent infinite sync loop
-        config(['sync.disable_logging' => true]);
+        ConfigSetting::updateOrInsert(
+            ['name' => 'SECONDARY_CHANGE_LOG', 'status' => 1],
+            ['value' => '0', 'updated_at' => now()]
+        );
 
         Model::withoutEvents(function () use ($changes) {
             foreach ($changes as $log) {
 
-                if (!Schema::hasTable($log['table_name'])) {
-                    continue;
-                }
+                if (!Schema::hasTable($log['table_name'])) continue;
                 
                 // DECODE PAYLOAD HERE
-                $payload = is_string($log['payload'])
-                ? json_decode($log['payload'], true)
-                : $log['payload'];
-                
+                $payload = is_string($log['payload']) ? json_decode($log['payload'], true) : $log['payload'];
 
                 match ($log['action']) {
                     'insert', 'update' =>
@@ -67,15 +64,14 @@ class SyncController extends Controller
         $limit = $request->input('limit', config('sync.batch_size', 100));
 
         // Fetch unsynced changes
-        $changes = DB::table('change_logs')
-            ->where('synced', 0)->orderBy('id')
+        $changes = ChangeLog::where(['synced' => 0, 'status' => 1])
+            ->orderBy('id')
             ->limit($limit)->get()
             ->map(function ($log) {
                 // Decode payload here
                 $log->payload = $log->payload
                     ? json_decode($log->payload, true)
                     : null;
-
                 return $log;
             });
 
@@ -94,12 +90,10 @@ class SyncController extends Controller
 
         $ids = $request->input('ids', []);
 
-        if (empty($ids) || !is_array($ids)) {
-            return response()->json(['message' => 'No IDs'], 200);
-        }
+        if (empty($ids) || !is_array($ids)) return response()->json(['message' => 'No IDs'], 200);
 
-        DB::table('change_logs')
-            ->whereIn('id', $ids)
+        ChangeLog::whereIn('id', $ids)
+            ->where('status',1)
             ->update([
                 'synced' => 1,
                 'synced_at' => now(),
@@ -118,15 +112,16 @@ class SyncController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        DB::table('system_state')->updateOrInsert(
-            ['key_name' => 'primary_status'],
+        // Sync time
+        ConfigSetting::updateOrInsert(
+            ['name' => 'PRIMARY_STATE', 'status' => 1],
             ['value' => 'up', 'updated_at' => $request->input('up_time', now())]
         );
         
-        DB::table('system_settings')->updateOrInsert(
-            ['action_key' => 'secondary_change_log_enabled'],
-            ['value' => 0, 'updated_at' => now()]
-        );
+        // Disable secondary log
+        ConfigSetting::updateOrInsert(
+            ['name' => 'SECONDARY_CHANGE_LOG', 'status' => 1],
+            ['value' => 0]);
         
         return response()->json([
             'message' => 'Updated primary state',

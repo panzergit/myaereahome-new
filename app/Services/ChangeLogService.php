@@ -4,6 +4,8 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\v7\ChangeLog;
+use App\Models\v7\ConfigSetting;
 
 class ChangeLogService
 {
@@ -12,20 +14,17 @@ class ChangeLogService
      */
     public static function log(string $action, Model $model): void
     {
-        // Disable logging during sync replay
-        if(config('sync.server_id') === 'primary') {
-            if (config('sync.disable_logging', false)) return;
-        }else{
-            $changeLogEnabled = DB::table('system_settings')
-                ->where('action_key', 'secondary_change_log_enabled')
-                ->value('value');
-
-            if($changeLogEnabled == 0) return;
-        }
-
         // Ignore specific tables
-        if (in_array($model->getTable(), config('sync.ignore_tables', []))) {
-            return;
+        if (in_array($model->getTable(), config('sync.ignore_tables', []))) return;
+
+        // Disable logging during sync replay
+        if(config('sync.server_id') === 'primary')
+        {
+            $isLogEnabled = ConfigSetting::where(['name' => 'PRIMARY_CHANGE_LOG', 'status' => 1])->value('value');
+            if (empty($isLogEnabled) || $isLogEnabled=='0') return;
+        }else{
+            $secondaryChangeLogEnabled = ConfigSetting::where(['name' => 'SECONDARY_CHANGE_LOG', 'status' => 1])->value('value');
+            if (empty($secondaryChangeLogEnabled) || $secondaryChangeLogEnabled=='0') return;
         }
 
         // Prepare payload
@@ -33,17 +32,18 @@ class ChangeLogService
             'delete' => null,
             default  => self::sanitize($model),
         };
-
-        \Log::info("Change log inserted: {$action} on {$model->getTable()} ID {$model->getKey()}");
+        
         // Insert change log
-        DB::table('change_logs')->insert([
+        ChangeLog::create([
             'server_id'  => config('sync.server_id'),
             'table_name' => $model->getTable(),
             'record_id'  => $model->getKey(),
             'action'     => $action,
             'payload'    => $payload ? json_encode($payload) : null,
-            'created_at' => now(),
         ]);
+
+        \Log::info("Change log inserted: {$action} on {$model->getTable()} ID {$model->getKey()}");
+
     }
 
     /**

@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use App\Models\v7\ChangeLog;
 
 class SyncPush extends Command
 {
@@ -27,18 +27,8 @@ class SyncPush extends Command
      */
     public function handle()
     {
-        if(config('sync.disable_push')) {
-            \Log::info('Push sync is disabled');
-            return;
-        }
-
-        $logs = DB::table('change_logs')
-            ->where(['synced' => 0, 'server_id' => config('sync.server_id')])
-            ->orderBy('id')
-            ->limit(100)->get();
-
-        if ($logs->isEmpty()) {
-            \Log::info('No changes to sync');
+        if(!is_primary_serv_active()) {
+            \Log::info('Primary is down. Skipping sync push.');
             return;
         }
 
@@ -47,12 +37,20 @@ class SyncPush extends Command
             return;
         }
 
+        $logs = ChangeLog::where(['synced' => 0, 'server_id' => config('sync.server_id'), 'status' => 1])
+            ->orderBy('id')
+            ->limit(100)->get();
+
+        if ($logs->isEmpty()) {
+            \Log::info('No changes to sync');
+            return;
+        }
+
         $response = Http::withHeaders([
             'X-SYNC-TOKEN' => config('sync.api_token'),
         ])->post(config('sync.secondary.sync_url'), ['changes' => $logs->toArray()]);
 
-        if ($response->successful()) DB::table('change_logs')->whereIn('id', $logs->pluck('id'))
-            ->update(['synced' => 1]);
+        if ($response->successful()) ChangeLog::whereIn('id', $logs->pluck('id'))->update(['synced' => 1]);
 
         \Log::info('Push sync completed');
     }

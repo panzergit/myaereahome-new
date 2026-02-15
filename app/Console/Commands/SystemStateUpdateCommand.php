@@ -27,9 +27,7 @@ class SystemStateUpdateCommand extends Command
      */
     public function handle()
     {
-        $isPrimaryActive = ConfigSetting::where(['name' => 'PRIMARY_ACTIVE', 'status' => 1])->value('value') === '1';
-
-        if(!$isPrimaryActive) {
+        if(!is_primary_serv_active()) {
             \Log::info('Primary is marked as down. Skipping state update.');
             return;
         }

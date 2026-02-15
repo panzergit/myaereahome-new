@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('aereahome:check_primary_active')->everyMinute();
 
         $schedule->command('aereahome:system_state_update')->everyMinute();
-        $schedule->command('aereahome:sync_push')->everyMinute();
+        $schedule->command('aereahome:sync_push')->everyMinute()->withoutOverlapping();
 
         $schedule->command('send_invoice_notification:command')->everyMinute();
         $schedule->command('announcement_user:command')->everyMinute();
